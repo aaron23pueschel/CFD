@@ -38,7 +38,6 @@ class Nozzle:
 
     def set_geometry(self):
         self.x = np.linspace(self.domain[0],self.domain[1],self.NI)
-        self.A = np.zeros(self.NI+2)
         self.A = self.Area()
         #self.A[1:-1] = self.Area()
         #self.A[0] = 2*self.A[1]-self.A[2]
@@ -69,10 +68,13 @@ class Nozzle:
         self.extrapolate_conserved()
 
     def update_conserved(self):
+ 
+        F3 = (self.gamma/(self.gamma-1))*self.p*self.u+self.rho*(self.u**3)/2
+        self.F[1:-1] = np.array([self.rho*self.u,self.rho*self.u**2+self.p,F3]).T
         T = self.p/(self.rho*self.R)
         et = (self.R/(self.gamma-1))*T+.5*(self.u**2)
-        ht = (self.gamma*self.R/(self.gamma-1))*T+.5*self.u**2
-        self.F[1:-1] = np.array([self.rho*self.u,self.rho*self.u**2+self.p,self.rho*self.u*ht]).T
+        self.U = np.array([self.rho,self.rho*self.u,self.rho*et]).T
+
         self.extrapolate_conserved()
 
     def Area(self):
@@ -92,7 +94,7 @@ class Nozzle:
         self.extrapolate_primitive()
 
     def iteration_step(self):
-        deltax = self.x[2]-self.x[1]
+        deltax = np.abs(self.x[2]-self.x[1])
         for i in range(self.NI-1):
             Volume = (self.A[i]+self.A[i+1])*deltax/2
             F_plus_1_2 = (self.F[i+2]+self.F[i+1])/2
@@ -101,7 +103,7 @@ class Nozzle:
             A_plus_1_2 = (self.A[i+1])
             A_minus_1_2 = (self.A[i])
             
-            self.U[i] = self.U[i]-( F_plus_1_2*A_plus_1_2-F_minus_1_2*A_minus_1_2 -self.S[i]*deltax)*self.delta_t/(Volume)
+            self.U[i] = self.U[i]-(( F_plus_1_2*A_plus_1_2-F_minus_1_2*A_minus_1_2 -self.S[i]*deltax)*self.delta_t/(Volume))
 
     def set_source_term(self):
         self.S = np.zeros((self.NI-1,3))
@@ -119,6 +121,17 @@ class Nozzle:
         self.update_conserved()
 
 
+
+    def display(self):
+        print("p:", self.p)
+        print("u:", self.u)
+        print("x:", self.x)
+        print("rho:", self.rho)
+        print("F:", self.F)
+        print("U:", self.U)
+        print("V:", self.V)
+        print("A:", self.A)
+        print("S:", self.S)
 
 
 
