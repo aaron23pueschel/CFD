@@ -25,6 +25,8 @@ class Nozzle:
         self.delta_t = nml["inputs"]["delta_t"]
         self.p_back = nml["inputs"]["p_back"]
         self.gamma = nml["inputs"]["gamma"]
+        self.K4 = nml["inputs"]["K4"]
+        self.K2 = nml["inputs"]["K2"]
         # Class variables
         self.p = None
         self.u = None
@@ -35,6 +37,8 @@ class Nozzle:
         self.V = None
         self.A = None
         self.S = None
+        self.residual = None
+        
 
     def set_geometry(self):
         self.x = np.linspace(self.domain[0],self.domain[1],self.NI)
@@ -95,16 +99,20 @@ class Nozzle:
 
     def iteration_step(self):
         deltax = np.abs(self.x[2]-self.x[1])
+        
+        d_plus_half = -(self.d2(shift=1)-self.d4(shift=1))
+        d_minus_half = -(self.d2(shift=-1)-self.d4(shift=-1))
+        residual = np.zeros_like(self.S)
         for i in range(self.NI-1):
             Volume = (self.A[i]+self.A[i+1])*deltax/2
-            F_plus_1_2 = (self.F[i+2]+self.F[i+1])/2
-            F_minus_1_2 = (self.F[i]+self.F[i+1])/2 
+            F_plus_1_2 = (self.F[i+2]+self.F[i+1])/2 #+ d_plus_half[i]
+            F_minus_1_2 = (self.F[i]+self.F[i+1])/2 #+d_minus_half[i]
 
             A_plus_1_2 = (self.A[i+1])
             A_minus_1_2 = (self.A[i])
-            
+            residual[i] = ( F_plus_1_2*A_plus_1_2-F_minus_1_2*A_minus_1_2 -self.S[i]*deltax)
             self.U[i] = self.U[i]-(( F_plus_1_2*A_plus_1_2-F_minus_1_2*A_minus_1_2 -self.S[i]*deltax)*self.delta_t/(Volume))
-
+        self.residual = residual
     def set_source_term(self):
         self.S = np.zeros((self.NI-1,3))
         self.S[:,1] = self.p*(self.A[1:]-self.A[0:-1])
@@ -112,8 +120,98 @@ class Nozzle:
         self.S[:,1] = self.p*(self.A[1:]-self.A[0:-1])
     def conserved_to_primitive(self):
         self.rho = self.U[:,0]  # Density
+        if np.any(self.rho<0):
+            np.maximum(self.rho, 0)
         self.u = self.U[:,1] / self.rho  # Velocity
+        if np.any(self.u<0):
+            self.u = np.maximum(self.u, 0)
         self.p = (self.gamma - 1) * (self.U[:,2] - 0.5 * self.rho * self.u**2)  # Pressure
+        if np.any(self.p > self.p0):  # Check if any element is greater than p0
+            self.p = np.minimum(self.p, self.p0)
+
+
+
+    def lambda_ibar(self,shift=1):
+        u = np.zeros((self.u.shape[0]+2))
+        a = np.zeros((self.u.shape[0]+2))
+        u[1:-1] = np.abs(self.u)
+        a[1:-1] = np.sqrt(self.gamma*(self.p/self.rho))
+        
+        a[0] = 2*a[1]-a[2]
+        a[-1] = 2*a[-2]-a[-3]
+
+        u[0] = 2*u[1]-u[2]
+        u[-1] = 2*u[-2]-u[-3]
+
+        lambda_bar = np.abs(u)+a
+        if shift==1:
+            lambda_bar = (lambda_bar[2:]+lambda_bar[1:-1])/2
+        else:
+            lambda_bar = (lambda_bar[1:-1]+lambda_bar[0:-2])/2
+
+        return lambda_bar
+
+
+    def d2(self,shift=1):
+        temp_U = np.zeros((self.U.shape[0]+2,3))
+        temp_U[0] = 2*temp_U[1]-temp_U[2]
+        temp_U[-1] = 2*temp_U[-2]-temp_U[-3]
+        if shift==1:
+            return np.tile(self.lambda_ibar(shift=1)*self.epsilon2(shift=1),(3,1)).T*(temp_U[2:]-temp_U[1:-1])
+        else:
+            return np.tile(self.lambda_ibar(shift=-1)*self.epsilon2(shift=-1),(3,1)).T*(temp_U[1:-1]-temp_U[0:-2])
+
+    def d4(self,shift=1):
+        temp_U = np.zeros((self.U.shape[0]+4,3))
+        temp_U[1] = 2*temp_U[2]-temp_U[3]
+        temp_U[0] = 2*temp_U[1]-temp_U[2]
+        temp_U[-2] = 2*temp_U[-3]-temp_U[-4]
+        temp_U[-1] = 2*temp_U[-2]-temp_U[-3]
+        if shift==1:
+            return np.tile(self.lambda_ibar(shift=1)*self.epsilon4(shift=1),(3,1)).T*(temp_U[4:]-3*temp_U[3:-1]+3*temp_U[2:-2]-temp_U[1:-3])
+        else:
+            return np.tile(self.lambda_ibar(shift=-1)*self.epsilon4(shift=-1),(3,1)).T*(temp_U[3:-1]-3*temp_U[2:-2]+3*temp_U[1:-3]-temp_U[0:-4])
+
+
+
+    def nu(self):
+        temp_p = np.zeros((self.p.shape[0]+6)) # 3 ghost cells on each side
+        temp_p[3:-3] = self.p
+        
+        temp_p[2] = 2*temp_p[3]-temp_p[4]
+        temp_p[1] = 2*temp_p[2]-temp_p[3]
+        temp_p[0] = 2*temp_p[1]-temp_p[2]
+        temp_p[-3] = 2*temp_p[-4]-temp_p[-5]
+        temp_p[-2] = 2*temp_p[-3]-temp_p[-4]
+        temp_p[-1] = 2*temp_p[-2]-temp_p[-3]
+
+
+        pi_plus1 = temp_p[2:]
+        pi = temp_p[1:-1]
+        pi_minus1 = temp_p[0:-2]
+
+        num = pi_plus1-2*pi+pi_minus1
+        den =  pi_plus1+2*pi+pi_minus1
+
+        return np.abs(num/den)
+
+    def epsilon2(self,shift=1):
+        nu = self.nu()
+        epsilon = np.zeros((self.NI-1))
+        if shift==1:
+            for i in range(2,self.NI+2-1):
+                epsilon[i-2] = np.max([nu[i-1],nu[i],nu[i+1],nu[i+2]])
+        if shift ==-1:
+            for i in range(2,self.NI-1+2):
+                epsilon[i-2] = np.max([nu[i-2],nu[i-1],nu[i],nu[i+1]])
+        return epsilon
+
+    def epsilon4(self,shift=1):
+        return np.maximum(0,self.K4 - self.epsilon2(shift=shift))
+
+
+
+
     def update_all(self):
         self.conserved_to_primitive() # Updates primitive variables
         self.set_boundary_conditions()

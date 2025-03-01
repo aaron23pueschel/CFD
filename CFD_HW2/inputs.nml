@@ -1,17 +1,19 @@
 &inputs
-    NI = 11
+    NI = 15
     p0 = 300                                                        !kpa
     T0 = 600                                                        !K
     Ru = 8.314
     M = 28.97 
-    p_inf = 101 !kpa
-    T_inf = 293 !K
+    p_inf = 1 !kpa
+    T_inf = 1 !K
     CFL = .5
     ghost_cells = 1
     domain = -1,1
-    delta_t = .0001
+    delta_t = .001
     p_back = -1
     gamma = 1.4
+    K4 = .02
+    K2 = .25
 
 
 /
