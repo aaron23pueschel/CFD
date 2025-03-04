@@ -9,13 +9,13 @@
     CFL = .1
     ghost_cells = 1
     domain = -1,1
-    delta_t = .0001
-    p_back = -1
+    p_back = 120
     gamma = 1.4
     artifial_dissapation = .true.
-    K4 = .1
+    K4 = .02
     K2 = .25
     extrapolation_order = 0
+    epsilon = .0001
 
 
 /

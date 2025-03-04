@@ -27,6 +27,7 @@ class Nozzle:
         self.gamma = nml["inputs"]["gamma"]
         self.K4 = nml["inputs"]["K4"]
         self.K2 = nml["inputs"]["K2"]
+        self.epsilon = nml["inputs"]["epsilon"]
         self.extrapolation_order = []
         # Class variables
         self.p = None
@@ -115,10 +116,10 @@ class Nozzle:
     def conserved_to_primitive(self,conserved):
         rho = conserved[:,0]  # Density
         if np.any(rho<0):
-            rho = np.maximum(rho, 0.0001)
+            rho = np.maximum(rho, self.epsilon)
         u = conserved[:,1] / rho  # Velocity
         if np.any(u<0):
-            u = np.maximum(u, 0.0001)
+            u = np.maximum(u, self.epsilon)
         p = (self.gamma - 1) * (conserved[:,2] - 0.5 * rho * u**2)  # Pressure
         V = np.array([rho,u,p]).T
         return V 
@@ -149,7 +150,7 @@ class Nozzle:
 
 
     def set_boundary_conditions(self):
-        epsilon = .001
+
         self.mach= np.abs(self.V[:,1])/np.sqrt(np.abs(self.gamma*self.V[:,2]/self.V[:,0]))
         #self.mach[0] = np.max([epsilon,2*self.mach[1]-self.mach[2]]) # Maybe dont need this line...
 
@@ -157,10 +158,11 @@ class Nozzle:
         p_bndry = self.total_p(self.gamma,self.mach[0],self.p0)
         rho_bndry = self.total_density(p_bndry,self.R,T)
         u_bndry = self.total_velocity(self.gamma,self.mach[0],self.R,T)
-        if not self.p_back==-1:
-            self.p[-1] = self.p_back
+        
         self.V[0] = np.array([rho_bndry,u_bndry,p_bndry]).T
         self.V[-1] = np.array([self.extrapolate1(self.V)[1]])
+        if not self.p_back==-1:
+            self.V[-1,1] = self.p_back
         self.U,self.F = self.primitive_to_conserved(self.V)
 
 
@@ -172,8 +174,7 @@ class Nozzle:
         self.U = np.zeros((self.NI+1,3)) # Number of faces
         self.F = np.zeros((self.NI+1,3))
         
-        #self.U[1:-1] = np.array([self.V[-1:1,0],self.V[-1:1,1]*self.V[-1:1,0],self.V[-1:1,0]*et]).T
-        #self.F[1:-1] = np.array([self.V[-1:1,0]*self.V[-1:1,1],self.V[-1:1,0]*self.V[-1:1,1]**2+self.V[-1:1,3],self.V[-1:1,0]*self.V[-1:1,1]*ht]).T
+       
         
         self.U = np.array([
         self.V[:, 0],  # Density
@@ -187,31 +188,12 @@ class Nozzle:
         self.V[:, 0] * self.V[:, 1] * ht ]).T
         
 
-    #def update_conserved(self):
- 
-    #    F3 = (self.gamma/(self.gamma-1))*self.p*self.u+self.rho*(self.u**3)/2
-    #    self.F = np.array([self.rho*self.u,self.rho*self.u**2+self.p,F3]).T
-    #    T = self.p/(self.rho*self.R)
-    #    et = (self.R/(self.gamma-1))*T+.5*(self.u**2)
-    #    self.U = np.array([self.rho,self.rho*self.u,self.rho*et]).T
-
-        
 
     def Area(self):
         return .2+.4*(1+np.sin(np.pi*(self.x-.5)))
     def Darea(self):
         x = (self.x[1:]+self.x[0:-1])/2
         return 0.4 * np.pi * np.cos(np.pi * (x - 0.5))
-    
-    def extrapolate_conserved(self):
-        self.U[0] = 2*self.U[1]-self.U[2]
-        self.U[-1] = 2*self.U[-2]-self.U[-3]
-            
-
-    def set_primitive_variables(self):
-        self.V = np.zeros((self.NI+2*self.ghost_cells-1,3))
-        self.V[0:-1] = np.array([self.rho[0:-1],self.u[0:-1],self.p[0:-1]]).T
-        self.extrapolate_primitive()
 
     
     def compute_CFL(self):
@@ -336,26 +318,6 @@ class Nozzle:
 
 
 
-    def update_all(self):
-        self.conserved_to_primitive() # Updates primitive variables
-        self.update_mach()
-        self.set_boundary_conditions()
-        self.update_source()
-        self.update_conserved()
-
-
-
-
-    def display(self):
-        print("p:", self.p)
-        print("u:", self.u)
-        print("x:", self.x)
-        print("rho:", self.rho)
-        print("F:", self.F)
-        print("U:", self.U)
-        print("V:", self.V)
-        print("A:", self.A)
-        print("S:", self.S)
 
 
     
