@@ -216,28 +216,33 @@ class Nozzle:
     
     def compute_CFL(self):
         delta_x = np.abs(self.x[1]-self.x[0])
-        self.delta_t =np.min(self.CFL*delta_x/(np.abs(self.V[:,1]) + np.sqrt(np.abs(self.gamma*self.V[:,2]/self.V[:,0]))))
-    def iteration_step(self,return_error=True):
+        self.delta_t =self.CFL*delta_x/(np.abs(self.V[:,1]) + np.sqrt(np.abs(self.gamma*self.V[:,2]/self.V[:,0])))
+    def iteration_step(self,return_error=True,local_timestep = True):
         deltax = np.abs(self.x[2]-self.x[1])
         
         d_plus_half = -(self.d2(shift=1)-self.d4(shift=1))
         d_minus_half = -(self.d2(shift=-1)-self.d4(shift=-1))
         residual = np.zeros((self.NI-1,3))
-        temp_U = np.zeros_like(self.U)
+        
         self.compute_CFL()
-        #self.delta_t = .00001
-        for i in range(1,self.NI):
-            Volume = (self.A[i-1]+self.A[i])*deltax/2
-            F_plus_1_2 = (self.F[i+1]+self.F[i])/2 + d_plus_half[i-1]
-            F_minus_1_2 = (self.F[i-1]+self.F[i])/2 +d_minus_half[i-1]
+        if not local_timestep:
+            self.delta_t = np.min(self.delta_t)
+        
+        Volume = (self.A[0:-1]+self.A[1:])*deltax/2
+        F_plus_1_2 = (self.F[2:]+self.F[1:-1])/2 + d_plus_half
+        F_minus_1_2 = (self.F[0:-2]+self.F[1:-1])/2 +d_minus_half
 
-            A_plus_1_2 = (self.A[i])
-            A_minus_1_2 = (self.A[i-1])
-           
-            residual[i-1] = ( F_plus_1_2*A_plus_1_2-F_minus_1_2*A_minus_1_2 -self.S[i-1]*deltax)
-            temp_U[i] = self.U[i]-(residual[i-1]*self.delta_t/(Volume))
-        self.U = temp_U
+        A_plus_1_2 = np.tile((self.A[1:]),(3,1)).T
+        A_minus_1_2 = np.tile(self.A[0:-1],(3,1)).T
+        
+        residual = ( F_plus_1_2*A_plus_1_2-F_minus_1_2*A_minus_1_2 -self.S*deltax)
+        
+        
+        self.U[1:-1] = self.U[1:-1]-(residual*np.tile(self.delta_t[1:-1],(3,1)).T/np.tile(Volume,(3,1)).T)
+        
         # Update all 
+
+        
         self.U[0],self.U[-1] = self.extrapolate1(self.U)
         self.V = self.conserved_to_primitive(self.U)
         self.update_source()

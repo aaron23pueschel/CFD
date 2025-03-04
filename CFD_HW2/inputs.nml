@@ -6,14 +6,14 @@
     M = 28.97 
     p_inf = 1 !kpa
     T_inf = 1 !K
-    CFL = .075
+    CFL = .1
     ghost_cells = 1
     domain = -1,1
     delta_t = .0001
     p_back = -1
     gamma = 1.4
     artifial_dissapation = .true.
-    K4 = .02
+    K4 = .1
     K2 = .25
     extrapolation_order = 0
 
