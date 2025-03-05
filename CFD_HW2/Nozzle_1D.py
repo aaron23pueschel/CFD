@@ -1,5 +1,6 @@
 import f90nml
 import numpy as np
+import scipy
 from cfunctions import C_FUNCTIONS as functions
 import ctypes
 class Nozzle:
@@ -195,7 +196,43 @@ class Nozzle:
         x = (self.x[1:]+self.x[0:-1])/2
         return 0.4 * np.pi * np.cos(np.pi * (x - 0.5))
 
-    
+    def RUN_SIMULATION(self,iter_max = 500000,output_quantity = 100,convergence_criteria = 10e-12, verbose=False):
+        self.set_arrays()
+        self.set_geometry()
+        rho_exact,u_exact,p_exact = self.exact_isentropic()
+        self.set_initial_conditions()
+        self.set_boundary_conditions()
+
+        R1 = self.iteration_step()
+        self.set_boundary_conditions()
+
+        convergence_history = []
+
+        for i in range(iter_max):
+            
+            R = self.iteration_step()
+            if i%output_quantity == 0:
+                convergence_history.append(R/R1)
+                if np.max(R/R1)<convergence_criteria:
+                    print("Converged at Rk/R1: "+ str(np.max(R/R1)))
+                    break
+                if verbose:
+                    print("Iteration: "+str((i+1)),np.max(R/R1))
+            self.set_boundary_conditions()
+            
+        p_compute = self.V[:,2]
+        u_compute = self.V[:,1]
+        rho_compute = self.V[:,0]
+
+        return p_compute,u_compute,rho_compute,p_exact,u_exact,rho_exact,convergence_history
+
+
+
+
+
+
+
+
     def compute_CFL(self):
         delta_x = np.abs(self.x[1]-self.x[0])
         self.delta_t =self.CFL*delta_x/(np.abs(self.V[:,1]) + np.sqrt(np.abs(self.gamma*self.V[:,2]/self.V[:,0])))
@@ -316,7 +353,44 @@ class Nozzle:
         return np.maximum(0,self.K4 - self.epsilon2(shift=shift))
 
 
+    def exact_isentropic(self):
+        x = (self.x[1:]+self.x[0:-1])/2
+        A_x = 0.2 + 0.4*(1 + np.sin(np.pi*(x - 0.5)))
+        A_star = 0.2 + 0.4*(1 + np.sin(np.pi*(0 - 0.5)))
+        A_Astar = A_x/A_star
+        RHO,U,P = ([],[],[])
+        for i,A in enumerate(A_Astar):
+            if x[i]<=0:
+                rho,u,p = self.exact_solution(A,subsonic=True)
+            else:
+                rho,u,p = self.exact_solution(A,subsonic=False)
+            RHO.append(rho)
+            U.append(u)
+            P.append(p)
+        return RHO,U,P
+    def exact_solution(self,A_Astar,subsonic=True):
+       
+        
+        def mach_from_area_ratio(A_Astar, gamma=1.4):
 
+            def mach_eq(M):
+                return (1/M) * ((2/(gamma+1)) * (1 + (gamma-1)/2 * M**2))**((gamma+1)/(2*(gamma-1))) - A_Astar
+            if subsonic:
+                Mach_initial_guess = 0.5 
+            else:
+                Mach_initial_guess =  2.0  # Subsonic for A/A*<1, supersonic for A/A*>1
+            return scipy.optimize.fsolve(mach_eq, Mach_initial_guess)[0]
+        Mach = mach_from_area_ratio(A_Astar) 
+        # Temperature relation
+        T = self.T0 / (1 + (self.gamma - 1) / 2 * Mach**2)
+        
+        # Pressure relation
+        p = self.p0 * (T / self.T0) ** (self.gamma / (self.gamma - 1))
+        
+        # Density relation using ideal gas law
+        rho = p / (self.R * T)
+        velocity = Mach * np.sqrt(self.gamma * self.R * T)
+        return rho,velocity,p
 
 
 
