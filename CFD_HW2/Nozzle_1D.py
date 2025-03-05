@@ -1,7 +1,6 @@
 import f90nml
 import numpy as np
 import scipy
-from cfunctions import C_FUNCTIONS as functions
 import ctypes
 class Nozzle:
     def __init__(self,input_file):
@@ -45,10 +44,10 @@ class Nozzle:
         self.delta_t = None
 
                 ## C functions
-        self.FM = functions().FM()
-        self.DfdM = functions().DfdM()
-        self.newton = functions().newton()
-        
+        #self.FM = functions().FM()
+        #self.DfdM = functions().DfdM()
+        #self.newton = functions().newton()
+    """   
     def compute_newton(self):
         P0 = self.p0
         T0 = self.T0
@@ -87,7 +86,7 @@ class Nozzle:
             RHO.append(rho)
             u.append(U)
         return p,u,RHO
-            
+    """        
 
     def set_arrays(self):
         self.U = np.zeros((self.NI+1,3)) # Number of faces
@@ -196,10 +195,12 @@ class Nozzle:
         x = (self.x[1:]+self.x[0:-1])/2
         return 0.4 * np.pi * np.cos(np.pi * (x - 0.5))
 
-    def RUN_SIMULATION(self,iter_max = 500000,output_quantity = 100,convergence_criteria = 10e-12, verbose=False):
+    def RUN_SIMULATION(self,iter_max = 500000,output_quantity = 100,convergence_criteria = 10e-12, verbose=False,compute_exact = True):
         self.set_arrays()
         self.set_geometry()
-        rho_exact,u_exact,p_exact = self.exact_isentropic()
+        rho_exact,u_exact,p_exact = ([],[],[])
+        if compute_exact:
+            rho_exact,u_exact,p_exact = self.exact_isentropic()
         self.set_initial_conditions()
         self.set_boundary_conditions()
 
@@ -224,7 +225,7 @@ class Nozzle:
         u_compute = self.V[:,1]
         rho_compute = self.V[:,0]
 
-        return p_compute,u_compute,rho_compute,p_exact,u_exact,rho_exact,convergence_history
+        return p_compute,u_compute,rho_compute,np.array(p_exact),np.array(u_exact),np.array(rho_exact),convergence_history
 
 
 
