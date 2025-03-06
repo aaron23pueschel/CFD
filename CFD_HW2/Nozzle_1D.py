@@ -4,31 +4,28 @@ import scipy
 import ctypes
 class Nozzle:
     def __init__(self,input_file):
-        try:
-            nml = f90nml.read(input_file)
-        except FileNotFoundError:
-            print("Check namelist filename")
+        if input_file is not None:
+            try:
+                nml = f90nml.read(input_file)
+            except FileNotFoundError:
+                print("Check namelist filename")
 
-        # Input vars
-        self.p0 = nml["inputs"]["p0"]
-        self.NI = nml["inputs"]["NI"]
-        self.p0 = nml["inputs"]["p0"]
-        self.T0 = nml["inputs"]["T0"]
-        self.Ru = nml["inputs"]["Ru"]
-        self.M = nml["inputs"]["M"]
-        self.R = self.Ru/self.M
-        self.p_inf = nml["inputs"]["p_inf"]
-        self.T_inf = nml["inputs"]["T_inf"]
-        self.CFL = nml["inputs"]["CFL"]
-        self.ghost_cells = nml["inputs"]["ghost_cells"]
-        self.domain = nml["inputs"]["domain"]
-        #self.delta_t = nml["inputs"]["delta_t"]
-        self.p_back = nml["inputs"]["p_back"]
-        self.gamma = nml["inputs"]["gamma"]
-        self.K4 = nml["inputs"]["K4"]
-        self.K2 = nml["inputs"]["K2"]
-        self.epsilon = nml["inputs"]["epsilon"]
-        self.extrapolation_order = []
+            # Input vars
+            self.p0 = nml["inputs"]["p0"]
+            self.NI = nml["inputs"]["NI"]
+            self.T0 = nml["inputs"]["T0"]
+            self.Ru = nml["inputs"]["Ru"]
+            self.M = nml["inputs"]["M"]
+            self.R = self.Ru/self.M
+            self.CFL = nml["inputs"]["CFL"]
+            self.ghost_cells = nml["inputs"]["ghost_cells"]
+            self.domain = nml["inputs"]["domain"]
+            self.p_back = nml["inputs"]["p_back"]
+            self.gamma = nml["inputs"]["gamma"]
+            self.K4 = nml["inputs"]["K4"]
+            self.K2 = nml["inputs"]["K2"]
+            self.epsilon = nml["inputs"]["epsilon"]
+            self.extrapolation_order = []
         # Class variables
         self.p = None
         self.u = None
@@ -47,46 +44,7 @@ class Nozzle:
         #self.FM = functions().FM()
         #self.DfdM = functions().DfdM()
         #self.newton = functions().newton()
-    """   
-    def compute_newton(self):
-        P0 = self.p0
-        T0 = self.T0
-        gamma = ctypes.c_double(self.gamma)
-        tolerance = ctypes.c_double(1e-12)
 
-        # Compute A(x)
-        if self.x is None:
-            self.set_geometry()
-        x = self.x
-        A_x = 0.2 + 0.4*(1 + np.sin(np.pi*(x - 0.5)))
-        A_star = 0.2 + 0.4*(1 + np.sin(np.pi*(0 - 0.5)))
-        A_bar = A_x/A_star
-        p = []
-        u = []
-        RHO = []
-        
-        for i,A_ in enumerate(A_bar):
-            A_ = ctypes.c_double(A_)
-            if abs(x[i])<.01:
-                initial_mach = ctypes.c_double(1+x[i])
-            if x[i]<0:
-                initial_mach = ctypes.c_double(.3)
-
-            elif x[i]==0:
-                initial_mach = ctypes.c_double(1+10e-14)
-            else:
-                initial_mach = ctypes.c_double(3)
-            R = self.R
-            M = (self.newton(gamma,A_,initial_mach,tolerance))
-            T = functions.T(gamma.value,M,T0)
-            P = functions.P(gamma.value,M,P0)
-            U = functions.u(gamma.value,M,R,T)
-            rho = functions.rho(P,R,T)
-            p.append(P)
-            RHO.append(rho)
-            u.append(U)
-        return p,u,RHO
-    """        
 
     def set_arrays(self):
         self.U = np.zeros((self.NI+1,3)) # Number of faces
@@ -101,14 +59,8 @@ class Nozzle:
 
         # Compute total energy per unit mass (et)
         et = p / ((self.gamma - 1) * rho) + 0.5 * u**2
-
-        # Compute total enthalpy per unit mass (ht)
         ht = (self.gamma / (self.gamma - 1)) * (p / rho) + 0.5 * u**2
-
-        # Compute conserved variables (U)
         U = np.column_stack((rho, rho * u, rho * et))
-
-        # Compute fluxes (F)
         F = np.column_stack((rho * u, rho * u**2 + p, rho * u * ht))
 
         return U, F  # Return both conserved variables and fluxes
@@ -146,9 +98,7 @@ class Nozzle:
 
         self.V = np.array([rho,u,p]).T
         self.U,self.F = self.primitive_to_conserved(self.V)
-        
-
-
+      
     def set_boundary_conditions(self):
 
         self.mach= np.abs(self.V[:,1])/np.sqrt(np.abs(self.gamma*self.V[:,2]/self.V[:,0]))
@@ -234,7 +184,7 @@ class Nozzle:
 
 
 
-    def compute_CFL(self):
+    def compute_timestep(self):
         delta_x = np.abs(self.x[1]-self.x[0])
         self.delta_t =self.CFL*delta_x/(np.abs(self.V[:,1]) + np.sqrt(np.abs(self.gamma*self.V[:,2]/self.V[:,0])))
     def iteration_step(self,return_error=True,local_timestep = True):
@@ -244,7 +194,7 @@ class Nozzle:
         d_minus_half = -(self.d2(shift=-1)-self.d4(shift=-1))
         residual = np.zeros((self.NI-1,3))
         
-        self.compute_CFL()
+        self.compute_timestep()
         if not local_timestep:
             self.delta_t = np.min(self.delta_t)
         
@@ -269,14 +219,10 @@ class Nozzle:
         if return_error:
             return np.linalg.norm(residual,axis=0)
         
-    def set_source_term(self):
-        deltax = np.abs(self.x[2]-self.x[1])
-        self.S[:,1] = self.V[1:-1,2]*(self.A[1:]-self.A[0:-1])/deltax
+
     def update_source(self):
         deltax = np.abs(self.x[2]-self.x[1])
         self.S[:,1] = self.V[1:-1,2]*(self.A[1:]-self.A[0:-1])/deltax
-
-
 
 
 
@@ -307,15 +253,14 @@ class Nozzle:
     def d4(self,shift=1):
         temp_U = np.zeros((self.U.shape[0]+2,3))
         temp_U[1:-1] = self.U
-        #temp_U[1] = 2*temp_U[2]-temp_U[3]
         temp_U[0] = 2*temp_U[1]-temp_U[2]
-        #temp_U[-2] = 2*temp_U[-3]-temp_U[-4]
         temp_U[-1] = 2*temp_U[-2]-temp_U[-3]
         #print(self.lambda_ibar(shift=1).shape,self.epsilon4(shift=1).shape,temp_U[4:].shape)
         if shift==1:
             return np.tile(self.lambda_ibar(shift=1)*self.epsilon4(shift=1),(3,1)).T*(temp_U[4:]-3*temp_U[3:-1]+3*temp_U[2:-2]-temp_U[1:-3])
         else:
             return np.tile(self.lambda_ibar(shift=-1)*self.epsilon4(shift=-1),(3,1)).T*(temp_U[3:-1]-3*temp_U[2:-2]+3*temp_U[1:-3]-temp_U[0:-4])
+
 
 
 
@@ -416,7 +361,35 @@ class Nozzle:
 
 
 
+#### TEST FUNCTIONS
 
+    def test_variable_changes(self):
+        self.set_arrays()
+        U = np.random.rand(*self.U.shape)
+        V = self.primitive_to_conserved(U)[0]
+        temp_U = self.conserved_to_primitive(V)
+        if np.allclose(temp_U,U):
+            print("Conserved to primitive is valid")
+        else:
+            print("ERROR: Conserved to primitive has an error")
+
+    def test_nu(self):
+        self.V = np.ones_like(self.V)
+        if np.allclose(self.nu(),0):
+            print("Nu is valid")
+        else:
+            print("ERROR: Nu() has an error")
+
+            
+    def test_lambda_ibar(self):
+        self.V = np.ones_like(self.V)
+        self.V[:,1] = 0*self.V[:,1] # u = 0
+        expected_val = np.sqrt(self.gamma)*np.ones_like(self.V[:,1])[1:-1]
+        test_val = self.lambda_ibar(shift = 1)
+        if np.allclose(expected_val,test_val):
+            print("Lambda_ibar() function is valid")
+        else:
+            print("ERROR: Lambda_ibar() is invalid")
 
 
             

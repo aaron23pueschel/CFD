@@ -1,5 +1,5 @@
 &inputs
-    NI = 201
+    NI =101
     p0 = 300                                                        !kpa
     T0 = 600                                                        !K
     Ru = 8314
