@@ -1,5 +1,5 @@
 &inputs
-    NI =101
+    NI =601
     p0 = 300                                                        !kpa
     T0 = 600                                                        !K
     Ru = 8314
@@ -9,7 +9,7 @@
     CFL = .075
     ghost_cells = 1
     domain = -1,1
-    p_back =    -1 !120
+    p_back =    120
     gamma = 1.4
     artifial_dissapation = .true.
     K4 = .02
