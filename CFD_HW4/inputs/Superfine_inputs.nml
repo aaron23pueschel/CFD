@@ -1,19 +1,19 @@
 &inputs
-    NI =201
+    NI = 801
     p0 = 300                                                        !kpa
     T0 = 600                                                        !K
     Ru = 8314
     M = 28.97 
     p_inf = 1 !kpa
     T_inf = 1 !K
-    CFL = .075
+    CFL = .05
     ghost_cells = 1
     domain = -1,1
-    p_back =    -1  ! 120
+    p_back =    -1 !120
     gamma = 1.4
     artifial_dissapation = .true.
     K4 = .02
-    K2 = .35
+    K2 = .3
     extrapolation_order = 0
     epsilon = .0001
 

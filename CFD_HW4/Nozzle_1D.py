@@ -67,11 +67,10 @@ class Nozzle:
 
     def conserved_to_primitive(self,conserved):
         rho = conserved[:,0]  # Density
-        if np.any(rho<0):
-            rho = np.maximum(rho, self.epsilon)
+       
         u = conserved[:,1] / rho  # Velocity
-        if np.any(u<0):
-            u = np.maximum(u, self.epsilon)
+        #if np.any(u<=0):
+        #    u = np.sign(u)*np.maximum(np.abs(u), self.epsilon)
         p = (self.gamma - 1) * (conserved[:,2] - 0.5 * rho * u**2)  # Pressure
         V = np.array([rho,u,p]).T
         return V 
@@ -112,7 +111,7 @@ class Nozzle:
         self.V[0] = np.array([rho_bndry,u_bndry,p_bndry]).T
         self.V[-1] = np.array([self.extrapolate1(self.V)[1]])
         if not self.p_back==-1:
-            self.V[-1,1] = self.p_back
+            self.V[-1,2] = self.p_back
         self.U,self.F = self.primitive_to_conserved(self.V)
 
 
@@ -145,7 +144,8 @@ class Nozzle:
         x = (self.x[1:]+self.x[0:-1])/2
         return 0.4 * np.pi * np.cos(np.pi * (x - 0.5))
 
-    def RUN_SIMULATION(self,iter_max = 500000,output_quantity = 100,convergence_criteria = 10e-12, verbose=False,compute_exact = True,local_timestep = True):
+    def RUN_SIMULATION(self,iter_max = 500000,output_quantity = 100,convergence_criteria = 10e-12, verbose=False, 
+                        compute_exact = True,local_timestep = True,jameson_damping = False,first_order = True):
         self.set_arrays()
         self.set_geometry()
         rho_exact,u_exact,p_exact = ([],[],[])
@@ -154,16 +154,18 @@ class Nozzle:
         self.set_initial_conditions()
         self.set_boundary_conditions()
 
-        R1 = self.iteration_step(local_timestep=local_timestep)
+        R1 = self.iteration_step(local_timestep=local_timestep,jameson_damping = jameson_damping,first_order=first_order,return_error=True)
         self.set_boundary_conditions()
-
+        
         convergence_history = []
 
         for i in range(iter_max):
             
-            R = self.iteration_step()
+            R = self.iteration_step(jameson_damping = jameson_damping,first_order=first_order,return_error=True)
+            ##print(self.V[-1,1])
             if i%output_quantity == 0:
                 convergence_history.append(R/R1)
+                
                 if np.max(R/R1)<convergence_criteria:
                     print("Converged at Rk/R1: "+ str(np.max(R/R1)))
                     break
@@ -179,19 +181,121 @@ class Nozzle:
 
 
 
+    def c_plus_minus(self,alpha_plus_minus,beta_LR,mach_LR,M_plus_minus):
+        return alpha_plus_minus*(1+beta_LR)*mach_LR-beta_LR*M_plus_minus
 
 
 
+
+    def f_convective(self,i_plus_half=True,first_order=False):
+        shift = self.FL_FR_FUNC(i_plus_half=i_plus_half,first_order=first_order)
+            
+
+        rho_L,rho_R =shift(self.V[:,0]) # Density
+        if np.any(rho_L<=0):
+            rho_L = np.maximum(rho_L, self.epsilon)
+        if np.any(rho_R<=0):
+            rho_R = np.maximum(rho_R, self.epsilon)
+        u_L,u_R = shift(self.V[:,1])  # Velocity
+        p_L,p_R = shift(self.V[:, 2])  # Pressure
+        if i_plus_half and not self.p_back== -1:
+            p_R[-1] = self.p_back
+        a_L = np.sqrt(np.maximum(self.epsilon,(self.gamma*(p_L/rho_L))))
+        a_R = np.sqrt(np.maximum(self.epsilon,(self.gamma*(p_R/rho_R))))
+        M_L,M_R = (u_L/a_L,u_R/a_R)
+        
+        alpha_plus = .5*(1+np.sign(M_L))
+        alpha_minus = .5*(1-np.sign(M_R))
+        beta_L = -np.maximum(0,1-np.floor(np.abs(M_L)))
+        beta_R = -np.maximum(0,1-np.floor(np.abs(M_R)))
+
+        M_plus = .25*(M_L+1)**2
+        M_minus = -.25*(M_R-1)**2
+
+        
+        ht_L = (self.gamma / (self.gamma - 1)) * (p_L / rho_L) + 0.5 * u_L**2
+        ht_R = (self.gamma / (self.gamma - 1)) * (p_R / rho_R) + 0.5 * u_R**2
+
+        temp_L = rho_L*a_L*self.c_plus_minus(alpha_plus,beta_L,M_L,M_plus)
+        temp_R = rho_R*a_R*self.c_plus_minus(alpha_minus,beta_R,M_R,M_minus)
+        FC_i_half = np.array([temp_L,u_L*temp_L,ht_L*temp_L]).T+np.array([temp_R,u_R*temp_R,ht_R*temp_R]).T
+
+        return FC_i_half 
+    def FL_FR_FUNC(self,i_plus_half = True,first_order=False,epsilon=0):
+        if first_order:
+            if i_plus_half:
+                def shift(F,tuple_len = 1): return (F[1:-1],F[2:])
+            else:
+                def shift(F,tuple_len = 1): return (F[0:-2],F[1:-1])
+        else:
+            if i_plus_half:
+                def shift(F,tuple_len = 1): 
+                    F_temp = np.zeros((F.shape[0]+2))
+                    F_temp[1:-1] = F
+                    F_temp[0],F_temp[-1] = self.extrapolate1(F_temp)
+                    
+                    F = F_temp
+                    
+                    #return (F[2:-2],F[3:-1])
+                    return F[2:-2]+.5*(F[2:-2]-F[1:-3]),F[3:-1]-.5*(F[4:]-F[3:-1])
+            else:
+                def shift(F,tuple_len = 1):
+                    F_temp = np.zeros((F.shape[0]+2))
+                    F_temp[1:-1] = F
+                    F_temp[0],F_temp[-1] = self.extrapolate1(F_temp)
+                    F = F_temp
+                    #return (F[1:-3],F[2:-2])
+                    return F[1:-3]+.5*(F[1:-3]-F[:-4]),F[2:-2]-.5*(F[3:-1]-F[2:-2])
+        return shift
+    def f_pressure_flux(self,i_plus_half=True,first_order=False):
+        
+        shift = self.FL_FR_FUNC(i_plus_half=i_plus_half,first_order=first_order)
+        rho_L,rho_R =shift(self.V[:,0]) # Density
+
+        if np.any(rho_L<=0):
+            rho_L = np.maximum(rho_L, self.epsilon)
+        if np.any(rho_R<=0):
+            rho_R = np.maximum(rho_R, self.epsilon)
+        p_L,p_R = shift(self.V[:, 2])  # Pressure
+        if i_plus_half and not self.p_back== -1:
+            p_R[-1] = self.p_back
+        u_L,u_R = shift(self.V[:,1])  # Velocity
+
+        
+        a_L = np.sqrt(np.maximum(self.epsilon,(self.gamma*(p_L/rho_L))))
+        a_R = np.sqrt(np.maximum(self.epsilon,(self.gamma*(p_R/rho_R))))
+        M_L,M_R = (u_L/a_L,u_R/a_R)
+        
+        alpha_plus = .5*(1+np.sign(M_L))
+        alpha_minus = .5*(1-np.sign(M_R))
+        beta_L = -np.maximum(0,1-np.floor(np.abs(M_L)))
+        beta_R = -np.maximum(0,1-np.floor(np.abs(M_R)))
+
+        M_plus = .25*(M_L+1)**2
+        M_minus = -.25*(M_R-1)**2
+
+        p_doubleBar_plus = M_plus*(-M_L+2)
+        p_doubleBar_minus = M_minus*(-M_R-2)
+
+        D_plus = alpha_plus*(1+beta_L)-beta_L*p_doubleBar_plus
+        D_minus = alpha_minus*(1+beta_R)-beta_R*p_doubleBar_minus
+
+        temp_zero = np.zeros_like(p_L)
+        
+
+        return np.array([temp_zero,D_plus*p_L,temp_zero]).T+np.array([temp_zero,D_minus*p_R,temp_zero]).T
 
 
     def compute_timestep(self):
         delta_x = np.abs(self.x[1]-self.x[0])
         self.delta_t =self.CFL*delta_x/(np.abs(self.V[:,1]) + np.sqrt(np.abs(self.gamma*self.V[:,2]/self.V[:,0])))
-    def iteration_step(self,return_error=True,local_timestep = True):
+    def iteration_step(self,return_error=True,local_timestep = True,jameson_damping = False,first_order = False):
         deltax = np.abs(self.x[2]-self.x[1])
-        
-        d_plus_half = -(self.d2(shift=1)-self.d4(shift=1))
-        d_minus_half = -(self.d2(shift=-1)-self.d4(shift=-1))
+        d_minus_half = 0
+        d_plus_half = 0
+        if jameson_damping:
+            d_plus_half = -(self.d2(shift=1)-self.d4(shift=1))
+            d_minus_half = -(self.d2(shift=-1)-self.d4(shift=-1))
         residual = np.zeros((self.NI-1,3))
         
         self.compute_timestep()
@@ -199,8 +303,12 @@ class Nozzle:
             self.delta_t = np.min(self.delta_t)
         
         Volume = (self.A[0:-1]+self.A[1:])*deltax/2
-        F_plus_1_2 = (self.F[2:]+self.F[1:-1])/2 + d_plus_half
-        F_minus_1_2 = (self.F[0:-2]+self.F[1:-1])/2 +d_minus_half
+        if jameson_damping:
+            F_plus_1_2 = (self.F[2:]+self.F[1:-1])/2 + d_plus_half
+            F_minus_1_2 = (self.F[0:-2]+self.F[1:-1])/2 +d_minus_half
+        else:
+            F_plus_1_2 = self.f_convective(i_plus_half=True,first_order=first_order)+self.f_pressure_flux(i_plus_half=True,first_order=first_order)
+            F_minus_1_2 = self.f_convective(i_plus_half=False,first_order=first_order)+self.f_pressure_flux(i_plus_half=False,first_order=first_order)
 
         A_plus_1_2 = np.tile((self.A[1:]),(3,1)).T
         A_minus_1_2 = np.tile(self.A[0:-1],(3,1)).T
@@ -219,6 +327,7 @@ class Nozzle:
         self.update_source()
         if return_error:
             return np.linalg.norm(residual,axis=0)
+        
         
 
     def update_source(self):
