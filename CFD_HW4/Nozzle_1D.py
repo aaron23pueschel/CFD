@@ -25,6 +25,8 @@ class Nozzle:
             self.K4 = nml["inputs"]["K4"]
             self.K2 = nml["inputs"]["K2"]
             self.epsilon = nml["inputs"]["epsilon"]
+            self.var_epsilon = nml["inputs"]["var_epsilon"]
+            self.kappa = nml["inputs"]["kappa"]
             self.extrapolation_order = []
         # Class variables
         self.p = None
@@ -165,7 +167,8 @@ class Nozzle:
             ##print(self.V[-1,1])
             if i%output_quantity == 0:
                 convergence_history.append(R/R1)
-                
+                if np.max(R/R1)<1e-7:
+                    first_order = False
                 if np.max(R/R1)<convergence_criteria:
                     print("Converged at Rk/R1: "+ str(np.max(R/R1)))
                     break
@@ -221,7 +224,7 @@ class Nozzle:
         FC_i_half = np.array([temp_L,u_L*temp_L,ht_L*temp_L]).T+np.array([temp_R,u_R*temp_R,ht_R*temp_R]).T
 
         return FC_i_half 
-    def FL_FR_FUNC(self,i_plus_half = True,first_order=False,epsilon=0):
+    def FL_FR_FUNC(self,i_plus_half = True,first_order=False,epsilon=1):
         if first_order:
             if i_plus_half:
                 def shift(F,tuple_len = 1): return (F[1:-1],F[2:])
@@ -235,18 +238,53 @@ class Nozzle:
                     F_temp[0],F_temp[-1] = self.extrapolate1(F_temp)
                     
                     F = F_temp
+                    #FL = F[2:-2]+.5*(F[2:-2]-F[1:-3])
+                    #FR = F[3:-1]-.5*(F[4:]-F[3:-1])
+
+                    r_plus_upwind = (F[0:-4]-F[1:-3])/self.min_func(F[1:-3]-F[2:-2])
+                    r_minus_upwind = (F[2:-2]-F[3:-1])/self.min_func(F[1:-3]-F[2:-2])
+
+                    r_plus_central = ((F[3:-1]-F[2:-2]))/self.min_func(F[2:-2]-F[1:-3])
+                    r_minus_central = ((F[3:-1]-F[0:-4]))/self.min_func(F[2:-2]-F[1:-3])
+
+                    # Linear function for psi
+                    FL = F[2:-2]+(self.var_epsilon/4)*((1-self.kappa)*(F[2:-2]-F[1:-3])+(1+self.kappa)*(F[3:-1]-F[2:-2]))
+                    FR = F[3:-1]-(self.var_epsilon/4)*((1-self.kappa)*(F[4:]-F[3:-1])+(1+self.kappa)*(F[3:-1]-F[2:-2]))
                     
-                    #return (F[2:-2],F[3:-1])
-                    return F[2:-2]+.5*(F[2:-2]-F[1:-3]),F[3:-1]-.5*(F[4:]-F[3:-1])
+                    #FL = F[2:-2]+(self.var_epsilon/4)*((1-self.kappa)*(self.psi(r_minus_upwind))+(1+self.kappa)*self.psi(r_minus_central))
+                    #FR = F[3:-1]-(self.var_epsilon/4)*((1-self.kappa)*(self.psi(r_plus_upwind))+(1+self.kappa)*self.psi(r_plus_central))
+                    return FL,FR
             else:
                 def shift(F,tuple_len = 1):
                     F_temp = np.zeros((F.shape[0]+2))
                     F_temp[1:-1] = F
                     F_temp[0],F_temp[-1] = self.extrapolate1(F_temp)
                     F = F_temp
-                    #return (F[1:-3],F[2:-2])
-                    return F[1:-3]+.5*(F[1:-3]-F[:-4]),F[2:-2]-.5*(F[3:-1]-F[2:-2])
+                    r_plus_upwind = (F[4:]-F[3:-1])/self.min_func(F[3:-1]-F[2:-2])
+                    r_minus_upwind = (F[2:-2]-F[1:-3])/self.min_func(F[3:-1]-F[2:-2])
+
+                    r_plus_central = ((F[2:-2]-F[1:-3]))/self.min_func(F[3:-1]-F[2:-2])
+                    r_minus_central = ((F[2:-2]-F[1:-3]))/self.min_func(F[1:-3]-F[2:-2])
+                    # Linear function for psi
+
+
+                    #FL = F[1:-3]+.5*(F[1:-3]-F[:-4])
+                    #FR = F[2:-2]-.5*(F[3:-1]-F[2:-2])
+
+                    FL = F[1:-3]+(self.var_epsilon/4)*((1-self.kappa)*(F[1:-3]-F[:-4])+(1+self.kappa)*(F[2:-2]-F[1:-3]))
+                    FR = F[2:-2]-(self.var_epsilon/4)*((1-self.kappa)*(F[3:-1]-F[2:-2])+(1+self.kappa)*(F[2:-2]-F[1:-3]))
+                    
+                    
+                    #FL = F[2:-2]+(self.var_epsilon/4)*((1-self.kappa)*(self.psi(r_minus_upwind))+(1+self.kappa)*self.psi(r_minus_central))
+                    #FR = F[3:-1]-(self.var_epsilon/4)*((1-self.kappa)*(self.psi(r_plus_upwind))+(1+self.kappa)*self.psi(r_plus_central))
+                    
+                    return FL,FR
         return shift
+    def psi(self,r,van_leer = True):
+        if van_leer:
+            return (r+np.abs(r))/self.min_func(1+r)
+    def min_func(self,s):
+        return np.sign(s)*np.maximum(self.epsilon,np.abs(s))
     def f_pressure_flux(self,i_plus_half=True,first_order=False):
         
         shift = self.FL_FR_FUNC(i_plus_half=i_plus_half,first_order=first_order)

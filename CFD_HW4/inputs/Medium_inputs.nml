@@ -1,5 +1,5 @@
 &inputs
-    NI =51
+    NI =151
     p0 = 300                                                        !kpa
     T0 = 600                                                        !K
     Ru = 8314
@@ -16,6 +16,8 @@
     K2 = .35
     extrapolation_order = 0
     epsilon = .0001
+    kappa = 0
+    var_epsilon = 1 ! 0 for first order 1 for second order
 
 
 /
