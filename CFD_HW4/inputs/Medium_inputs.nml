@@ -15,8 +15,8 @@
     K4 = .02
     K2 = .35
     extrapolation_order = 0
-    epsilon = .0001
-    kappa = 0
+    epsilon = .00001
+    kappa = .5
     var_epsilon = 1 ! 0 for first order 1 for second order
 
 
