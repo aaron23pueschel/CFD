@@ -25,9 +25,18 @@ class Nozzle:
             self.K4 = nml["inputs"]["K4"]
             self.K2 = nml["inputs"]["K2"]
             self.epsilon = nml["inputs"]["epsilon"]
-            self.var_epsilon = nml["inputs"]["var_epsilon"]
             self.kappa = nml["inputs"]["kappa"]
+            self.upwind_order = nml["inputs"]["upwind_order"] #! 0 for first order 1 for second order
+            self.convergence_criteria = nml["inputs"]["convergence_criteria"]
+            self.damping_scheme = nml["inputs"]["damping_scheme"]#1 ! 0 for jameson damping, 1 for van leer upwind
+            self.iter_max = nml["inputs"]["iter_max"]
+            self.local_timestep = nml["inputs"]["local_timestep"]
+            self.flux_limiter_scheme = nml["inputs"]["flux_limiter_scheme"] #0 for freeze, 1 for van leer, 2 for van albada
+            self.flat_initial_mach = nml["inputs"]["flat_initial_mach"]
+            self.converge_at_second_order = nml["inputs"]["converge_at_second_order"]
             self.extrapolation_order = []
+            self.compute_isentropic =nml["inputs"]["compute_isentropic"]
+            self.temp_plot = None
         # Class variables
         self.p = None
         self.u = None
@@ -87,19 +96,95 @@ class Nozzle:
     def set_initial_conditions(self):
         tempx = (self.x[1:]+self.x[0:-1])/2
         self.mach = np.zeros((self.NI+1)) # only a left ghost node
-        self.mach[1:-1] = (9/10)*tempx+1
+        if self.flat_initial_mach:
+            self.mach[1:-1] = np.ones_like((9/10)*tempx+1)
+        else:
+            self.mach[1:-1] = (9/10)*tempx+1
         self.mach[0],self.mach[-1] = self.extrapolate1(self.mach)
 
         T = self.total_T(self.gamma,self.mach,self.T0)
 
 
         p = self.total_p(self.gamma, self.mach,self.p0) # Number of cells
+        if self.flat_initial_mach:
+            p[-1] = 1+self.p_back
         rho = self.total_density(p,self.R,T)
         u = self.total_velocity(self.gamma,self.mach,self.R,T)
-
+        
         self.V = np.array([rho,u,p]).T
         self.U,self.F = self.primitive_to_conserved(self.V)
-      
+    def compute_doubleBar_values(self,i_plus_half,compute_deltas = False):
+        shift = self.FL_FR_FUNC(i_plus_half=i_plus_half)
+
+        rho_L,rho_R =shift(self.V[:,0]) # Density
+        if np.any(rho_L<=0):
+            rho_L = np.maximum(rho_L, self.epsilon)
+        if np.any(rho_R<=0):
+            rho_R = np.maximum(rho_R, self.epsilon)
+        u_L,u_R = shift(self.V[:,1])  # Velocity
+        p_L,p_R = shift(self.V[:, 2])  # Pressure
+        if i_plus_half and not self.p_back== -1:
+            p_R[-1] = self.p_back
+        ht_L = (self.gamma / (self.gamma - 1)) * (p_L / rho_L) + 0.5 * u_L**2
+        ht_R = (self.gamma / (self.gamma - 1)) * (p_R / rho_R) + 0.5 * u_R**2
+
+        R = np.sqrt(np.maximum(0,rho_R/self.min_func(rho_L)))
+        p_double_bar = np.sqrt(np.maximum(self.epsilon,p_L*p_R))
+        rho_double_bar = R*rho_L
+        u_double_bar = (R*u_R+u_L)/(R+1)
+        ht_double_bar = (R*ht_R+ht_L)/(R+1)
+        if not compute_deltas:
+            return (p_double_bar,rho_double_bar,u_double_bar,ht_double_bar)
+        return (p_double_bar,rho_double_bar,u_double_bar,ht_double_bar),(p_R-p_L,rho_R-rho_L,u_R-u_L)
+    def compute_roe_eigs(self,i_plus_half):
+        p,rho,u,ht = self.compute_doubleBar_values(i_plus_half)
+        a = np.sqrt(np.maximum(0,(self.gamma-1)*(ht-(u**2)/2)))
+        ones = np.ones_like(u)
+        lam1 = u
+        lam2 = u+a
+        lam3 = u-a
+        
+
+        r1 = np.array([ones,u,(u**2)/2])
+        r2 = (rho/np.maximum(self.epsilon,2*a))*np.array([ones,u+a,ht+u*a])
+        r3 = (-rho/np.maximum(self.epsilon,2*a))*np.array([ones,u-a,ht-u*a])
+
+        return (lam1,lam2,lam3), (r1,r2,r3)
+    def compute_roe_flux(self, i_plus_half):
+        #self.set_boundary_conditions()
+        shift = self.FL_FR_FUNC(i_plus_half=i_plus_half,vector = True)
+        lams,eigvecs = self.compute_roe_eigs(i_plus_half=i_plus_half)
+        #print(lams)
+        ws = self.compute_wave_amplitudes(i_plus_half=i_plus_half)
+        F_L,F_R = shift(self.F)
+        #if i_plus_half and not self.p_back== -1:
+        #    F_R[-1,2] = self.p_back
+        
+        temp_sum = 0
+        def modified_lambda(eigenvalue,lambda_eps = .1):
+            p,rho,u,ht = self.compute_doubleBar_values(i_plus_half)
+            a = np.sqrt(np.maximum(self.epsilon,(self.gamma-1)*(ht-(u**2)/2)))
+            indeces_LT = np.where(eigenvalue<=2*lambda_eps*a)
+            eigenvalue[indeces_LT] = (eigenvalue[indeces_LT]**2)/(4*lambda_eps*a[indeces_LT])+lambda_eps*a[indeces_LT]
+            
+            return eigenvalue
+
+        for i in range(3):
+            temp_sum += modified_lambda(np.abs(lams[i]))*ws[i]*eigvecs[i] 
+        flux_roe = .5*(F_L+F_R) - .5*temp_sum.T
+        return flux_roe
+        
+    def compute_wave_amplitudes(self,i_plus_half):
+        
+        bars,deltas = self.compute_doubleBar_values(i_plus_half,compute_deltas=True)
+        p,rho,u,ht = bars
+        delta_p,delta_rho,delta_u = deltas
+        a = np.sqrt(np.maximum(0,(self.gamma-1)*(ht-(u**2)/2)))
+        dw1 = delta_rho-(delta_p/self.min_func(a**2))
+        dw2 = delta_u+(delta_p/self.min_func(rho*a))
+        dw3 = delta_u-(delta_p/self.min_func(rho*a))
+        
+        return (dw1,dw2,dw3)
     def set_boundary_conditions(self):
 
         self.mach= np.abs(self.V[:,1])/np.sqrt(np.abs(self.gamma*self.V[:,2]/self.V[:,0]))
@@ -121,6 +206,7 @@ class Nozzle:
         T = self.V[:,2]/(self.V[:,0]*self.R)
         et = (self.R/(self.gamma-1))*T+.5*(self.V[:,1]**2)
         ht = (self.gamma*self.R/(self.gamma-1))*T+.5*self.V[:,1]**2
+
 
         self.U = np.zeros((self.NI+1,3)) # Number of faces
         self.F = np.zeros((self.NI+1,3))
@@ -146,30 +232,31 @@ class Nozzle:
         x = (self.x[1:]+self.x[0:-1])/2
         return 0.4 * np.pi * np.cos(np.pi * (x - 0.5))
 
-    def RUN_SIMULATION(self,iter_max = 500000,output_quantity = 100,convergence_criteria = 10e-12, verbose=False, 
-                        compute_exact = True,local_timestep = True,jameson_damping = False,first_order = True):
+    def RUN_SIMULATION(self,output_quantity = 100,verbose=True ):
         self.set_arrays()
         self.set_geometry()
         rho_exact,u_exact,p_exact = ([],[],[])
-        if compute_exact:
+        if self.compute_isentropic:
             rho_exact,u_exact,p_exact = self.exact_isentropic()
         self.set_initial_conditions()
         self.set_boundary_conditions()
 
-        R1 = self.iteration_step(local_timestep=local_timestep,jameson_damping = jameson_damping,first_order=first_order,return_error=True)
+        R1 = self.iteration_step()
         self.set_boundary_conditions()
         
         convergence_history = []
 
-        for i in range(iter_max):
-            
-            R = self.iteration_step(jameson_damping = jameson_damping,first_order=first_order,return_error=True)
+        for i in range(self.iter_max):
+            compute_norm = False
+            if i%output_quantity==0:
+                compute_norm = True
+            R = self.iteration_step(return_error = compute_norm)
             ##print(self.V[-1,1])
-            if i%output_quantity == 0:
+            if compute_norm:
                 convergence_history.append(R/R1)
-                if np.max(R/R1)<1e-7:
-                    first_order = False
-                if np.max(R/R1)<convergence_criteria:
+                if np.max(R/R1)<self.converge_at_second_order:
+                    self.upwind_order = 1
+                if np.max(R/R1)<self.convergence_criteria:
                     print("Converged at Rk/R1: "+ str(np.max(R/R1)))
                     break
                 if verbose:
@@ -190,8 +277,8 @@ class Nozzle:
 
 
 
-    def f_convective(self,i_plus_half=True,first_order=False):
-        shift = self.FL_FR_FUNC(i_plus_half=i_plus_half,first_order=first_order)
+    def f_convective(self,i_plus_half=True):
+        shift = self.FL_FR_FUNC(i_plus_half=i_plus_half)
             
 
         rho_L,rho_R =shift(self.V[:,0]) # Density
@@ -224,87 +311,88 @@ class Nozzle:
         FC_i_half = np.array([temp_L,u_L*temp_L,ht_L*temp_L]).T+np.array([temp_R,u_R*temp_R,ht_R*temp_R]).T
         
         return FC_i_half 
-    def FL_FR_FUNC(self,i_plus_half = True,first_order=False,epsilon=1):
-        if first_order:
-            if i_plus_half:
-                def shift(F,tuple_len = 1): return (F[1:-1],F[2:])
-            else:
-                def shift(F,tuple_len = 1): return (F[0:-2],F[1:-1])
+    def FL_FR_FUNC(self,i_plus_half = True,vector = False):
+        
+        if i_plus_half:
+            shift_indx = 0
         else:
-            if i_plus_half:
-                shift_indx = 0
-            else:
-                shift_indx = -1
-            
-            def shift(F,tuple_len = 1): 
+            shift_indx = -1
+        
+        def shift(F): 
+            if not vector:
                 F_temp = np.zeros((F.shape[0]+2))
                 F_temp[1:-1] = F
                 F_temp[0],F_temp[-1] = self.extrapolate1(F_temp)
-                
-                F = F_temp
-                #FL = F[2:-2]+.5*(F[2:-2]-F[1:-3])
-                #FR = F[3:-1]-.5*(F[4:]-F[3:-1])
+            else:
+                F_temp = np.zeros((F.shape[0]+2,3))
+                F_temp[1:-1,:] = F
+                F_temp[0],F_temp[-1] = self.extrapolate1(F_temp)
+            F_temp[1:-1] = F
+            F_temp[0],F_temp[-1] = self.extrapolate1(F_temp)
+            
+            F = F_temp
+            #FL = F[2:-2]+.5*(F[2:-2]-F[1:-3])
+            #FR = F[3:-1]-.5*(F[4:]-F[3:-1])
 
-                
-                #r_plus_upwind = (F[4+shift_indx:self.shift_func(shift_indx)]-F[3+shift_indx:-1+shift_indx])/self.min_func(F[3+shift_indx:-1+shift_indx]-F[2+shift_indx:-2+shift_indx])
-                #r_minus_upwind = (F[2+shift_indx:-2+shift_indx]-F[1+shift_indx:-3+shift_indx])/self.min_func(F[3+shift_indx:-1+shift_indx]-F[2+shift_indx:-2+shift_indx])
-                p1 = self.psi_plus(F,-1+shift_indx)
-                p2 = self.psi_minus(F,shift_indx)
-                p3 = self.psi_minus(F,shift_indx+1)
-                p4 = self.psi_plus(F,shift_indx)
-                #r_plus_central = ((F[3:-1]-F[2:-2]))/self.min_func(F[2:-2]-F[1:-3])
-                #r_minus_central = ((F[3:-1]-F[0:-4]))/self.min_func(F[2:-2]-F[1:-3])
+            
+            #r_plus_upwind = (F[4+shift_indx:self.shift_func(shift_indx)]-F[3+shift_indx:-1+shift_indx])/self.min_func(F[3+shift_indx:-1+shift_indx]-F[2+shift_indx:-2+shift_indx])
+            #r_minus_upwind = (F[2+shift_indx:-2+shift_indx]-F[1+shift_indx:-3+shift_indx])/self.min_func(F[3+shift_indx:-1+shift_indx]-F[2+shift_indx:-2+shift_indx])
+            p1 = self.psi_plus(F,-1+shift_indx)
+            p2 = self.psi_minus(F,shift_indx)
+            p3 = self.psi_minus(F,shift_indx+1)
+            p4 = self.psi_plus(F,shift_indx)
+            #r_plus_central = ((F[3:-1]-F[2:-2]))/self.min_func(F[2:-2]-F[1:-3])
+            #r_minus_central = ((F[3:-1]-F[0:-4]))/self.min_func(F[2:-2]-F[1:-3])
 
-                # Linear function for psi
-                #FL = F[2:-2]+(self.var_epsilon/4)*((1-self.kappa)*(F[2:-2]-F[1:-3])+(1+self.kappa)*(F[3:-1]-F[2:-2]))
-                #FR = F[3:-1]-(self.var_epsilon/4)*((1-self.kappa)*(F[4:]-F[3:-1])+(1+self.kappa)*(F[3:-1]-F[2:-2]))
-                
-                FL = F[2+shift_indx:-2+shift_indx]+(self.var_epsilon/4)*((1-self.kappa)*(p1*(F[2+shift_indx:-2+shift_indx]-F[1+shift_indx:-3+shift_indx]))+\
-                                                                         (1+self.kappa)*p2*(F[3+shift_indx:-1+shift_indx]-F[2+shift_indx:-2+shift_indx]))
-                FR = F[3+shift_indx:-1+shift_indx]-(self.var_epsilon/4)*((1-self.kappa)*(p3*(F[4+shift_indx:self.shift_func(shift_indx)]-F[3+shift_indx:-1+shift_indx]))\
-                                                                         +(1+self.kappa)*p4*(F[3+shift_indx:-1+shift_indx]-F[2+shift_indx:-2+shift_indx]))
-                return FL,FR
+            # Linear function for psi
+            #FL = F[2:-2]+(self.var_epsilon/4)*((1-self.kappa)*(F[2:-2]-F[1:-3])+(1+self.kappa)*(F[3:-1]-F[2:-2]))
+            #FR = F[3:-1]-(self.var_epsilon/4)*((1-self.kappa)*(F[4:]-F[3:-1])+(1+self.kappa)*(F[3:-1]-F[2:-2]))
+            epsilon = self.upwind_order
+            FL = F[2+shift_indx:-2+shift_indx]+(epsilon/4)*((1-self.kappa)*(p1*(F[2+shift_indx:-2+shift_indx]-F[1+shift_indx:-3+shift_indx]))+\
+                                                                        (1+self.kappa)*p2*(F[3+shift_indx:-1+shift_indx]-F[2+shift_indx:-2+shift_indx]))
+            FR = F[3+shift_indx:-1+shift_indx]-(epsilon/4)*((1-self.kappa)*(p3*(F[4+shift_indx:self.shift_func(shift_indx)]-F[3+shift_indx:-1+shift_indx]))\
+                                                                        +(1+self.kappa)*p4*(F[3+shift_indx:-1+shift_indx]-F[2+shift_indx:-2+shift_indx]))
+            return FL,FR
             
         return shift
     def shift_func(self,shift_indx):
         if(shift_indx==0):
             return  None
         return shift_indx
-    def psi_minus(self,F,shift_indx,freeze=False,van_leer = True):
-        if freeze:
+    def psi_minus(self,F,shift_indx):
+        if self.flux_limiter_scheme==0:
             return 1
         NUM =  (F[2+shift_indx:self.shift_func(-2+shift_indx)]-F[1+shift_indx:-3+shift_indx])
         DEN = self.min_func(F[3+shift_indx:self.shift_func(-1+shift_indx)]-F[2+shift_indx:self.shift_func(-2+shift_indx)])
         r_minus =NUM/DEN
-
         r = r_minus
-        if van_leer:
+        if self.flux_limiter_scheme==1:
             return (r+np.abs(r))/self.min_func(1+r)
-            #return (r**2+r)/self.min_func(1+r**2)
+        elif self.flux_limiter_scheme==2:
+            return (r**2+r)/self.min_func(1+r**2)
 
 
-    def psi_plus(self,F,shift_indx,freeze=False,van_leer = True):
-        if freeze:
+    def psi_plus(self,F,shift_indx):
+        if self.flux_limiter_scheme==0:
             return 1
         NUM = (F[4+shift_indx:self.shift_func(shift_indx)]-F[3+shift_indx:self.shift_func(-1+shift_indx)])
         DEN = self.min_func(F[3+shift_indx:self.shift_func(-1+shift_indx)]-F[2+shift_indx:self.shift_func(-2+shift_indx)])
         r_plus = NUM/DEN
-        
-        
-        #return 1
         r = r_plus
-        if van_leer:
+
+        if self.flux_limiter_scheme==1:
             return (r+np.abs(r))/self.min_func(1+r)
-            #return (r**2+r)/self.min_func(1+r**2)
+        elif self.flux_limiter_scheme ==2:
+            return (r**2+r)/self.min_func(1+r**2)
         
-    
+
     def min_func(self,s):
         indeces = np.where(s==0)[0]
         s[indeces] = self.epsilon
         return np.sign(s)*np.maximum(self.epsilon,np.abs(s))
     def f_pressure_flux(self,i_plus_half=True,first_order=False):
         
-        shift = self.FL_FR_FUNC(i_plus_half=i_plus_half,first_order=first_order)
+        shift = self.FL_FR_FUNC(i_plus_half=i_plus_half)
         rho_L,rho_R =shift(self.V[:,0]) # Density
         
         if np.any(rho_L<=0):
@@ -344,33 +432,36 @@ class Nozzle:
     def compute_timestep(self):
         delta_x = np.abs(self.x[1]-self.x[0])
         self.delta_t =self.CFL*delta_x/(np.abs(self.V[:,1]) + np.sqrt(np.abs(self.gamma*self.V[:,2]/self.V[:,0])))
-    def iteration_step(self,return_error=True,local_timestep = True,jameson_damping = False,first_order = False):
+    def iteration_step(self,return_error=True):
         deltax = np.abs(self.x[2]-self.x[1])
         d_minus_half = 0
         d_plus_half = 0
-        if jameson_damping:
+        if self.damping_scheme==0:
             d_plus_half = -(self.d2(shift=1)-self.d4(shift=1))
             d_minus_half = -(self.d2(shift=-1)-self.d4(shift=-1))
         residual = np.zeros((self.NI-1,3))
-        
         self.compute_timestep()
-        if not local_timestep:
+        if not self.local_timestep:
             self.delta_t = np.min(self.delta_t)
         
         Volume = (self.A[0:-1]+self.A[1:])*deltax/2
-        if jameson_damping:
+        if self.damping_scheme==0:
             F_plus_1_2 = (self.F[2:]+self.F[1:-1])/2 + d_plus_half
             F_minus_1_2 = (self.F[0:-2]+self.F[1:-1])/2 +d_minus_half
-        else:
-            F_plus_1_2 = self.f_convective(i_plus_half=True,first_order=first_order)+self.f_pressure_flux(i_plus_half=True,first_order=first_order)
-            F_minus_1_2 = self.f_convective(i_plus_half=False,first_order=first_order)+self.f_pressure_flux(i_plus_half=False,first_order=first_order)
-        #print(np.max(F_plus_1_2),np.min(F_minus_1_2))
+        elif self.damping_scheme==1:
+            F_plus_1_2 = self.f_convective(i_plus_half=True)+self.f_pressure_flux(i_plus_half=True)
+            F_minus_1_2 = self.f_convective(i_plus_half=False)+self.f_pressure_flux(i_plus_half=False)
+        elif self.damping_scheme==2:
+            F_plus_1_2 = self.compute_roe_flux(i_plus_half=True)
+            F_minus_1_2 = self.compute_roe_flux(i_plus_half=False)
+
+        self.temp_plot = F_minus_1_2
         A_plus_1_2 = np.tile((self.A[1:]),(3,1)).T
         A_minus_1_2 = np.tile(self.A[0:-1],(3,1)).T
         
         residual = ( F_plus_1_2*A_plus_1_2-F_minus_1_2*A_minus_1_2 -self.S*deltax)
         
-        if local_timestep:       
+        if self.local_timestep:       
             self.U[1:-1] = self.U[1:-1]-(residual*np.tile(self.delta_t[1:-1],(3,1)).T/np.tile(Volume,(3,1)).T)
         else:
             self.U[1:-1] = self.U[1:-1]-(residual*self.delta_t/np.tile(Volume,(3,1)).T)
