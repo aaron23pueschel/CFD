@@ -36,6 +36,7 @@ class Nozzle:
             self.converge_at_second_order = nml["inputs"]["converge_at_second_order"]
             self.extrapolation_order = []
             self.compute_isentropic =nml["inputs"]["compute_isentropic"]
+            self.return_conserved = nml["inputs"]["return_conserved"]
             self.temp_plot = None
         # Class variables
         self.p = None
@@ -232,7 +233,7 @@ class Nozzle:
         x = (self.x[1:]+self.x[0:-1])/2
         return 0.4 * np.pi * np.cos(np.pi * (x - 0.5))
 
-    def RUN_SIMULATION(self,output_quantity = 100,verbose=True ):
+    def RUN_SIMULATION(self,output_quantity = 100,verbose=False ):
         self.set_arrays()
         self.set_geometry()
         rho_exact,u_exact,p_exact = ([],[],[])
@@ -257,7 +258,7 @@ class Nozzle:
                 if np.max(R/R1)<self.converge_at_second_order:
                     self.upwind_order = 1
                 if np.max(R/R1)<self.convergence_criteria:
-                    print("Converged at Rk/R1: "+ str(np.max(R/R1)))
+                    print("Converged at Rk/R1: "+ str(np.max(R/R1))+" in "+str(i)+" iterations.") 
                     break
                 if verbose:
                     print("Iteration: "+str((i+1)),np.max(R/R1))
@@ -266,8 +267,24 @@ class Nozzle:
         p_compute = self.V[:,2]
         u_compute = self.V[:,1]
         rho_compute = self.V[:,0]
+        if not self.return_conserved:
+            return p_compute,u_compute,rho_compute,np.array(p_exact),np.array(u_exact),np.array(rho_exact),convergence_history
+        else:
+            Mass_compute = self.U[1:-1,0]
+            Momentum_compute = self.U[1:-1,1]
+            Energy_compute = self.U[1:-1,2]
+            U,_ = self.primitive_to_conserved(np.array([rho_exact,u_exact,p_exact]).T)
+            
+            Mass_exact = U[:,0]
+            Momentum_exact = U[:,1]
+            Energy_exact = U[:,2]
 
-        return p_compute,u_compute,rho_compute,np.array(p_exact),np.array(u_exact),np.array(rho_exact),convergence_history
+            return Mass_compute,Momentum_compute,Energy_compute,Mass_exact,Momentum_exact,Energy_exact,convergence_history
+
+
+
+
+            
 
 
 

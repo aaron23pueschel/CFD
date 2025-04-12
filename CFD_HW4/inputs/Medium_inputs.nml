@@ -9,7 +9,7 @@
     CFL = .1
     ghost_cells = 1
     domain = -1,1
-    p_back =  -1 !120
+    p_back =  120
     gamma = 1.4
     artifial_dissapation = .true.
     K4 = .02
@@ -17,15 +17,16 @@
     compute_isentropic = .true.
     extrapolation_order = 0
     epsilon = .00001
-    kappa = 0
+    kappa = -1
     upwind_order = 1 ! 0 for first order 1 for second order
     convergence_criteria = 1e-12
     damping_scheme = 2 ! 0 for jameson damping, 1 for van leer upwind, 2 for roe upwind
-    iter_max = 300000
+    iter_max = 1000000
     local_timestep = .true.
-    flux_limiter_scheme = 0 ! 0 for freeze, 1 for van leer, 2 for van albada
-    flat_initial_mach = .false.
+    flux_limiter_scheme = 2 ! 0 for freeze, 1 for van leer, 2 for van albada
+    flat_initial_mach = .true.
     converge_at_second_order = -1 !-1 for none and 1e-7 for switch
+    return_conserved = .false.
     
 
 
