@@ -236,9 +236,6 @@ class Nozzle:
     def RUN_SIMULATION(self,output_quantity = 100,verbose=False ):
         self.set_arrays()
         self.set_geometry()
-        rho_exact,u_exact,p_exact = ([],[],[])
-        if self.compute_isentropic:
-            rho_exact,u_exact,p_exact = self.exact_isentropic()
         self.set_initial_conditions()
         self.set_boundary_conditions()
 
@@ -268,18 +265,15 @@ class Nozzle:
         u_compute = self.V[:,1]
         rho_compute = self.V[:,0]
         if not self.return_conserved:
-            return p_compute,u_compute,rho_compute,np.array(p_exact),np.array(u_exact),np.array(rho_exact),convergence_history
+            return p_compute,u_compute,rho_compute,convergence_history
         else:
             Mass_compute = self.U[1:-1,0]
             Momentum_compute = self.U[1:-1,1]
             Energy_compute = self.U[1:-1,2]
-            U,_ = self.primitive_to_conserved(np.array([rho_exact,u_exact,p_exact]).T)
+            #U,_ = self.primitive_to_conserved(np.array([rho_exact,u_exact,p_exact]).T)
             
-            Mass_exact = U[:,0]
-            Momentum_exact = U[:,1]
-            Energy_exact = U[:,2]
 
-            return Mass_compute,Momentum_compute,Energy_compute,Mass_exact,Momentum_exact,Energy_exact,convergence_history
+            return Mass_compute,Momentum_compute,Energy_compute,convergence_history
 
 
 
@@ -299,6 +293,8 @@ class Nozzle:
             
 
         rho_L,rho_R =shift(self.V[:,0]) # Density
+        print(rho_L.shape)
+        raise Exception("Help")
         if np.any(rho_L<=0):
             rho_L = np.maximum(rho_L, self.epsilon)
         if np.any(rho_R<=0):
@@ -471,7 +467,8 @@ class Nozzle:
         elif self.damping_scheme==2:
             F_plus_1_2 = self.compute_roe_flux(i_plus_half=True)
             F_minus_1_2 = self.compute_roe_flux(i_plus_half=False)
-
+        #print(F_plus_1_2.shape,self.F.shape)
+        #raise Exception("Stope here")
         self.temp_plot = F_minus_1_2
         A_plus_1_2 = np.tile((self.A[1:]),(3,1)).T
         A_minus_1_2 = np.tile(self.A[0:-1],(3,1)).T
