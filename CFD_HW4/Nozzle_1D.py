@@ -138,7 +138,7 @@ class Nozzle:
             return (p_double_bar,rho_double_bar,u_double_bar,ht_double_bar)
         return (p_double_bar,rho_double_bar,u_double_bar,ht_double_bar),(p_R-p_L,rho_R-rho_L,u_R-u_L)
     def compute_roe_eigs(self,i_plus_half):
-        p,rho,u,ht = self.compute_doubleBar_values(i_plus_half)
+        _,rho,u,ht = self.compute_doubleBar_values(i_plus_half)
         a = np.sqrt(np.maximum(0,(self.gamma-1)*(ht-(u**2)/2)))
         ones = np.ones_like(u)
         lam1 = u
@@ -163,7 +163,7 @@ class Nozzle:
         
         temp_sum = 0
         def modified_lambda(eigenvalue,lambda_eps = .1):
-            p,rho,u,ht = self.compute_doubleBar_values(i_plus_half)
+            _,_,u,ht = self.compute_doubleBar_values(i_plus_half)
             a = np.sqrt(np.maximum(self.epsilon,(self.gamma-1)*(ht-(u**2)/2)))
             indeces_LT = np.where(eigenvalue<=2*lambda_eps*a)
             eigenvalue[indeces_LT] = (eigenvalue[indeces_LT]**2)/(4*lambda_eps*a[indeces_LT])+lambda_eps*a[indeces_LT]
@@ -178,7 +178,7 @@ class Nozzle:
     def compute_wave_amplitudes(self,i_plus_half):
         
         bars,deltas = self.compute_doubleBar_values(i_plus_half,compute_deltas=True)
-        p,rho,u,ht = bars
+        _,rho,u,ht = bars
         delta_p,delta_rho,delta_u = deltas
         a = np.sqrt(np.maximum(0,(self.gamma-1)*(ht-(u**2)/2)))
         dw1 = delta_rho-(delta_p/self.min_func(a**2))
@@ -293,8 +293,6 @@ class Nozzle:
             
 
         rho_L,rho_R =shift(self.V[:,0]) # Density
-        print(rho_L.shape)
-        raise Exception("Help")
         if np.any(rho_L<=0):
             rho_L = np.maximum(rho_L, self.epsilon)
         if np.any(rho_R<=0):

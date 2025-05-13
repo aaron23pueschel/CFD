@@ -1,21 +1,13 @@
-from Nozzle_1D import Nozzle
+from EulerSolver import EulerSolver
+from DataStructures import DataStructures
 import matplotlib.pyplot as plt
 import numpy as np
-import pickle
 
 
-TestNozzle = Nozzle("inputs/Medium_inputs.nml")
-TestNozzle.set_arrays()
-TestNozzle.set_curved_geometry()
-TestNozzle.plot_Geometry()
-TestNozzle.set_initial_conditions()
-TestNozzle.set_normals()
-TestNozzle.compute_all_areas()
-TestNozzle.set_boundary_conditions()
-#TestNozzle.nx_ny_right[0].shape
-#plt.scatter(TestNozzle.V[:,:,3])
-TestNozzle.plot_primitive(type_="velocity")
-#TestNozzle.set_boundary_conditions()
+Test = EulerSolver("AOE_6145/CFD/CFD_FINAL/inputs/Medium_inputs.nml")
+Test.set_initial_conditions()
+Test.Data.plot_primitive("pressure")
+Test.set_inflow_bcs()
+Test.set_pressure_bc()
 
-
-s = TestNozzle.iteration_step(return_error=True)
+s = Test.iteration_step(delta_t = .1)
