@@ -9,5 +9,16 @@ Test.set_initial_conditions()
 Test.Data.plot_primitive("pressure")
 Test.set_inflow_bcs()
 Test.set_pressure_bc()
+Test.set_RK4_vals()
+for i in range(5):
+    Test.set_pressure_bc()
+    Test.set_inflow_bcs()
+    s = Test.RK4_iteration()
+    Test.set_pressure_bc()
+    Test.set_inflow_bcs()
 
-s = Test.iteration_step(delta_t = .1)
+
+
+temp = Test.Data.V[1]
+
+print("here")

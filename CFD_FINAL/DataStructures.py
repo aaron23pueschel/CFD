@@ -1,9 +1,9 @@
 import numpy as np
 import matplotlib.pyplot as plt
-
+import MMS_FORTRAN
 class DataStructures(object):
     
-    def __init__(self,NI,NJ):
+    def __init__(self,NI,NJ,grd_name):
 
         self.p_idx = 3
         self.u_idx = 1
@@ -15,8 +15,8 @@ class DataStructures(object):
         self.yynormal = 1
         self.unormal = 2
         self.vnormal = 3
-        self.epsilon = .0001
-
+        self.epsilon = .0000001
+        self.MMS_length = 1
 
         self.NI = NI
         self.NJ = NJ
@@ -26,15 +26,54 @@ class DataStructures(object):
         self.V = np.zeros((4,self.NI-1,self.NJ-1))
         self.S = np.zeros((4,self.NI-1,self.NJ-1)) 
         
-        self.x = np.linspace(-1,1,self.NJ) # Opposite
+        self.x = np.linspace(0,1,self.NJ) # Opposite
         self.y = np.linspace(0,1,self.NI)
         self.xx = None
         self.yy = None
         self.set_curved_geometry()
+        #self.load_grid(grd_name)
+        self.set_MMS()
         self.set_normals()
         self.compute_all_areas()
         
+    def set_MMS(self,MMS_ON=False):
+        MMS_FORTRAN.set_inputs.initialize_constants()
 
+        xx= (self.xx[1:,:]+self.xx[0:-1,:])/2
+        x = (xx[:,1:]+xx[:,0:-1])/2
+
+        yy= (self.yy[1:,:]+self.yy[0:-1,:])/2
+        y = (yy[:,1:]+yy[:,0:-1])/2
+        
+
+        
+        pressure = np.zeros_like(x)
+        vvel = np.zeros_like(x)
+        uvel = np.zeros_like(x)
+        density = np.zeros_like(x)
+
+        cmass = np.zeros_like(x)
+        xmom = np.zeros_like(x)
+        ymom = np.zeros_like(x)
+        energymom = np.zeros_like(x)
+        length = self.MMS_length
+        for i in range(len(x)):
+            for j in range(len(x[0])):
+                pressure[i,j] = MMS_FORTRAN.press_mms(length,x[i,j],y[i,j])
+                density[i,j] = MMS_FORTRAN.rho_mms(length,x[i,j],y[i,j])
+                uvel[i,j] = MMS_FORTRAN.uvel_mms(length,x[i,j],y[i,j])
+                vvel[i,j] = MMS_FORTRAN.vvel_mms(length,x[i,j],y[i,j])
+
+                cmass[i,j] = MMS_FORTRAN.rmassconv(length,x[i,j],y[i,j])
+                xmom[i,j] = MMS_FORTRAN.xmtmconv(length,x[i,j],y[i,j])
+                ymom[i,j] = MMS_FORTRAN.ymtmconv(length,x[i,j],y[i,j])
+                energymom[i,j] = MMS_FORTRAN.energyconv(1.4,length,x[i,j],y[i,j])
+        if MMS_ON:
+            self.MMS_primitive = np.array([density,uvel,vvel,density])
+            self.MMS_conserved = np.array([cmass,xmom,ymom,energymom])
+        else:
+            self.MMS_conserved = 0
+            self.MMS_primitive = 0
     def set_ramp_BC(self):
         
         def generate_ramp_mesh(x_flat=1.0, x_ramp=2.0, height=1.0, angle_deg=30, 
@@ -126,11 +165,11 @@ class DataStructures(object):
         
         xx_,yy_ = np.meshgrid(self.x,self.y)
         xx = (xx_)
-        yy = yy_#.5*(yy_+xx**2)
+        yy = yy_ # -#.5*(yy_+xx**2)
 
 
         self.xx = xx
-        self.yy = yy +xx
+        self.yy = yy
     def plot_Geometry(self):
         plt.plot(self.xx.flatten(), self.yy.flatten(), ".")
 
@@ -196,3 +235,26 @@ class DataStructures(object):
             plt.colorbar()
             plt.show()
         self.AREA = np.einsum("ij,jkl->ikl",np.ones((4,1)),areas[np.newaxis,:,:])
+    def load_grid(self,filename):
+
+        with open(filename, 'r') as f:
+            # Read integers
+            nzones = int(f.readline())
+            imax, jmax, kmax = map(int, f.readline().split())
+
+            size = imax * jmax * kmax
+
+            # Read the flattened data for x, y, and zztemp
+            data = []
+            while len(data) < 3 * size:
+                line = f.readline()
+                data.extend(map(float, line.split()))
+
+            # Split data into x, y, zztemp
+            data = np.array(data)
+            x = data[0:size].reshape((kmax, jmax, imax))
+            y = data[size:2*size].reshape((kmax, jmax, imax))
+            zztemp = data[2*size:].reshape((kmax, jmax, imax))
+
+        self.xx = x[0]
+        self.yy = y[0]

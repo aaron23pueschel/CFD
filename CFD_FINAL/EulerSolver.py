@@ -2,6 +2,7 @@ import f90nml
 import numpy as np
 import scipy
 import os
+import copy
 import matplotlib.pyplot as plt
 from DataStructures import DataStructures
 from Upwind import Upwind
@@ -23,13 +24,14 @@ class EulerSolver:
             self.M = nml["SimulationVariables"]["M"]
             self.R = self.Ru/self.M
             self.CFL = nml["SimulationVariables"]["CFL"]
-            
+            self.MMS_length = nml["SimulationVariables"]["MMS_len"]
+            self.grd_name = nml["SimulationVariables"]["grd"]
             self.gamma = nml["SimulationVariables"]["gamma"]
             self.epsilon = nml["SimulationVariables"]["epsilon"]
             self.kappa = nml["UpwindVariables"]["kappa"]
-            self.upwind_order = nml["UpwindVariables"]["upwind_order"] #! 0 for first order 1 for second order
+            self.Upwind_order = nml["UpwindVariables"]["Upwind_order"] #! 0 for first order 1 for second order
             self.convergence_criteria = nml["SimulationVariables"]["convergence_criteria"]
-            self.damping_scheme = nml["UpwindVariables"]["damping_scheme"]#1 ! 0 for jameson damping, 1 for van leer upwind
+            self.damping_scheme = nml["UpwindVariables"]["damping_scheme"]#1 ! 0 for jameson damping, 1 for van leer Upwind
             self.iter_max = nml["SimulationVariables"]["iter_max"]
             self.local_timestep = nml["SimulationVariables"]["local_timestep"]
             self.flux_limiter_scheme = nml["UpwindVariables"]["flux_limiter_scheme"] #0 for freeze, 1 for van leer, 2 for van albada
@@ -57,9 +59,8 @@ class EulerSolver:
         self.delta_t = None
         self.AREA = None
 
-        self.Data = DataStructures(self.NI,self.NJ)
-        self.Upwind = Upwind(self.Data,self.kappa,self.upwind_order,self.damping_scheme,self.flux_limiter_scheme)
-
+        self.Data = DataStructures(self.NI,self.NJ,self.grd_name)
+        self.Upwind = Upwind(self.Data,self.kappa,self.Upwind_order,self.damping_scheme,self.flux_limiter_scheme)
 
 
     
@@ -85,12 +86,20 @@ class EulerSolver:
         
         
         self.Data.V[self.rho_idx] = rho
-        self.Data.V[self.u_idx] = 0*u*self.Data.upward_S[self.unormal]
-        self.Data.V[self.v_idx] = 0*u*self.Data.upward_S[self.vnormal]
+        self.Data.V[self.u_idx] = u*self.Data.rightward_normal[self.unormal]
+        self.Data.V[self.v_idx] = u*self.Data.rightward_normal[self.vnormal]
         self.Data.V[self.p_idx] = p
 
         self.Data.U,_,_ = self.primitive_to_conserved(self.Data.V)
 
+    def set_RK4_vals(self):
+        self.U1 = copy.deepcopy(self)
+        self.U2 = copy.deepcopy(self)
+        self.U3 = copy.deepcopy(self)
+        self.U4 = copy.deepcopy(self)
+
+
+        
     def set_inflow_bcs(self):
 
         mach = 2.1*np.ones((self.NI-1))
@@ -100,15 +109,16 @@ class EulerSolver:
         u = self.total_velocity(self.gamma,mach,self.R,T)
         
         
-        self.Data.V[self.rho_idx,:,0] = rho
-        self.Data.V[self.u_idx,:,0] = u*self.Data.upward_S[self.unormal,:,0]
-        self.Data.V[self.v_idx,:,0] = u*self.Data.upward_S[self.vnormal,:,0]
-        self.Data.V[self.p_idx,:,0] = p
+        #self.Data.V[self.rho_idx,:,0] = rho
+        #self.Data.V[self.u_idx,:,0] = u*self.Data.rightward_normal[self.unormal,:,0]
+        #self.Data.V[self.v_idx,:,0] = u*self.Data.rightward_normal[self.vnormal,:,0]
+        #self.Data.V[self.p_idx,:,0] = p
 
 
-        self.Data.U,_,_ = self.primitive_to_conserved(self.Data.V)
+        #self.Data.U,_,_ = self.primitive_to_conserved(self.Data.V)
 
-
+        self.Data.inflow = np.array([rho, u*self.Data.rightward_normal[self.unormal,:,0],\
+            u*self.Data.rightward_normal[self.vnormal,:,0],p])
     
     
 
@@ -136,7 +146,7 @@ class EulerSolver:
             if compute_norm:
                 convergence_history.append(R/R1)
                 if np.max(R/R1)<self.converge_at_second_order:
-                    self.upwind_order = 1
+                    self.Upwind_order = 1
                 if np.max(R/R1)<self.convergence_criteria:
                     print("Converged at Rk/R1: "+ str(np.max(R/R1))+" in "+str(i)+" iterations.") 
                     break
@@ -171,178 +181,93 @@ class EulerSolver:
 
 
     def compute_timestep(self):
-        delta_x = np.abs(self.x[1]-self.x[0])
-        self.delta_t =self.CFL*delta_x/(np.abs(self.Data.V[:,1]) + np.sqrt(np.abs(self.gamma*self.Data.V[:,2]/self.Data.V[:,0])))
+        rho =self.Data.V[self.rho_idx]  # Density
+        u = self.Data.V[self.u_idx]
+        v = self.Data.V[self.v_idx]  # Velocity
+        p = self.Data.V[self.p_idx]  # Pressure
+        a = np.sqrt(np.maximum(0,(self.gamma*(p/self.Upwind.min_func(rho)))))
+
+
+        nx_psi_p1,ny_psi_p1 = self.Upwind.get_normal_directions("left")
+        nx_psi_p2,ny_psi_p2 = self.Upwind.get_normal_directions("right")
+        nx_psi = (nx_psi_p2+nx_psi_p1)/2
+        ny_psi = (ny_psi_p2+ny_psi_p1)/2
+
+        nx_eta_p1,ny_eta_p1 = self.Upwind.get_normal_directions("up")
+        nx_eta_p2,ny_eta_p2 = self.Upwind.get_normal_directions("down")
+        nx_eta = (nx_eta_p2+nx_eta_p1)/2
+        ny_eta = (ny_eta_p2+ny_eta_p1)/2
+        u,v = self.Data.V[self.u_idx],self.Data.V[self.v_idx]
+        
+        Area_LR = .5*(self.Data.A_left +self.Data.A_right)
+        Area_UD = .5*(self.Data.A_top+self.Data.A_bottom)
+        lambda_LR = np.abs(u*nx_psi +v*ny_psi)+a
+        lambda_UD = np.abs(u*nx_eta+v*ny_eta)+a
+
+        delta_t = self.Data.AREA/self.Upwind.min_func(lambda_LR*Area_LR+lambda_UD*Area_UD)
+        self.delta_t =self.CFL*delta_t
 
     def set_pressure_bc(self):
         self.Data.V[self.p_idx,-1,:] = self.Data.V[self.p_idx,-2,:]
         self.Data.V[self.p_idx,0,:] =self.Data.V[self.p_idx,1,:]
 
+   
 
 
-    def iteration_step(self,return_error=True,delta_t = .000001):
+    def iteration_step(self,alpha=1):
         
 
         
-        #self.compute_timestep()
-        #if not self.local_timestep:
-        #    self.delta_t = np.min(self.delta_t)
+        self.compute_timestep()
+        if not self.local_timestep:
+            self.delta_t = np.min(self.delta_t)
         
-        self.delta_t = delta_t
-     
-        #F_left = 
+
         Volume =self.Data.AREA 
         self.set_boundary_multiplier()
-        F_left,F_right,F_top,F_bottom = self.Upwind.GetFluxes()
-       
         
-        
-
-
-
-
-        
-        
-        
-        
+        F_left,F_right,F_top,F_bottom = self.Upwind.GetFluxes("Leer")
+    
     
         residual = F_left*self.Data.A_left + F_right*self.Data.A_right+\
-            F_top*self.Data.A_bottom+F_bottom*self.Data.A_top
+            F_top*self.Data.A_bottom+F_bottom*self.Data.A_top -self.Data.MMS_conserved*Volume
         
         self.residual = residual
-        #if self.local_timestep:       
-        #    self.Data.U[1:-1] = self.Data.U[1:-1]-(residual*np.tile(self.delta_t[1:-1],(3,1)).T/np.tile(Volume,(3,1)).T)
-        #else:
-        
-        self.Data.U = self.Data.U-(residual*self.delta_t/Volume)
-        # Update all 
 
+        
+        self.Data.U = self.Data.U-alpha*(residual*self.delta_t/Volume)
         self.Data.V = self.conserved_to_primitive(self.Data.U)
-        
+    
         return residual
-        if return_error:
-            return np.linalg.norm(residual,axis=0)
         
         
-
-    def update_source(self):
-        #deltax = np.abs(self.x[2]-self.x[1])
-        #self.S[:,1] = self.Data.V[1:-1,2]*(self.A[1:]-self.A[0:-1])/deltax
-        return
-
-
-
-    def lambda_ibar(self,shift=1):
-        rho =self.Data.V[:, 0]  # Density
-        u = self.Data.V[:, 1]  # Velocity
-        p = self.Data.V[:, 2]  # Pressure
-        a = np.sqrt(np.maximum(0,(self.gamma*(p/rho))))
         
-
-        lambda_bar = np.abs(u)+a
-        if shift==1:
-            lambda_bar = (lambda_bar[2:]+lambda_bar[1:-1])/2
-        else:
-            lambda_bar = (lambda_bar[1:-1]+lambda_bar[0:-2])/2
-
-        return lambda_bar
-
-
-    def d2(self,shift=1):
-        temp_U = self.Data.U
-        
-        if shift==1:
-            return np.tile(self.lambda_ibar(shift=1)*self.epsilon2(shift=1),(3,1)).T*(temp_U[2:]-temp_U[1:-1])
-        else:
-            return np.tile(self.lambda_ibar(shift=-1)*self.epsilon2(shift=-1),(3,1)).T*(temp_U[1:-1]-temp_U[0:-2])
-
-    def d4(self,shift=1):
-        temp_U = np.zeros((self.Data.U.shape[0]+2,3))
-        temp_U[1:-1] = self.Data.U
-        temp_U[0] = 2*temp_U[1]-temp_U[2]
-        temp_U[-1] = 2*temp_U[-2]-temp_U[-3]
-        #print(self.lambda_ibar(shift=1).shape,self.epsilon4(shift=1).shape,temp_U[4:].shape)
-        if shift==1:
-            return np.tile(self.lambda_ibar(shift=1)*self.epsilon4(shift=1),(3,1)).T*(temp_U[4:]-3*temp_U[3:-1]+3*temp_U[2:-2]-temp_U[1:-3])
-        else:
-            return np.tile(self.lambda_ibar(shift=-1)*self.epsilon4(shift=-1),(3,1)).T*(temp_U[3:-1]-3*temp_U[2:-2]+3*temp_U[1:-3]-temp_U[0:-4])
+    def RK_iteration(self,type_ = "RK4"):
+        if type_ =="Euler":
+            self.residual = self.iteration_step(alpha = 1)
+        elif type_=="RK4":
+            self.U1.set_inflow_bcs()
+            self.U2.set_inflow_bcs()
+            self.U3.set_inflow_bcs()
+            self.U4.set_inflow_bcs()
+            R1 = self.U1.iteration_step(alpha=1/4)
+            self.U2.Data.V = copy.deepcopy(self.U1.Data.V)
+            R2 = self.U2.iteration_step(alpha = 1/3)
+            self.U3.Data.V = copy.deepcopy(self.U2.Data.V)
+            R3 = self.U3.iteration_step(alpha = .5)
+            self.U4.Data.V = copy.deepcopy(self.U3.Data.V)
+            R4 = self.U4.iteration_step(alpha = 1)
 
 
+            self.Data = copy.deepcopy(self.U4.Data)
+            self.residual = self.U4.residual
+            self.U1.Data = self.U2.Data = self.U3.Data = copy.deepcopy(self.Data)
+            self.U1.set_inflow_bcs()
+            self.U2.set_inflow_bcs()
+            self.U3.set_inflow_bcs()
+            self.U4.set_inflow_bcs()
+        return self.residual
 
-
-    def nu(self):
-        temp_p = np.zeros((self.NI+5)) # 3 ghost cells on each side
-        temp_p[2:-2] = self.Data.V[:,2]
-        
-        
-        temp_p[1] = 2*temp_p[2]-temp_p[3]
-        temp_p[0] = 2*temp_p[1]-temp_p[2]
-        temp_p[-2] = 2*temp_p[-3]-temp_p[-4]
-        temp_p[-1] = 2*temp_p[-2]-temp_p[-3]
-
-
-        pi_plus1 = temp_p[2:]
-        pi = temp_p[1:-1]
-        pi_minus1 = temp_p[0:-2]
-
-        num = pi_plus1-2*pi+pi_minus1
-        den =  pi_plus1+2*pi+pi_minus1
-
-        return np.abs(num/den)
-
-    def epsilon2(self,shift=1):
-        nu = self.nu()
-        epsilon = np.zeros((self.NI-1))
-        if shift==1:
-            for i in range(2,self.NI+2-1):
-                epsilon[i-2] = self.K2*np.max([nu[i-1],nu[i],nu[i+1],nu[i+2]])
-        if shift ==-1:
-            for i in range(2,self.NI-1+2):
-                epsilon[i-2] = self.K2*np.max([nu[i-2],nu[i-1],nu[i],nu[i+1]])
-        return epsilon
-
-    def epsilon4(self,shift=1):
-        return np.maximum(0,self.K4 - self.epsilon2(shift=shift))
-
-
-    def exact_isentropic(self):
-        x = (self.x[1:]+self.x[0:-1])/2
-        A_x = 0.2 + 0.4*(1 + np.sin(np.pi*(x - 0.5)))
-        A_star = 0.2 + 0.4*(1 + np.sin(np.pi*(0 - 0.5)))
-        A_Astar = A_x/A_star
-        RHO,U,P = ([],[],[])
-        for i,A in enumerate(A_Astar):
-            if x[i]<=0:
-                rho,u,p = self.exact_solution(A,subsonic=True)
-            else:
-                rho,u,p = self.exact_solution(A,subsonic=False)
-            RHO.append(rho)
-            U.append(u)
-            P.append(p)
-        return RHO,U,P
-    def exact_solution(self,A_Astar,subsonic=True):
-       
-        
-        def mach_from_area_ratio(A_Astar, gamma=1.4):
-
-            def mach_eq(M):
-                return (1/M) * ((2/(gamma+1)) * (1 + (gamma-1)/2 * M**2))**((gamma+1)/(2*(gamma-1))) - A_Astar
-            if subsonic:
-                Mach_initial_guess = 0.5 
-            else:
-                Mach_initial_guess =  2.0  # Subsonic for A/A*<1, supersonic for A/A*>1
-            return scipy.optimize.fsolve(mach_eq, Mach_initial_guess)[0]
-        Mach = mach_from_area_ratio(A_Astar) 
-        # Temperature relation
-        T = self.T0 / (1 + (self.gamma - 1) / 2 * Mach**2)
-        
-        # Pressure relation
-        p = self.p0 * (T / self.T0) ** (self.gamma / (self.gamma - 1))
-        
-        # Density relation using ideal gas law
-        rho = p / (self.R * T)
-        velocity = Mach * np.sqrt(self.gamma * self.R * T)
-        return rho,velocity,p
 
 
 
@@ -362,8 +287,8 @@ class EulerSolver:
     def total_velocity(self,gamma,M,R,T):
         return M*np.sqrt(gamma*R*T)
 
-    #def compute_mach(self):
-
+    def compute_mach(self):
+        pass
 
 
 
@@ -416,12 +341,12 @@ class EulerSolver:
 
     def conserved_to_primitive(self,conserved):
         rho = conserved[self.rho_idx]  # Density
-       
+        rho = np.maximum(self.epsilon,rho)
         u = conserved[self.u_idx] / rho  # Velocity
         v = conserved[self.v_idx]/rho
         #if np.any(u<=0):
         #    u = np.sign(u)*np.maximum(np.abs(u), self.epsilon)
-        p = (self.gamma - 1) * (conserved[self.p_idx] - 0.5 * rho * (u**2+v**2))  # Pressure
+        p = np.maximum(0,(self.gamma - 1) * (conserved[self.p_idx] - 0.5 * rho * (u**2+v**2)))  # Pressure
         V = np.array([rho,u,v,p])
 
         return V

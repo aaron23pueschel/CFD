@@ -22,26 +22,18 @@ class Upwind(object):
          
         if direction=="right":
             nx,ny = self.Data.rightward_normal[self.Data.unormal],self.Data.rightward_normal[self.Data.vnormal]
-            nx_L,ny_L = nx,ny
-            nx_R,ny_R = nx,ny
         elif direction=="left":
             nx,ny = self.Data.leftward_normal[self.Data.unormal],self.Data.leftward_normal[self.Data.vnormal]
-            nx_L,ny_L = -nx,-ny
-            nx_R,ny_R = -nx,-ny
         elif direction=="down":
             nx,ny = self.Data.downward_normal[self.Data.unormal],self.Data.downward_normal[self.Data.vnormal]
-            nx_L,ny_L = -nx,-ny
-            nx_R,ny_R = -nx,-ny
         elif direction == "up":
             nx,ny = self.Data.upward_normal[self.Data.unormal],self.Data.upward_normal[self.Data.vnormal]
-            nx_L,ny_L = nx,ny
-            nx_R,ny_R = nx,ny
-        #return nx,ny,nx,ny
-        return nx_L,ny_L,nx_R,ny_R
+        return nx,ny
+
     def FG_convective(self,direction):
         shift = self.FLUXL_FLUXR_FUNC(direction=direction)
         
-        nx_L,ny_L,nx_R,ny_R = self.get_normal_directions(direction)
+        nx,ny = self.get_normal_directions(direction)
         V_L,V_R =shift(self.Data.V)
 
 
@@ -53,22 +45,32 @@ class Upwind(object):
         u_L,u_R =V_L[self.Data.u_idx],V_R[self.Data.u_idx]
         v_L,v_R =V_L[self.Data.v_idx],V_R[self.Data.v_idx]
         p_L,p_R =V_L[self.Data.p_idx],V_R[self.Data.p_idx]
+        rho_L = np.maximum(self.epsilon,rho_L)
+        rho_R = np.maximum(self.epsilon,rho_R)
+        p_L = np.maximum(self.epsilon,p_L)
+        p_R = np.maximum(self.epsilon,p_R)
 
  
         a_L = np.sqrt(np.maximum(self.epsilon,(self.gamma*(p_L/rho_L))))
         a_R = np.sqrt(np.maximum(self.epsilon,(self.gamma*(p_R/rho_R))))
         #print(u_L.shape,nx.shape,"u_l,nx",direction)
         # print(direction,nx.shape,u_L.shape)
-        vel_L = u_L*nx_L+v_L*ny_L
-        vel_R = u_R*nx_R+v_R*ny_R
-    
+        vel_L = u_L*nx+v_L*ny
+        vel_R = u_R*nx+v_R*ny
+
         M_L,M_R = (vel_L/a_L,vel_R/a_R)
-        
-        alpha_plus = .5*(1+np.sign(M_L))
-        alpha_minus = .5*(1-np.sign(M_R))
+        if direction=="up" or direction=="down":
+            alpha_plus = .5*(1+np.sign(v_L))
+            alpha_minus = .5*(1-np.sign(v_R))
+        else:
+            alpha_plus = .5*(1+np.sign(u_L))
+            alpha_minus = .5*(1-np.sign(u_R))
+        #alpha_plus = .5*(1+np.sign(vel_L))
+        #alpha_minus = .5*(1-np.sign(vel_R))
+
         beta_L = -np.maximum(0,1-np.floor(np.abs(M_L)))
         beta_R = -np.maximum(0,1-np.floor(np.abs(M_R)))
-
+        
         M_plus = .25*(M_L+1)**2
         M_minus = -.25*(M_R-1)**2
 
@@ -99,24 +101,26 @@ class Upwind(object):
         
             F_temp = np.zeros((4,F.shape[1],F.shape[2]+4))
             F_temp[:,:,2:-2] = F
-            #temp0 = 2*a[1]-a[2]
-            F_temp[:,:,1] = 2*F_temp[:,:,2]-F_temp[:,:,3]
+            
+            F_temp[:,:,1] = self.Data.inflow
+            F_temp[:,:,0] = 2*F_temp[:,:,1]-F_temp[:,:,2]
             F_temp[:,:,-2] = 2*F_temp[:,:,-3]-F_temp[:,:,-4]
+            F_temp[:,:,-1] = 2*F_temp[:,:,-2]-F_temp[:,:,-3]
             
             
             F = F_temp
             
-            #p1 = self.psi_plus(F,-1+shift_indx,F_flux=True)
-            #p2 = self.psi_minus(F,shift_indx,F_flux=True)
-            #p3 = self.psi_minus(F,shift_indx+1,F_flux=True)
-            #p4 = self.psi_plus(F,shift_indx,F_flux=True)
+            p1 = self.psi_plus(F,-1+shift_indx,F_flux=True)
+            p2 = self.psi_minus(F,shift_indx,F_flux=True)
+            p3 = self.psi_minus(F,shift_indx+1,F_flux=True)
+            p4 = self.psi_plus(F,shift_indx,F_flux=True)
             
             
-            #epsilon = self.upwind_order
-            FL = F[:,:,2+shift_indx:-2+shift_indx]#+(epsilon/4)*((1self.kappa)*(p1*(F[:,2+shift_indx:-2+shift_indx]-F[:,1+shift_indx:-3+shift_indx]))+\
-                                                 #                       (1+self.kappa)*p2*(F[:,3+shift_indx:-1+shift_indx]-F[:,2+shift_indx:-2+shift_indx]))
-            FR = F[:,:,3+shift_indx:-1+shift_indx]#-(epsilon/4)*((1self.kappa)*(p3*(F[:,4+shift_indx:self.shift_func(shift_indx)]-F[:,3+shift_indx:-1+shift_indx]))\
-                                                 #                      +(1+self.kappa)*p4*(F[:,3+shift_indx:-1+shift_indx]-F[:,2+shift_indx:-2+shift_indx]))
+            epsilon = self.upwind_order
+            FL = F[:,:,2+shift_indx:-2+shift_indx]+(epsilon/4)*((1-self.kappa)*(p1*(F[:,:,2+shift_indx:-2+shift_indx]-F[:,:,1+shift_indx:-3+shift_indx]))+\
+                                                                        (1+self.kappa)*p2*(F[:,:,3+shift_indx:-1+shift_indx]-F[:,:,2+shift_indx:-2+shift_indx]))
+            FR = F[:,:,3+shift_indx:-1+shift_indx]-(epsilon/4)*((1-self.kappa)*(p3*(F[:,:,4+shift_indx:self.shift_func(shift_indx)]-F[:,:,3+shift_indx:-1+shift_indx]))\
+                                                                       +(1+self.kappa)*p4*(F[:,:,3+shift_indx:-1+shift_indx]-F[:,:,2+shift_indx:-2+shift_indx]))
             return FL,FR
         
         def shift_UD(F): 
@@ -195,7 +199,7 @@ class Upwind(object):
         s[indeces] = self.epsilon
         return np.sign(s)*np.maximum(self.epsilon,np.abs(s))
     def FG_pressure_flux(self,direction):
-        nx_L,ny_L,nx_R,ny_R = self.get_normal_directions(direction)
+        nx,ny = self.get_normal_directions(direction)
         
 
         shift = self.FLUXL_FLUXR_FUNC(direction)
@@ -208,7 +212,10 @@ class Upwind(object):
         v_L,v_R =V_L[self.Data.v_idx],V_R[self.Data.v_idx]
         p_L,p_R =V_L[self.Data.p_idx],V_R[self.Data.p_idx]
 
-        
+        rho_L = np.maximum(self.epsilon,rho_L)
+        rho_R = np.maximum(self.epsilon,rho_R)
+        p_L = np.maximum(self.epsilon,p_L)
+        p_R = np.maximum(self.epsilon,p_R)
 
         
         a_L = np.sqrt(np.maximum(self.epsilon,(self.gamma*(p_L/rho_L))))
@@ -220,8 +227,8 @@ class Upwind(object):
         #print(ny)
 
 
-        U_L = u_L*nx_L+v_L*ny_L
-        U_R = u_R*nx_R+v_R*ny_R
+        U_L = u_L*nx+v_L*ny
+        U_R = u_R*nx+v_R*ny
 
     
 
@@ -229,8 +236,15 @@ class Upwind(object):
         M_L,M_R = (U_L/a_L,U_R/a_R)
         
         #print(U_L,U_R,"nx",direction)
-        alpha_plus = .5*(1+np.sign(M_L))
-        alpha_minus = .5*(1-np.sign(M_R))
+        if direction=="up" or direction=="down":
+            alpha_plus = .5*(1+np.sign(v_L))
+            alpha_minus = .5*(1-np.sign(v_R))
+        else:
+            alpha_plus = .5*(1+np.sign(u_L))
+            alpha_minus = .5*(1-np.sign(u_R))
+        #alpha_plus = .5*(1+np.sign(U_L))
+        #alpha_minus = .5*(1-np.sign(U_R))
+
         beta_L = -np.maximum(0,1-np.floor(np.abs(M_L)))
         beta_R = -np.maximum(0,1-np.floor(np.abs(M_R)))
         #print(beta_L-beta_R,"beta")
@@ -245,7 +259,7 @@ class Upwind(object):
         #print(D_minus-D_plus)
         temp_zero = np.zeros_like(p_L)
         #print(p_L+p_R,direction)
-        G =  np.array([temp_zero,D_plus*nx_L*p_L,D_plus*ny_L*p_L,temp_zero])+np.array([temp_zero,D_minus*nx_R*p_R,D_minus*ny_R*p_R,temp_zero])
+        G =  np.array([temp_zero,D_plus*nx*p_L,D_plus*ny*p_L,temp_zero])+np.array([temp_zero,D_minus*nx*p_R,D_minus*ny*p_R,temp_zero])
 
         return G
 
@@ -262,92 +276,147 @@ class Upwind(object):
 
 
 
-            
-
-
-
-
             F_left = (FL_conv+self.FG_pressure_flux(direction="left"))
             F_top = (FT_conv+self.FG_pressure_flux(direction="up"))
             F_right = (FR_conv+self.FG_pressure_flux(direction="right"))
             F_bottom = (FD_conv+self.FG_pressure_flux(direction="down"))
-        return -F_left,F_right,-F_top,F_bottom 
-        
+            
+    
+        if method=="Roe":
+            F_left = self.compute_roe_flux("left")
+            F_right = self.compute_roe_flux("right")
+            F_top = self.compute_roe_flux("up")
+            F_bottom = self.compute_roe_flux("down")
 
-        
-    def compute_doubleBar_values(self,i_plus_half,compute_deltas = False):
-        shift = self.FL_FR_FUNC(i_plus_half=i_plus_half)
+        return F_left,F_right,F_top,F_bottom 
+    def compute_doubleBar_values(self,direction,compute_deltas = False):
+        shift = self.FLUXL_FLUXR_FUNC(direction)
+        V_L,V_R =shift(self.Data.V)
+        rho_L,rho_R =V_L[self.Data.rho_idx],V_R[self.Data.rho_idx]
+        u_L,u_R =V_L[self.Data.u_idx],V_R[self.Data.u_idx]
+        v_L,v_R =V_L[self.Data.v_idx],V_R[self.Data.v_idx]
+        p_L,p_R =V_L[self.Data.p_idx],V_R[self.Data.p_idx]
 
-        rho_L,rho_R =shift(self.Data.V[:,0]) # Density
-        if np.any(rho_L<=0):
-            rho_L = np.maximum(rho_L, self.epsilon)
-        if np.any(rho_R<=0):
-            rho_R = np.maximum(rho_R, self.epsilon)
-        u_L,u_R = shift(self.Data.V[:,1])  # Velocity
-        p_L,p_R = shift(self.Data.V[:, 2])  # Pressure
-        if i_plus_half and not self.p_back== -1:
-            p_R[-1] = self.p_back
-        ht_L = (self.gamma / (self.gamma - 1)) * (p_L / rho_L) + 0.5 * u_L**2
-        ht_R = (self.gamma / (self.gamma - 1)) * (p_R / rho_R) + 0.5 * u_R**2
+        rho_L = np.maximum(self.epsilon,rho_L)
+        rho_R = np.maximum(self.epsilon,rho_R)
+        p_L = np.maximum(self.epsilon,p_L)
+        p_R = np.maximum(self.epsilon,p_R)
+
+
+        ht_L = (self.gamma / (self.gamma - 1)) * (p_L / rho_L) + 0.5 * (u_L**2+v_L**2)
+        ht_R = (self.gamma / (self.gamma - 1)) * (p_R / rho_R) + 0.5 * (u_R**2 +v_R**2)
 
         R = np.sqrt(np.maximum(0,rho_R/self.min_func(rho_L)))
         p_double_bar = np.sqrt(np.maximum(self.epsilon,p_L*p_R))
         rho_double_bar = R*rho_L
         u_double_bar = (R*u_R+u_L)/(R+1)
+        v_double_bar = (R*v_R+v_L)/(R+1)
         ht_double_bar = (R*ht_R+ht_L)/(R+1)
         if not compute_deltas:
-            return (p_double_bar,rho_double_bar,u_double_bar,ht_double_bar)
-        return (p_double_bar,rho_double_bar,u_double_bar,ht_double_bar),(p_R-p_L,rho_R-rho_L,u_R-u_L)
-    def compute_roe_eigs(self,i_plus_half):
-        p,rho,u,ht = self.compute_doubleBar_values(i_plus_half)
-        a = np.sqrt(np.maximum(0,(self.gamma-1)*(ht-(u**2)/2)))
+            return (p_double_bar,rho_double_bar,u_double_bar,v_double_bar,ht_double_bar)
+        return (p_double_bar,rho_double_bar,u_double_bar,v_double_bar,ht_double_bar),(p_R-p_L,rho_R-rho_L,u_R-u_L,v_R-v_L)
+    def compute_roe_eigs(self,direction):
+        _,rho,u,v,ht = self.compute_doubleBar_values(direction)
+        a = np.sqrt(np.maximum(0,(self.gamma-1)*(ht-(u**2+v**2)/2)))
+        nx,ny = self.get_normal_directions(direction=direction)
+        U = nx*u+ny*v
         ones = np.ones_like(u)
-        lam1 = u
-        lam2 = u+a
-        lam3 = u-a
+        lam1 = U
+        lam2 = U
+        lam3 = U+a
+        lam4 = U-a
         
 
-        r1 = np.array([ones,u,(u**2)/2])
-        r2 = (rho/np.maximum(self.epsilon,2*a))*np.array([ones,u+a,ht+u*a])
-        r3 = (-rho/np.maximum(self.epsilon,2*a))*np.array([ones,u-a,ht-u*a])
+        r1 = np.array([ones,u,v,(u**2+v**2)/2])
+        r2 = np.array([0*ones,ny*rho,-nx*rho,rho*(ny*u-nx*v)])
+        r3 = (rho/np.maximum(self.epsilon,2*a))*np.array([ones,u+nx*a,v+ny*a,ht+U*a])
+        r4 = (-rho/np.maximum(self.epsilon,2*a))*np.array([ones,u-nx*a,v-ny*a,ht-U*a])
 
-        return (lam1,lam2,lam3), (r1,r2,r3)
-    def compute_roe_flux(self, i_plus_half):
+        return (lam1,lam2,lam3,lam4), (r1,r2,r3,r4)
+    
+
+    
+     
+
+    def compute_roe_flux(self, direction):
         #self.set_boundary_conditions()
-        shift = self.FL_FR_FUNC(i_plus_half=i_plus_half,vector = True)
-        lams,eigvecs = self.compute_roe_eigs(i_plus_half=i_plus_half)
-        #print(lams)
-        ws = self.compute_wave_amplitudes(i_plus_half=i_plus_half)
-        F_L,F_R = shift(self.F)
+        shift = self.FLUXL_FLUXR_FUNC(direction)
+        lams,eigvecs = self.compute_roe_eigs(direction)
+        ws = self.compute_wave_amplitudes(direction)
+
+        nx,ny = self.get_normal_directions(direction)
+        V_L,V_R =shift(self.Data.V)
+
+
+       
+
+
+        
+        rho_L,rho_R =V_L[self.Data.rho_idx],V_R[self.Data.rho_idx]
+        u_L,u_R =V_L[self.Data.u_idx],V_R[self.Data.u_idx]
+        v_L,v_R =V_L[self.Data.v_idx],V_R[self.Data.v_idx]
+        p_L,p_R =V_L[self.Data.p_idx],V_R[self.Data.p_idx]
+        rho_L = np.maximum(self.epsilon,rho_L)
+        rho_R = np.maximum(self.epsilon,rho_R)
+        p_L = np.maximum(0,p_L)
+        p_R = np.maximum(0,p_R)
+
+ 
+        ht_L = (self.gamma / (self.gamma - 1)) * (p_L / rho_L) + 0.5 * (u_L**2+v_L**2)
+        ht_R = (self.gamma / (self.gamma - 1)) * (p_R / rho_R) + 0.5 * (u_R**2+v_R**2)
+
+        vel_L = u_L*nx+v_L*ny
+        vel_R = u_R*nx+v_R*ny
+
+        F_L =  np.array([
+            rho_L* vel_L,
+            rho_L * u_L* vel_L,
+            rho_L * v_L * vel_L,
+            rho_L * ht_L * vel_L
+        ])
+
+        F_R = np.array([
+            rho_R* vel_R,
+            rho_R * u_R* vel_R,
+            rho_R * v_R * vel_R,
+            rho_R * ht_R * vel_R
+        ])
+
+
+
+
+        
         #if i_plus_half and not self.p_back== -1:
         #    F_R[-1,2] = self.p_back
         
         temp_sum = 0
         def modified_lambda(eigenvalue,lambda_eps = .1):
-            p,rho,u,ht = self.compute_doubleBar_values(i_plus_half)
-            a = np.sqrt(np.maximum(self.epsilon,(self.gamma-1)*(ht-(u**2)/2)))
+            _,_,u,v,ht = self.compute_doubleBar_values(direction)
+            a = np.sqrt(np.maximum(self.epsilon,(self.gamma-1)*(ht-(u**2+v**2)/2)))
             indeces_LT = np.where(eigenvalue<=2*lambda_eps*a)
             eigenvalue[indeces_LT] = (eigenvalue[indeces_LT]**2)/(4*lambda_eps*a[indeces_LT])+lambda_eps*a[indeces_LT]
             
             return eigenvalue
 
-        for i in range(3):
-            temp_sum += modified_lambda(np.abs(lams[i]))*ws[i]*eigvecs[i] 
-        flux_roe = .5*(F_L+F_R) - .5*temp_sum.T
+        for i in range(4):
+            temp_sum += np.abs(lams[i])*ws[i]*eigvecs[i] 
+        flux_roe = .5*(F_L+F_R) - .5*temp_sum
         return flux_roe
     
          
-    def compute_wave_amplitudes(self,i_plus_half):
+    def compute_wave_amplitudes(self,direction):
         
-        bars,deltas = self.compute_doubleBar_values(i_plus_half,compute_deltas=True)
-        p,rho,u,ht = bars
-        delta_p,delta_rho,delta_u = deltas
-        a = np.sqrt(np.maximum(0,(self.gamma-1)*(ht-(u**2)/2)))
-        dw1 = delta_rho-(delta_p/self.min_func(a**2))
-        dw2 = delta_u+(delta_p/self.min_func(rho*a))
-        dw3 = delta_u-(delta_p/self.min_func(rho*a))
+        bars,deltas = self.compute_doubleBar_values(direction,compute_deltas=True)
+        nx,ny = self.get_normal_directions(direction)
+        _,rho,u,v,ht = bars
+        delta_p,delta_rho,delta_u,delta_v = deltas
+        a = np.sqrt(np.maximum(self.epsilon,(self.gamma-1)*(ht-(u**2+v**2)/2)))
+        dw1 = delta_rho+(delta_p/self.min_func(a**2))
+        dw2 = ny*delta_u-nx*delta_v
+        dw3 = nx*delta_u+ny*delta_v + (delta_p/self.min_func(rho*a))
+        dw4 = nx*delta_u+ny*delta_v - (delta_p/self.min_func(rho*a))
         
-        return (dw1,dw2,dw3)
+        return (dw1,dw2,dw3,dw4)
     
 
 

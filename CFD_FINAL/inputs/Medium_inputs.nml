@@ -1,15 +1,17 @@
 &SimulationVariables
-    NI = 7
-    NJ = 25
+    NI = 17
+    NJ = 53
     p0 = 300                                                        !kpa
     T0 = 600                                                        !K
     Ru = 8314
     M = 28.97 
     p_inf = 1 !kpa
     T_inf = 1 !K
-    CFL = .1
+    CFL = .001
+    grd = "inputs/Inlet-Grids/Inlet.53x17.grd"
     gamma = 1.4
-    epsilon = .00001
+    MMS_len = 1
+    epsilon = .00000001
     convergence_criteria = 1e-12
     local_timestep = .true.
     iter_max = 1000000
