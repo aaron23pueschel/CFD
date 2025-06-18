@@ -60,6 +60,8 @@ class EulerSolver:
         self.AREA = None
 
         self.Data = DataStructures(self.NI,self.NJ,self.grd_name)
+        self.Data.R = self.R
+        self.Data.p0 = self.p0
         self.Upwind = Upwind(self.Data,self.kappa,self.Upwind_order,self.damping_scheme,self.flux_limiter_scheme)
 
 
@@ -78,7 +80,7 @@ class EulerSolver:
         
     def set_initial_conditions(self):
         
-        mach = 1.5*np.ones((self.NI-1,self.NJ-1))
+        mach = 1.1*np.ones((self.NI-1,self.NJ-1))
         T = self.total_T(self.gamma,mach,self.T0)
         p = self.total_p(self.gamma, mach,self.p0) # Number of cells
         rho = self.total_density(p,self.R,T)
@@ -86,8 +88,9 @@ class EulerSolver:
         
         
         self.Data.V[self.rho_idx] = rho
-        self.Data.V[self.u_idx] = u*self.Data.rightward_normal[self.unormal]
-        self.Data.V[self.v_idx] = u*self.Data.rightward_normal[self.vnormal]
+        self.Data.V[self.u_idx] = u*self.Data.upward_S[self.unormal]
+        self.Data.V[self.v_idx] = u*self.Data.upward_S[self.vnormal]
+
         self.Data.V[self.p_idx] = p
 
         self.Data.U,_,_ = self.primitive_to_conserved(self.Data.V)
@@ -99,10 +102,12 @@ class EulerSolver:
         self.U4 = copy.deepcopy(self)
 
 
+    
+
         
     def set_inflow_bcs(self):
 
-        mach = 2.1*np.ones((self.NI-1))
+        mach = .5*np.ones((self.NI-1))
         T = self.total_T(self.gamma,mach,self.T0)
         p = self.total_p(self.gamma, mach,self.p0) # Number of cells
         rho = self.total_density(p,self.R,T)
@@ -226,7 +231,7 @@ class EulerSolver:
         Volume =self.Data.AREA 
         self.set_boundary_multiplier()
         
-        F_left,F_right,F_top,F_bottom = self.Upwind.GetFluxes("Leer")
+        F_left,F_right,F_top,F_bottom = self.Upwind.GetFluxes("Roe")
     
     
         residual = F_left*self.Data.A_left + F_right*self.Data.A_right+\

@@ -1,14 +1,14 @@
 &SimulationVariables
-    NI = 17
-    NJ = 53
+    NI = 20
+    NJ = 20
     p0 = 300                                                        !kpa
     T0 = 600                                                        !K
     Ru = 8314
     M = 28.97 
     p_inf = 1 !kpa
     T_inf = 1 !K
-    CFL = .001
-    grd = "inputs/Inlet-Grids/Inlet.53x17.grd"
+    CFL = 1
+    grd = "inputs/NACA64A006.coarse.53x27.grd"
     gamma = 1.4
     MMS_len = 1
     epsilon = .00000001

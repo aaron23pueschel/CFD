@@ -30,7 +30,8 @@ class DataStructures(object):
         self.y = np.linspace(0,1,self.NI)
         self.xx = None
         self.yy = None
-        self.set_curved_geometry()
+        #self.set_curved_geometry()
+        self.set_ramp_BC()
         #self.load_grid(grd_name)
         self.set_MMS()
         self.set_normals()
@@ -165,7 +166,7 @@ class DataStructures(object):
         
         xx_,yy_ = np.meshgrid(self.x,self.y)
         xx = (xx_)
-        yy = yy_ # -#.5*(yy_+xx**2)
+        yy = yy_ +xx #-#.5*(yy_+xx**2)
 
 
         self.xx = xx

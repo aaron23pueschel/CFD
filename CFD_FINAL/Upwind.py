@@ -1,6 +1,6 @@
 import numpy as np
 from DataStructures import DataStructures
-
+import matplotlib.pyplot as plt
 
 class Upwind(object):
     def __init__(self,Data,kappa,upwind_order,dampingscheme,flux_limiter):
@@ -65,8 +65,8 @@ class Upwind(object):
         else:
             alpha_plus = .5*(1+np.sign(u_L))
             alpha_minus = .5*(1-np.sign(u_R))
-        #alpha_plus = .5*(1+np.sign(vel_L))
-        #alpha_minus = .5*(1-np.sign(vel_R))
+        alpha_plus = .5*(1+np.sign(vel_L))
+        alpha_minus = .5*(1-np.sign(vel_R))
 
         beta_L = -np.maximum(0,1-np.floor(np.abs(M_L)))
         beta_R = -np.maximum(0,1-np.floor(np.abs(M_R)))
@@ -85,7 +85,61 @@ class Upwind(object):
         return GFC_i_half
     
 
+    def compute_slip_walls(self,s1,s2,n1,n2,v2x,v2y):
+        # Compute dot products
+        dot_vs = v2x * s1 + v2y * s2
+        dot_vn = v2x * n1 + v2y * n2
+
+        # Determinant of A
+        detA = s1 * n2 - s2 * n1
+
+        # Inverse of A (analytical)
+        A_inv = (1 / detA) * np.array([
+            [ n2, -s2],
+            [-n1,  s1]
+        ])
+
+        # Right-hand side
+        rhs = np.array([dot_vs, -dot_vn])
+        v1 = np.einsum("ijk,jk->ik",A_inv,rhs)
+        #temp = np.array([v2x,v2y]) - 2*(np.einsum("ij,ij->i",np.array([v2x,v2y]),np.array([n1,n2]))[:,np.newaxis]).T@np.array([n1,n2])
+        return v1
+
+
+
+
+
     
+    def get_boundary_conditions_NORMALS(self):
+        
+        
+        # Top
+        v2x = self.Data.V[1,-1,:]
+        v2y = self.Data.V[2,-1,:]
+        u_top,v_top = self.compute_slip_walls(self.Data.upward_S[self.Data.unormal,-1,:],\
+                                              self.Data.upward_S[self.Data.vnormal,-1,:],self.Data.upward_normal[self.Data.unormal,-1,:],\
+                                                self.Data.upward_normal[self.Data.vnormal,-1,:],v2x,v2y)
+        top = [u_top,v_top]
+        #self.Data.V[self.Data.u_idx,-1,:] = u_top
+        #self.Data.V[self.Data.v_idx,-1,:] = v_top
+
+        #self.Data.V[self.Data.u_idx,-1,0] = self.Data.V[self.Data.u_idx,-1,1]
+        #self.Data.V[self.Data.u_idx,-1,-1] = self.Data.V[self.Data.u_idx,-1,-2]
+        
+
+
+       # Bottom
+        v2x = self.Data.V[1,0,:]
+        v2y = self.Data.V[2,0,:]
+        u_top,v_top = self.compute_slip_walls(self.Data.downward_S[self.Data.unormal,0,:],\
+                                              self.Data.downward_S[self.Data.vnormal,0,:],self.Data.downward_normal[self.Data.unormal,0,:],\
+                                                self.Data.downward_normal[self.Data.vnormal,0,:],v2x,v2y)
+        bottom = [u_top,v_top]
+        
+
+        return top,bottom
+
+
     def FLUXL_FLUXR_FUNC(self,direction:str):
         
         if direction=="right":
@@ -103,6 +157,8 @@ class Upwind(object):
             F_temp[:,:,2:-2] = F
             
             F_temp[:,:,1] = self.Data.inflow
+
+
             F_temp[:,:,0] = 2*F_temp[:,:,1]-F_temp[:,:,2]
             F_temp[:,:,-2] = 2*F_temp[:,:,-3]-F_temp[:,:,-4]
             F_temp[:,:,-1] = 2*F_temp[:,:,-2]-F_temp[:,:,-3]
@@ -127,11 +183,48 @@ class Upwind(object):
         
             G_temp = np.zeros((4,F.shape[1]+4,F.shape[2]))
             G_temp[:,2:-2,:] = F
-            G_temp[:,1,:] = 2*G_temp[:,2,:]-G_temp[:,3,:]
-            G_temp[:,-2,:] = 2*G_temp[:,-3,:]-G_temp[:,-4,:]
-            
-            
+            G_temp[:,1,:] = G_temp[:,2,:]
+            G_temp[:,-2,:] = G_temp[:,-3,:]
             G = G_temp
+            T = self.Data.V[self.Data.p_idx,0,:]/(self.Data.V[self.Data.rho_idx,0,:]*self.Data.R)
+            rho0 = self.total_density(self.Data.p0,self.Data.R,T)
+            G[self.Data.rho_idx,1,:]= rho0
+
+            T = self.Data.V[self.Data.p_idx,-1,:]/(self.Data.V[self.Data.rho_idx,-1,:]*self.Data.R)
+            rho0 = self.total_density(self.Data.p0,self.Data.R,T)
+            G[self.Data.rho_idx,-2,:]= rho0
+
+
+            G[self.Data.p_idx,1,:]= self.Data.V[self.Data.p_idx,0,:]
+            G[self.Data.p_idx,-2,:]= self.Data.V[self.Data.p_idx,-1,:]
+
+            
+
+
+            top,bottom = self.get_boundary_conditions_NORMALS()
+            
+
+            # TOP
+            G[self.Data.u_idx,-2,:] = top[0]
+            G[self.Data.v_idx,-2,:] = top[1]
+            G[self.Data.u_idx,-1,:] = top[0]# -G[self.Data.u_idx,-3,:]
+            G[self.Data.v_idx,-1,:] = top[1]# - -G[self.Data.v_idx,-3,:]
+            
+            G[self.Data.u_idx,-1,0] = G[self.Data.u_idx,-1,1]
+            G[self.Data.u_idx,-1,-1] = G[self.Data.u_idx,-1,-2]
+            G[self.Data.v_idx,-1,0] = G[self.Data.v_idx,-1,1]
+            G[self.Data.v_idx,-1,-1] = G[self.Data.v_idx,-1,-2]
+
+            #Bottom 
+            G[self.Data.u_idx,1,:] = bottom[0]
+            G[self.Data.v_idx,1,:] = bottom[1]
+            G[self.Data.u_idx,0,:] = bottom[0]#-G[self.Data.u_idx,2,:]
+            G[self.Data.v_idx,0,:] = bottom[1]#-G[self.Data.v_idx,2,:]
+
+            G[self.Data.u_idx,0,0] = G[self.Data.u_idx,1,1]
+            G[self.Data.u_idx,0,-1] = G[self.Data.u_idx,1,-2]
+            G[self.Data.v_idx,0,0] = G[self.Data.v_idx,1,1]
+            G[self.Data.v_idx,0,-1] = G[self.Data.v_idx,1,-2]
             
             #p1 = self.psi_plus(G,-1+shift_indx,F_flux=False)
             #p2 = self.psi_minus(G,shift_indx,F_flux=False)
@@ -143,6 +236,10 @@ class Upwind(object):
                                                 #                       (1+self.kappa)*p2*(G[3+shift_indx:-1+shift_indx,:]-G[2+shift_indx:-2+shift_indx,:]))
             GR = G[:,3+shift_indx:-1+shift_indx,:]#-(epsilon/4)*((1self.kappa)*(p3*(G[4+shift_indx:self.shift_func(shift_indx),:]-G[3+shift_indx:-1+shift_indx,:]))\
                                                 #                       +(1+self.kappa)*p4*(G[3+shift_indx:-1+shift_indx,:]-G[2+shift_indx:-2+shift_indx,:]))
+            #plt.imshow(GL[2,:,:])
+            #plt.colorbar()
+            #plt.imshow(GR[2,:,:])
+            #plt.colorbar()
             return GL,GR
         
         
@@ -237,13 +334,13 @@ class Upwind(object):
         
         #print(U_L,U_R,"nx",direction)
         if direction=="up" or direction=="down":
-            alpha_plus = .5*(1+np.sign(v_L))
-            alpha_minus = .5*(1-np.sign(v_R))
+            alpha_plus = .5*(1+np.sign(v_R))
+            alpha_minus = .5*(1-np.sign(v_L))
         else:
             alpha_plus = .5*(1+np.sign(u_L))
             alpha_minus = .5*(1-np.sign(u_R))
-        #alpha_plus = .5*(1+np.sign(U_L))
-        #alpha_minus = .5*(1-np.sign(U_R))
+        alpha_plus = .5*(1+np.sign(U_L))
+        alpha_minus = .5*(1-np.sign(U_R))
 
         beta_L = -np.maximum(0,1-np.floor(np.abs(M_L)))
         beta_R = -np.maximum(0,1-np.floor(np.abs(M_R)))
@@ -268,27 +365,29 @@ class Upwind(object):
 
     def  GetFluxes(self,method = "Leer"):
         if method=="Leer":
-            bc_top,bc_bottom = self.Data.bc_multiplier
+            
             FL_conv = self.FG_convective(direction = "left")
-            FT_conv = bc_top*self.FG_convective(direction = "up")
+            FT_conv = self.FG_convective(direction = "up")
             FR_conv = self.FG_convective(direction="right")
-            FD_conv = bc_bottom*self.FG_convective(direction="down")
+            FD_conv = self.FG_convective(direction="down")
 
 
+            
+            self.F_left = (FL_conv+self.FG_pressure_flux(direction="left"))
+            self.F_top = (FT_conv+self.FG_pressure_flux(direction="up"))
+            self.F_right = (FR_conv+self.FG_pressure_flux(direction="right"))
+            self.F_bottom = (FD_conv+self.FG_pressure_flux(direction="down"))
 
-            F_left = (FL_conv+self.FG_pressure_flux(direction="left"))
-            F_top = (FT_conv+self.FG_pressure_flux(direction="up"))
-            F_right = (FR_conv+self.FG_pressure_flux(direction="right"))
-            F_bottom = (FD_conv+self.FG_pressure_flux(direction="down"))
+            
             
     
         if method=="Roe":
-            F_left = self.compute_roe_flux("left")
-            F_right = self.compute_roe_flux("right")
-            F_top = self.compute_roe_flux("up")
-            F_bottom = self.compute_roe_flux("down")
+            self.F_left = self.compute_roe_flux("left")
+            self.F_right = self.compute_roe_flux("right")
+            self.F_top = self.compute_roe_flux("up")
+            self.F_bottom = self.compute_roe_flux("down")
 
-        return F_left,F_right,F_top,F_bottom 
+        return self.F_left,self.F_right,self.F_top,self.F_bottom 
     def compute_doubleBar_values(self,direction,compute_deltas = False):
         shift = self.FLUXL_FLUXR_FUNC(direction)
         V_L,V_R =shift(self.Data.V)
@@ -519,3 +618,17 @@ class Upwind(object):
             self.Data.bc_multiplier * F_top_C + F_top_P,
             self.Data.bc_multiplier * F_bottom_C + F_bottom_P
         )
+    def total_T(self,gamma,M,T0):
+        def psi(gamma,M):
+            return 1+((gamma-1)/2)*M**2
+        return T0/psi(gamma,M)
+
+    def total_p(self,gamma,M,P0):
+        def psi(gamma,M):
+            return 1+((gamma-1)/2)*M**2
+        return P0/(psi(gamma,M)**(gamma/(gamma-1)))
+    def total_density(self,P,R,T):
+        
+        return P/(R*T)
+    def total_velocity(self,gamma,M,R,T):
+        return M*np.sqrt(gamma*R*T)
