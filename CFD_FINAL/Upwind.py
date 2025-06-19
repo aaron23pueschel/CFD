@@ -153,36 +153,16 @@ class Upwind(object):
         
         def shift_LR(F): 
         
-            F_temp = np.zeros((4,F.shape[1],F.shape[2]+4))
-            F_temp[:,:,2:-2] = F
+            F_temp = np.zeros((4,F.shape[1]-2,F.shape[2]+2))
+            F_temp[:,:,1:-1] = F[:,1:-1,:]
             
-            F_temp[:,:,2] = F_temp[:,:,1]  = self.Data.inflow
-
-
-            self.Data.V = F_temp[:,:,2:-2]
-
-
-            primitive = F_temp[:,:,2:-2]
-            rho = primitive[self.Data.rho_idx]  # Density
-            u = primitive[self.Data.u_idx]  # Velocity
-            v = primitive[self.Data.v_idx] 
-            p = primitive[self.Data.p_idx]
-
-            # Compute total energy per unit mass (et)
-            et = p / ((self.gamma - 1) * rho) + 0.5 * ((u)**2+v**2)
-            
-            self.Data.U = np.array([rho, rho * u,rho*v, rho * et])
 
 
 
 
 
-
-            F_temp[:,:,0] =  2*F_temp[:,:,1]-F_temp[:,:,2]
-
-            F_temp[:,:,0] = F_temp[:,:,1]
-            F_temp[:,:,-2] = F_temp[:,:,-3]
-            F_temp[:,:,-1] = F_temp[:,:,-2]
+            F_temp[:,:,0] =  2*F_temp[:,:,1] - F_temp[:,:,2]
+            F_temp[:,:,-1] = 2*F_temp[:,:,-2] - F_temp[:,:,-3]
             
             
             F = F_temp
@@ -202,50 +182,12 @@ class Upwind(object):
         
         def shift_UD(F): 
         
-            G_temp = np.zeros((4,F.shape[1]+4,F.shape[2]))
-            G_temp[:,2:-2,:] = F
-            G_temp[:,1,:] = G_temp[:,2,:]
-            G_temp[:,-2,:] = G_temp[:,-3,:]
+            G_temp = np.zeros((4,F.shape[1]+2,F.shape[2]-2))
+            G_temp[:,1:-1,:] = F[:,:,1:-1]
+            G_temp[:,0,:] = G_temp[:,1,:]
+            G_temp[:,-1,:] = G_temp[:,-2,:]
             G = G_temp
-            T = self.Data.V[self.Data.p_idx,0,:]/(self.Data.V[self.Data.rho_idx,0,:]*self.Data.R)
-            rho0 = self.total_density(self.Data.p0,self.Data.R,T)
-            G[self.Data.rho_idx,1,:]= rho0
-
-            T = self.Data.V[self.Data.p_idx,-1,:]/(self.Data.V[self.Data.rho_idx,-1,:]*self.Data.R)
-            rho0 = self.total_density(self.Data.p0,self.Data.R,T)
-            G[self.Data.rho_idx,-2,:]= rho0
-
-
-            G[self.Data.p_idx,1,:]= self.Data.V[self.Data.p_idx,0,:]
-            G[self.Data.p_idx,-2,:]= self.Data.V[self.Data.p_idx,-1,:]
-
             
-
-
-            top,bottom = self.get_boundary_conditions_NORMALS()
-            
-
-            # TOP
-            G[self.Data.u_idx,-2,:] = top[0]
-            G[self.Data.v_idx,-2,:] = top[1]
-            G[self.Data.u_idx,-1,:] = top[0]# -G[self.Data.u_idx,-3,:]
-            G[self.Data.v_idx,-1,:] = top[1]# - -G[self.Data.v_idx,-3,:]
-            
-            G[self.Data.u_idx,-1,0] = G[self.Data.u_idx,-1,1]
-            G[self.Data.u_idx,-1,-1] = G[self.Data.u_idx,-1,-2]
-            G[self.Data.v_idx,-1,0] = G[self.Data.v_idx,-1,1]
-            G[self.Data.v_idx,-1,-1] = G[self.Data.v_idx,-1,-2]
-
-            #Bottom 
-            G[self.Data.u_idx,1,:] = bottom[0]
-            G[self.Data.v_idx,1,:] = bottom[1]
-            G[self.Data.u_idx,0,:] = bottom[0]#-G[self.Data.u_idx,2,:]
-            G[self.Data.v_idx,0,:] = bottom[1]#-G[self.Data.v_idx,2,:]
-
-            G[self.Data.u_idx,0,0] = G[self.Data.u_idx,1,1]
-            G[self.Data.u_idx,0,-1] = G[self.Data.u_idx,1,-2]
-            G[self.Data.v_idx,0,0] = G[self.Data.v_idx,1,1]
-            G[self.Data.v_idx,0,-1] = G[self.Data.v_idx,1,-2]
             
             #p1 = self.psi_plus(G,-1+shift_indx,F_flux=False)
             #p2 = self.psi_minus(G,shift_indx,F_flux=False)

@@ -1,6 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
-import MMS_FORTRAN
+#import MMS_FORTRAN
 class DataStructures(object):
     
     def __init__(self,NI,NJ,grd_name):
@@ -21,10 +21,10 @@ class DataStructures(object):
         self.NI = NI
         self.NJ = NJ
 
-        self.U = np.zeros((4,self.NI-1,self.NJ-1)) 
-        self.F = np.zeros((4,self.NI-1,self.NJ-1))
-        self.V = np.zeros((4,self.NI-1,self.NJ-1))
-        self.S = np.zeros((4,self.NI-1,self.NJ-1)) 
+        self.U = np.zeros((4,self.NI+1,self.NJ+1)) 
+        self.F = np.zeros((4,self.NI+1,self.NJ+1))
+        self.V = np.zeros((4,self.NI+1,self.NJ+1))
+        self.S = np.zeros((4,self.NI+1,self.NJ+1)) 
         
         self.x = np.linspace(0,1,self.NJ) # Opposite
         self.y = np.linspace(0,1,self.NI)
@@ -33,7 +33,7 @@ class DataStructures(object):
         self.set_curved_geometry()
         #self.set_ramp_BC()
         #self.load_grid(grd_name)
-        self.set_MMS()
+        #self.set_MMS()
         self.set_normals()
         self.compute_all_areas()
         

@@ -8,13 +8,12 @@ print(os.getcwd())
 Test = EulerSolver("CFD_FINAL/inputs/Medium_inputs.nml")
 #Test = EulerSolver("inputs/Medium_inputs.nml")
 Test.set_initial_conditions()
-Test.Data.plot_primitive("pressure")
 Test.set_inflow_bcs()
 Test.set_pressure_bc()
 Test.set_RK4_vals()
 
 
-for i in range(100):
+for i in range(1):
     Test.set_pressure_bc()
     Test.set_inflow_bcs()
     s = Test.RK_iteration(type_ = "Euler")

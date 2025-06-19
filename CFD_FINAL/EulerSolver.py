@@ -66,21 +66,10 @@ class EulerSolver:
 
 
     
-    def set_boundary_multiplier(self):
-        bc_multiplier_top = np.ones_like(self.Data.F)
-        bc_multiplier_top[:,-1,:] = 0 # Top
-
-        bc_multiplier_bottom = np.ones_like(self.Data.F)
-        bc_multiplier_bottom[:,0,:] = 0 
-        #bc_multiplier[:,:,0] = 0 
-        
-        self.Data.bc_multiplier = [bc_multiplier_top,bc_multiplier_bottom]
-        
-    
         
     def set_initial_conditions(self):
         
-        mach = .1*np.ones((self.NI-1,self.NJ-1))
+        mach = .1*np.ones((self.NI+1,self.NJ+1))
         T = self.total_T(self.gamma,mach,self.T0)
         p = self.total_p(self.gamma, mach,self.p0) # Number of cells
         rho = self.total_density(p,self.R,T)
@@ -88,9 +77,24 @@ class EulerSolver:
         
         
         self.Data.V[self.rho_idx] = rho
-        self.Data.V[self.u_idx] = u*self.Data.upward_S[self.unormal]
-        self.Data.V[self.v_idx] = u*self.Data.upward_S[self.vnormal]
+        self.Data.V[self.u_idx,1:-1,1:-1] = u[1:-1,1:-1]*self.Data.upward_S[self.unormal]
+        self.Data.V[self.v_idx,1:-1,1:-1] = u[1:-1,1:-1]*self.Data.upward_S[self.vnormal]
+        Vu = self.Data.V[self.u_idx]
+        Vv = self.Data.V[self.v_idx]
 
+        # Constant extrapolation in x (left/right edges)
+        Vu[:, 0]    = Vu[:, 1]        # left edge
+        Vu[:, -1]   = Vu[:, -2]       # right edge
+        Vv[:, 0]    = Vv[:, 1]
+        Vv[:, -1]   = Vv[:, -2]
+
+        # Constant extrapolation in y (top/bottom edges)
+        Vu[0, :]    = Vu[1, :]        # bottom edge
+        Vu[-1, :]   = Vu[-2, :]       # top edge
+        Vv[0, :]    = Vv[1, :]
+        Vv[-1, :]   = Vv[-2, :]
+        self.Data.V[self.u_idx] = Vu
+        self.Data.V[self.v_idx] = Vv
         self.Data.V[self.p_idx] = p
 
         self.Data.U,_,_ = self.primitive_to_conserved(self.Data.V)
@@ -101,10 +105,55 @@ class EulerSolver:
         self.U3 = copy.deepcopy(self)
         self.U4 = copy.deepcopy(self)
 
+    def set_normal_bcs(self):
+        T = self.Data.V[self.Data.p_idx,0,:]/(self.Data.V[self.Data.rho_idx,0,:]*self.Data.R)
+        rho0 = self.total_density(self.Data.p0,self.Data.R,T)
+        G = self.Data.V
+        G[self.Data.rho_idx,1,:]= rho0
 
-    
+        T = self.Data.V[self.Data.p_idx,-1,:]/(self.Data.V[self.Data.rho_idx,-1,:]*self.Data.R)
+        rho0 = self.total_density(self.Data.p0,self.Data.R,T)
+        G[self.Data.rho_idx,-2,:]= rho0
+
+
+        G[self.Data.p_idx,1,:]= self.Data.V[self.Data.p_idx,0,:]
+        G[self.Data.p_idx,-2,:]= self.Data.V[self.Data.p_idx,-1,:]
 
         
+
+
+        top,bottom = self.get_boundary_conditions_NORMALS()
+        
+
+        # TOP
+        G[self.Data.u_idx,-2,:] = top[0]
+        G[self.Data.v_idx,-2,:] = top[1]
+        G[self.Data.u_idx,-1,:] = top[0]# -G[self.Data.u_idx,-3,:]
+        G[self.Data.v_idx,-1,:] = top[1]# - -G[self.Data.v_idx,-3,:]
+        
+        G[self.Data.u_idx,-1,0] = G[self.Data.u_idx,-1,1]
+        G[self.Data.u_idx,-1,-1] = G[self.Data.u_idx,-1,-2]
+        G[self.Data.v_idx,-1,0] = G[self.Data.v_idx,-1,1]
+        G[self.Data.v_idx,-1,-1] = G[self.Data.v_idx,-1,-2]
+
+        #Bottom 
+        G[self.Data.u_idx,1,:] = bottom[0]
+        G[self.Data.v_idx,1,:] = bottom[1]
+        G[self.Data.u_idx,0,:] = bottom[0]#-G[self.Data.u_idx,2,:]
+        G[self.Data.v_idx,0,:] = bottom[1]#-G[self.Data.v_idx,2,:]
+
+        G[self.Data.u_idx,0,0] = G[self.Data.u_idx,1,1]
+        G[self.Data.u_idx,0,-1] = G[self.Data.u_idx,1,-2]
+        G[self.Data.v_idx,0,0] = G[self.Data.v_idx,1,1]
+        G[self.Data.v_idx,0,-1] = G[self.Data.v_idx,1,-2]
+    def set_boundary_conditions(self):
+        self.set_inflow_bcs()
+
+
+        self.Data.V[:,1:-1,0] = self.Data.inflow
+        self.Data.V[:,:,-1] = 2*self.Data.V[:,:,-2] - self.Data.V[:,:,-3]
+
+        self.Data.U,_,_ = self.primitive_to_conserved(self.Data.V)
     def set_inflow_bcs(self):
 
         mach = .2*np.ones((self.NI-1))
@@ -124,6 +173,8 @@ class EulerSolver:
 
         self.Data.inflow = np.array([rho, u*self.Data.rightward_normal[self.unormal,:,0],\
             u*self.Data.rightward_normal[self.vnormal,:,0],p])
+
+
     
     
 
@@ -186,10 +237,10 @@ class EulerSolver:
 
 
     def compute_timestep(self):
-        rho =self.Data.V[self.rho_idx]  # Density
-        u = self.Data.V[self.u_idx]
-        v = self.Data.V[self.v_idx]  # Velocity
-        p = self.Data.V[self.p_idx]  # Pressure
+        rho =self.Data.V[self.rho_idx,1:-1,1:-1]  # Density
+        u = self.Data.V[self.u_idx,1:-1,1:-1]
+        v = self.Data.V[self.v_idx,1:-1,1:-1]  # Velocity
+        p = self.Data.V[self.p_idx,1:-1,1:-1]  # Pressure
         a = np.sqrt(np.maximum(0,(self.gamma*(p/self.Upwind.min_func(rho)))))
 
 
@@ -202,10 +253,11 @@ class EulerSolver:
         nx_eta_p2,ny_eta_p2 = self.Upwind.get_normal_directions("down")
         nx_eta = (nx_eta_p2+nx_eta_p1)/2
         ny_eta = (ny_eta_p2+ny_eta_p1)/2
-        u,v = self.Data.V[self.u_idx],self.Data.V[self.v_idx]
+        
         
         Area_LR = .5*(self.Data.A_left +self.Data.A_right)
         Area_UD = .5*(self.Data.A_top+self.Data.A_bottom)
+        
         lambda_LR = np.abs(u*nx_psi +v*ny_psi)+a
         lambda_UD = np.abs(u*nx_eta+v*ny_eta)+a
 
@@ -229,20 +281,30 @@ class EulerSolver:
         
 
         Volume =self.Data.AREA 
-        self.set_boundary_multiplier()
+        self.set_boundary_conditions()
         
-        F_left,F_right,F_top,F_bottom = self.Upwind.GetFluxes("Roe")
+        F_left,F_right,F_top,F_bottom = self.Upwind.GetFluxes("Leer")
     
     
         residual = F_left*self.Data.A_left + F_right*self.Data.A_right\
-            +0*F_bottom*self.Data.A_bottom+0*F_top*self.Data.A_top -self.Data.MMS_conserved*Volume
+            +0*F_bottom*self.Data.A_bottom+0*F_top*self.Data.A_top #-self.Data.MMS_conserved*Volume
         
         self.residual = residual
 
+        t = self.Data.U
+        self.Data.U[:,1:-1,1:-1] = self.Data.U[:,1:-1,1:-1]+alpha*(residual*self.delta_t/Volume)
+        Vu = self.Data.U
+        # Constant extrapolation in x (left/right edges)
+        Vu[:,:, 0]    = 2*Vu[:,:, 1] -  Vu[:,:, 2]     # left edge
+        Vu[:,:, -1]   = 2*Vu[:,:, -2]-   Vu[:,:, -3]    # right edge
         
-        self.Data.U = self.Data.U+alpha*(residual*self.delta_t/Volume)
+
+        # Constant extrapolation in y (top/bottom edges)
+        Vu[:,0, :]    = Vu[:,1, :]        # bottom edge
+        Vu[:,-1, :]   = Vu[:,-2, :]       # top edge
+        self.Data.U = Vu
         self.Data.V = self.conserved_to_primitive(self.Data.U)
-    
+        
         return residual
         
         
