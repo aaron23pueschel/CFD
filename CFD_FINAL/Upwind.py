@@ -156,12 +156,33 @@ class Upwind(object):
             F_temp = np.zeros((4,F.shape[1],F.shape[2]+4))
             F_temp[:,:,2:-2] = F
             
-            F_temp[:,:,1] = self.Data.inflow
+            F_temp[:,:,2] = F_temp[:,:,1]  = self.Data.inflow
 
 
-            F_temp[:,:,0] = 2*F_temp[:,:,1]-F_temp[:,:,2]
-            F_temp[:,:,-2] = 2*F_temp[:,:,-3]-F_temp[:,:,-4]
-            F_temp[:,:,-1] = 2*F_temp[:,:,-2]-F_temp[:,:,-3]
+            self.Data.V = F_temp[:,:,2:-2]
+
+
+            primitive = F_temp[:,:,2:-2]
+            rho = primitive[self.Data.rho_idx]  # Density
+            u = primitive[self.Data.u_idx]  # Velocity
+            v = primitive[self.Data.v_idx] 
+            p = primitive[self.Data.p_idx]
+
+            # Compute total energy per unit mass (et)
+            et = p / ((self.gamma - 1) * rho) + 0.5 * ((u)**2+v**2)
+            
+            self.Data.U = np.array([rho, rho * u,rho*v, rho * et])
+
+
+
+
+
+
+            F_temp[:,:,0] =  2*F_temp[:,:,1]-F_temp[:,:,2]
+
+            F_temp[:,:,0] = F_temp[:,:,1]
+            F_temp[:,:,-2] = F_temp[:,:,-3]
+            F_temp[:,:,-1] = F_temp[:,:,-2]
             
             
             F = F_temp
@@ -332,13 +353,7 @@ class Upwind(object):
 
         M_L,M_R = (U_L/a_L,U_R/a_R)
         
-        #print(U_L,U_R,"nx",direction)
-        if direction=="up" or direction=="down":
-            alpha_plus = .5*(1+np.sign(v_R))
-            alpha_minus = .5*(1-np.sign(v_L))
-        else:
-            alpha_plus = .5*(1+np.sign(u_L))
-            alpha_minus = .5*(1-np.sign(u_R))
+       
         alpha_plus = .5*(1+np.sign(U_L))
         alpha_minus = .5*(1-np.sign(U_R))
 

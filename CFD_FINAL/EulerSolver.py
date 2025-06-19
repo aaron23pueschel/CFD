@@ -80,7 +80,7 @@ class EulerSolver:
         
     def set_initial_conditions(self):
         
-        mach = 1.1*np.ones((self.NI-1,self.NJ-1))
+        mach = .1*np.ones((self.NI-1,self.NJ-1))
         T = self.total_T(self.gamma,mach,self.T0)
         p = self.total_p(self.gamma, mach,self.p0) # Number of cells
         rho = self.total_density(p,self.R,T)
@@ -107,7 +107,7 @@ class EulerSolver:
         
     def set_inflow_bcs(self):
 
-        mach = .5*np.ones((self.NI-1))
+        mach = .2*np.ones((self.NI-1))
         T = self.total_T(self.gamma,mach,self.T0)
         p = self.total_p(self.gamma, mach,self.p0) # Number of cells
         rho = self.total_density(p,self.R,T)
@@ -234,13 +234,13 @@ class EulerSolver:
         F_left,F_right,F_top,F_bottom = self.Upwind.GetFluxes("Roe")
     
     
-        residual = F_left*self.Data.A_left + F_right*self.Data.A_right+\
-            F_top*self.Data.A_bottom+F_bottom*self.Data.A_top -self.Data.MMS_conserved*Volume
+        residual = F_left*self.Data.A_left + F_right*self.Data.A_right\
+            +0*F_bottom*self.Data.A_bottom+0*F_top*self.Data.A_top -self.Data.MMS_conserved*Volume
         
         self.residual = residual
 
         
-        self.Data.U = self.Data.U-alpha*(residual*self.delta_t/Volume)
+        self.Data.U = self.Data.U+alpha*(residual*self.delta_t/Volume)
         self.Data.V = self.conserved_to_primitive(self.Data.U)
     
         return residual

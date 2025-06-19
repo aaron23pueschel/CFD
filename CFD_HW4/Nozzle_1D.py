@@ -471,7 +471,7 @@ class Nozzle:
         A_plus_1_2 = np.tile((self.A[1:]),(3,1)).T
         A_minus_1_2 = np.tile(self.A[0:-1],(3,1)).T
         
-        residual = ( F_plus_1_2*A_plus_1_2-F_minus_1_2*A_minus_1_2 -self.S*deltax)
+        residual = ( F_plus_1_2*A_plus_1_2-F_minus_1_2*A_minus_1_2 )
         
         if self.local_timestep:       
             self.U[1:-1] = self.U[1:-1]-(residual*np.tile(self.delta_t[1:-1],(3,1)).T/np.tile(Volume,(3,1)).T)
