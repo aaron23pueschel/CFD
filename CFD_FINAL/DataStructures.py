@@ -166,7 +166,7 @@ class DataStructures(object):
         
         xx_,yy_ = np.meshgrid(self.x,self.y)
         xx = (xx_)
-        yy = yy_  #-#.5*(yy_+xx**2)
+        yy = yy_ #+xx_ #-#.5*(yy_+xx**2)
 
 
         self.xx = xx
@@ -186,7 +186,7 @@ class DataStructures(object):
             plt.scatter(midpointxx.flatten(),midpointyy.flatten(),c=(self.V[self.p_idx]).flatten())
             plt.colorbar()
         if type_=="velocity":
-            plt.quiver(midpointxx,midpointyy,self.V[self.u_idx],self.V[self.v_idx])
+            plt.quiver(midpointxx,midpointyy,self.V[self.u_idx,1:-1,1:-1],self.V[self.v_idx,1:-1,1:-1])
         if type_=="density":
             plt.scatter(midpointxx.flatten(),midpointyy.flatten(),c=self.V[self.rho_idx].flatten())
             plt.colorbar()

@@ -22,10 +22,12 @@ class Upwind(object):
          
         if direction=="right":
             nx,ny = self.Data.rightward_normal[self.Data.unormal],self.Data.rightward_normal[self.Data.vnormal]
+            
         elif direction=="left":
-            nx,ny = self.Data.leftward_normal[self.Data.unormal],self.Data.leftward_normal[self.Data.vnormal]
+           
+            nx,ny = - self.Data.leftward_normal[self.Data.unormal],self.Data.leftward_normal[self.Data.vnormal]
         elif direction=="down":
-            nx,ny = self.Data.downward_normal[self.Data.unormal],self.Data.downward_normal[self.Data.vnormal]
+            nx,ny = self.Data.downward_normal[self.Data.unormal],-self.Data.downward_normal[self.Data.vnormal]
         elif direction == "up":
             nx,ny = self.Data.upward_normal[self.Data.unormal],self.Data.upward_normal[self.Data.vnormal]
         return nx,ny
@@ -55,8 +57,8 @@ class Upwind(object):
         a_R = np.sqrt(np.maximum(self.epsilon,(self.gamma*(p_R/rho_R))))
         #print(u_L.shape,nx.shape,"u_l,nx",direction)
         # print(direction,nx.shape,u_L.shape)
-        vel_L = u_L*nx+v_L*ny
-        vel_R = u_R*nx+v_R*ny
+        vel_L = u_L #*nx+v_L*ny
+        vel_R = u_R#*nx+v_R*ny
 
         M_L,M_R = (vel_L/a_L,vel_R/a_R)
         if direction=="up" or direction=="down":
@@ -79,9 +81,12 @@ class Upwind(object):
         ht_R = (self.gamma / (self.gamma - 1)) * (p_R / rho_R) + 0.5 * (u_R**2+v_R**2)
        
         temp_L = rho_L*a_L*self.c_plus_minus(alpha_plus,beta_L,M_L,M_plus)
-        
         temp_R = rho_R*a_R*self.c_plus_minus(alpha_minus,beta_R,M_R,M_minus)
-        GFC_i_half = np.array([temp_L,u_L*temp_L,v_L*temp_L,ht_L*temp_L])+np.array([temp_R,u_R*temp_R,v_R*temp_R,ht_R*temp_R])
+
+
+
+        
+        GFC_i_half = np.array([temp_L,u_L*temp_L,0*v_L*temp_L,ht_L*temp_L])+np.array([temp_R,u_R*temp_R,0*v_R*temp_R,ht_R*temp_R])
         return GFC_i_half
     
 
@@ -114,23 +119,15 @@ class Upwind(object):
         
         
         # Top
-        v2x = self.Data.V[1,-1,:]
-        v2y = self.Data.V[2,-1,:]
+        v2x = self.Data.V[1,-2,1:-1]
+        v2y = self.Data.V[2,-2,1:-1]
         u_top,v_top = self.compute_slip_walls(self.Data.upward_S[self.Data.unormal,-1,:],\
                                               self.Data.upward_S[self.Data.vnormal,-1,:],self.Data.upward_normal[self.Data.unormal,-1,:],\
                                                 self.Data.upward_normal[self.Data.vnormal,-1,:],v2x,v2y)
         top = [u_top,v_top]
-        #self.Data.V[self.Data.u_idx,-1,:] = u_top
-        #self.Data.V[self.Data.v_idx,-1,:] = v_top
 
-        #self.Data.V[self.Data.u_idx,-1,0] = self.Data.V[self.Data.u_idx,-1,1]
-        #self.Data.V[self.Data.u_idx,-1,-1] = self.Data.V[self.Data.u_idx,-1,-2]
-        
-
-
-       # Bottom
-        v2x = self.Data.V[1,0,:]
-        v2y = self.Data.V[2,0,:]
+        v2x = self.Data.V[1,1,1:-1]
+        v2y = self.Data.V[2,1,1:-1]
         u_top,v_top = self.compute_slip_walls(self.Data.downward_S[self.Data.unormal,0,:],\
                                               self.Data.downward_S[self.Data.vnormal,0,:],self.Data.downward_normal[self.Data.unormal,0,:],\
                                                 self.Data.downward_normal[self.Data.vnormal,0,:],v2x,v2y)
@@ -184,21 +181,21 @@ class Upwind(object):
         
             G_temp = np.zeros((4,F.shape[1]+2,F.shape[2]-2))
             G_temp[:,1:-1,:] = F[:,:,1:-1]
-            G_temp[:,0,:] = G_temp[:,1,:]
-            G_temp[:,-1,:] = G_temp[:,-2,:]
+            G_temp[:,0,:] = 2*G_temp[:,1,:]-G_temp[:,2,:]
+            G_temp[:,-1,:] = 2*G_temp[:,-2,:]-G_temp[:,-3,:]
             G = G_temp
             
             
-            #p1 = self.psi_plus(G,-1+shift_indx,F_flux=False)
-            #p2 = self.psi_minus(G,shift_indx,F_flux=False)
-            #p3 = self.psi_minus(G,shift_indx+1,F_flux=False)
-            #p4 = self.psi_plus(G,shift_indx,F_flux=False)
+            p1 = self.psi_plus(G,-1+shift_indx,F_flux=False)
+            p2 = self.psi_minus(G,shift_indx,F_flux=False)
+            p3 = self.psi_minus(G,shift_indx+1,F_flux=False)
+            p4 = self.psi_plus(G,shift_indx,F_flux=False)
             
-            #epsilon = self.upwind_order
-            GL = G[:,2+shift_indx:-2+shift_indx,:]#+(epsilon/4)*((1self.kappa)*(p1*(G[2+shift_indx:-2+shift_indx,:]-G[1+shift_indx:-3+shift_indx,:]))+\
-                                                #                       (1+self.kappa)*p2*(G[3+shift_indx:-1+shift_indx,:]-G[2+shift_indx:-2+shift_indx,:]))
-            GR = G[:,3+shift_indx:-1+shift_indx,:]#-(epsilon/4)*((1self.kappa)*(p3*(G[4+shift_indx:self.shift_func(shift_indx),:]-G[3+shift_indx:-1+shift_indx,:]))\
-                                                #                       +(1+self.kappa)*p4*(G[3+shift_indx:-1+shift_indx,:]-G[2+shift_indx:-2+shift_indx,:]))
+            epsilon = self.upwind_order
+            GL = G[:,2+shift_indx:-2+shift_indx,:]+(epsilon/4)*((1-self.kappa)*(p1*(G[:,2+shift_indx:-2+shift_indx,:]-G[:,1+shift_indx:-3+shift_indx,:]))+\
+                                                                       (1+self.kappa)*p2*(G[:,3+shift_indx:-1+shift_indx,:]-G[:,2+shift_indx:-2+shift_indx,:]))
+            GR = G[:,3+shift_indx:-1+shift_indx,:]-(epsilon/4)*((1-self.kappa)*(p3*(G[:,4+shift_indx:self.shift_func(shift_indx),:]-G[:,3+shift_indx:-1+shift_indx,:]))\
+                                                                      +(1+self.kappa)*p4*(G[:,3+shift_indx:-1+shift_indx,:]-G[:,2+shift_indx:-2+shift_indx,:]))
             #plt.imshow(GL[2,:,:])
             #plt.colorbar()
             #plt.imshow(GR[2,:,:])
@@ -287,8 +284,8 @@ class Upwind(object):
         #print(ny)
 
 
-        U_L = u_L*nx+v_L*ny
-        U_R = u_R*nx+v_R*ny
+        U_L = u_L#*nx+v_L*ny
+        U_R = u_R#*nx+v_R*ny
 
     
 
@@ -313,7 +310,7 @@ class Upwind(object):
         #print(D_minus-D_plus)
         temp_zero = np.zeros_like(p_L)
         #print(p_L+p_R,direction)
-        G =  np.array([temp_zero,D_plus*nx*p_L,D_plus*ny*p_L,temp_zero])+np.array([temp_zero,D_minus*nx*p_R,D_minus*ny*p_R,temp_zero])
+        G =  np.array([temp_zero,nx*D_plus*p_L,ny*D_plus*p_L,temp_zero])+np.array([temp_zero,nx*D_minus*p_R,ny*D_minus*p_R,temp_zero])
 
         return G
 
@@ -337,7 +334,7 @@ class Upwind(object):
 
             
             
-    
+
         if method=="Roe":
             self.F_left = self.compute_roe_flux("left")
             self.F_right = self.compute_roe_flux("right")

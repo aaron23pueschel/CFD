@@ -106,30 +106,30 @@ class EulerSolver:
         self.U4 = copy.deepcopy(self)
 
     def set_normal_bcs(self):
-        T = self.Data.V[self.Data.p_idx,0,:]/(self.Data.V[self.Data.rho_idx,0,:]*self.Data.R)
+        T = self.Data.V[self.Data.p_idx,1,:]/(self.Data.V[self.Data.rho_idx,1,:]*self.Data.R)
         rho0 = self.total_density(self.Data.p0,self.Data.R,T)
         G = self.Data.V
-        G[self.Data.rho_idx,1,:]= rho0
+        G[self.Data.rho_idx,0,:]= rho0
 
-        T = self.Data.V[self.Data.p_idx,-1,:]/(self.Data.V[self.Data.rho_idx,-1,:]*self.Data.R)
+        T = self.Data.V[self.Data.p_idx,-2,:]/(self.Data.V[self.Data.rho_idx,-2,:]*self.Data.R)
         rho0 = self.total_density(self.Data.p0,self.Data.R,T)
-        G[self.Data.rho_idx,-2,:]= rho0
+        G[self.Data.rho_idx,-1,:]= rho0
 
 
-        G[self.Data.p_idx,1,:]= self.Data.V[self.Data.p_idx,0,:]
-        G[self.Data.p_idx,-2,:]= self.Data.V[self.Data.p_idx,-1,:]
+        G[self.Data.p_idx,0,:]= self.Data.V[self.Data.p_idx,1,:]
+        G[self.Data.p_idx,-1,:]= self.Data.V[self.Data.p_idx,-2,:]
 
         
 
 
-        top,bottom = self.get_boundary_conditions_NORMALS()
+        top,bottom = self.Upwind.get_boundary_conditions_NORMALS()
         
 
         # TOP
-        G[self.Data.u_idx,-2,:] = top[0]
-        G[self.Data.v_idx,-2,:] = top[1]
-        G[self.Data.u_idx,-1,:] = top[0]# -G[self.Data.u_idx,-3,:]
-        G[self.Data.v_idx,-1,:] = top[1]# - -G[self.Data.v_idx,-3,:]
+        G[self.Data.u_idx,-2,1:-1] = top[0]
+        G[self.Data.v_idx,-2,1:-1] = top[1]
+        G[self.Data.u_idx,-1,1:-1] = top[0]# -G[self.Data.u_idx,-3,:]
+        G[self.Data.v_idx,-1,1:-1] = top[1]# - -G[self.Data.v_idx,-3,:]
         
         G[self.Data.u_idx,-1,0] = G[self.Data.u_idx,-1,1]
         G[self.Data.u_idx,-1,-1] = G[self.Data.u_idx,-1,-2]
@@ -137,22 +137,26 @@ class EulerSolver:
         G[self.Data.v_idx,-1,-1] = G[self.Data.v_idx,-1,-2]
 
         #Bottom 
-        G[self.Data.u_idx,1,:] = bottom[0]
-        G[self.Data.v_idx,1,:] = bottom[1]
-        G[self.Data.u_idx,0,:] = bottom[0]#-G[self.Data.u_idx,2,:]
-        G[self.Data.v_idx,0,:] = bottom[1]#-G[self.Data.v_idx,2,:]
+        G[self.Data.u_idx,1,1:-1] = bottom[0]
+        G[self.Data.v_idx,1,1:-1] = bottom[1]
+        G[self.Data.u_idx,0,1:-1] = bottom[0]#-G[self.Data.u_idx,2,:]
+        G[self.Data.v_idx,0,1:-1] = bottom[1]#-G[self.Data.v_idx,2,:]
 
         G[self.Data.u_idx,0,0] = G[self.Data.u_idx,1,1]
         G[self.Data.u_idx,0,-1] = G[self.Data.u_idx,1,-2]
         G[self.Data.v_idx,0,0] = G[self.Data.v_idx,1,1]
         G[self.Data.v_idx,0,-1] = G[self.Data.v_idx,1,-2]
+
+        return G
     def set_boundary_conditions(self):
+        
         self.set_inflow_bcs()
 
-
+        
         self.Data.V[:,1:-1,0] = self.Data.inflow
-        self.Data.V[:,:,-1] = 2*self.Data.V[:,:,-2] - self.Data.V[:,:,-3]
-
+        #self.Data.V = self.set_normal_bcs()
+        
+        #self.set_pressure_bc()
         self.Data.U,_,_ = self.primitive_to_conserved(self.Data.V)
     def set_inflow_bcs(self):
 
@@ -171,8 +175,8 @@ class EulerSolver:
 
         #self.Data.U,_,_ = self.primitive_to_conserved(self.Data.V)
 
-        self.Data.inflow = np.array([rho, u*self.Data.rightward_normal[self.unormal,:,0],\
-            u*self.Data.rightward_normal[self.vnormal,:,0],p])
+        self.Data.inflow = np.array([rho, u*self.Data.upward_S[self.unormal,:,0],\
+            u*self.Data.upward_S[self.vnormal,:,0],p])
 
 
     
@@ -283,11 +287,11 @@ class EulerSolver:
         Volume =self.Data.AREA 
         self.set_boundary_conditions()
         
-        F_left,F_right,F_top,F_bottom = self.Upwind.GetFluxes("Leer")
+        F_left,F_right,F_top,F_bottom = self.Upwind.GetFluxes("Roe")
     
     
-        residual = F_left*self.Data.A_left + F_right*self.Data.A_right\
-            +0*F_bottom*self.Data.A_bottom+0*F_top*self.Data.A_top #-self.Data.MMS_conserved*Volume
+        residual = -F_left*self.Data.A_left + F_right*self.Data.A_right#\
+            #-F_bottom*self.Data.A_bottom+F_top*self.Data.A_top #-self.Data.MMS_conserved*Volume
         
         self.residual = residual
 
@@ -295,16 +299,18 @@ class EulerSolver:
         self.Data.U[:,1:-1,1:-1] = self.Data.U[:,1:-1,1:-1]+alpha*(residual*self.delta_t/Volume)
         Vu = self.Data.U
         # Constant extrapolation in x (left/right edges)
-        Vu[:,:, 0]    = 2*Vu[:,:, 1] -  Vu[:,:, 2]     # left edge
-        Vu[:,:, -1]   = 2*Vu[:,:, -2]-   Vu[:,:, -3]    # right edge
+        ##Vu[:,:, 0]    = Vu[:,:, 1]     # left edge
+        self.set_inflow_bcs
+        Vu[:,:, -1]   =2*Vu[:,:, -2]- Vu[:,:, -3]   # right edge
         
 
         # Constant extrapolation in y (top/bottom edges)
         Vu[:,0, :]    = Vu[:,1, :]        # bottom edge
-        Vu[:,-1, :]   = Vu[:,-2, :]       # top edge
+        Vu[:,-1, :]   = 2*Vu[:,-2, :] -Vu[:,-3, :]      # top edge
+        self.Data.V[:,1:-1,0] = self.Data.inflow
         self.Data.U = Vu
         self.Data.V = self.conserved_to_primitive(self.Data.U)
-        
+        self.set_boundary_conditions()
         return residual
         
         

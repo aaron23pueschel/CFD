@@ -14,12 +14,11 @@ Test.set_RK4_vals()
 
 
 for i in range(1):
-    Test.set_pressure_bc()
-    Test.set_inflow_bcs()
-    s = Test.RK_iteration(type_ = "Euler")
-    Test.set_pressure_bc()
-
-
-
     
-    print(np.linalg.norm(s[3,:,:]))
+    s = Test.RK_iteration(type_ = "Euler")
+    
+
+
+plt.imshow(Test.Data.V[0,:,:])
+plt.show()
+print(np.linalg.norm(s[3,:,:]))
