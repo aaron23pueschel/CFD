@@ -13,10 +13,12 @@ public:
     
     // Euler variables
     double* U = new double[4]();  // Initializes all to 0
-    double* V = new double[4]();  // Same
     double* Residual = new double[4]();
     // Solver variables
     double delta_t;
+
+    int i_idx;
+    int j_idx;
 
     // Cell pointers
     Cell* cell_L = nullptr;
@@ -29,33 +31,33 @@ public:
 
 
 
-    double nx_L = std::numeric_limits<double>::quiet_NaN();
-    double nx_R = std::numeric_limits<double>::quiet_NaN();
-    double nx_U = std::numeric_limits<double>::quiet_NaN();
-    double nx_D = std::numeric_limits<double>::quiet_NaN();
+    double nx_L = numeric_limits<double>::quiet_NaN();
+    double nx_R = numeric_limits<double>::quiet_NaN();
+    double nx_U = numeric_limits<double>::quiet_NaN();
+    double nx_D = numeric_limits<double>::quiet_NaN();
 
-    double ny_L = std::numeric_limits<double>::quiet_NaN();
-    double ny_R = std::numeric_limits<double>::quiet_NaN();
-    double ny_U = std::numeric_limits<double>::quiet_NaN();
-    double ny_D = std::numeric_limits<double>::quiet_NaN();
+    double ny_L = numeric_limits<double>::quiet_NaN();
+    double ny_R = numeric_limits<double>::quiet_NaN();
+    double ny_U = numeric_limits<double>::quiet_NaN();
+    double ny_D = numeric_limits<double>::quiet_NaN();
 
-    double A_L = std::numeric_limits<double>::quiet_NaN();
-    double A_R = std::numeric_limits<double>::quiet_NaN();
-    double A_U = std::numeric_limits<double>::quiet_NaN();
-    double A_D = std::numeric_limits<double>::quiet_NaN();
-    double Volume = std::numeric_limits<double>::quiet_NaN();
+    double A_L = numeric_limits<double>::quiet_NaN();
+    double A_R = numeric_limits<double>::quiet_NaN();
+    double A_U = numeric_limits<double>::quiet_NaN();
+    double A_D = numeric_limits<double>::quiet_NaN();
+    double Volume = numeric_limits<double>::quiet_NaN();
 
-    double x11 = std::numeric_limits<double>::quiet_NaN();
-    double y11 = std::numeric_limits<double>::quiet_NaN();
-    double x12 = std::numeric_limits<double>::quiet_NaN();
-    double y12 = std::numeric_limits<double>::quiet_NaN();
-    double x21 = std::numeric_limits<double>::quiet_NaN();
-    double y21 = std::numeric_limits<double>::quiet_NaN();
-    double x22 = std::numeric_limits<double>::quiet_NaN();
-    double y22 = std::numeric_limits<double>::quiet_NaN();
+    double x11 = numeric_limits<double>::quiet_NaN();
+    double y11 = numeric_limits<double>::quiet_NaN();
+    double x12 = numeric_limits<double>::quiet_NaN();
+    double y12 = numeric_limits<double>::quiet_NaN();
+    double x21 = numeric_limits<double>::quiet_NaN();
+    double y21 = numeric_limits<double>::quiet_NaN();
+    double x22 = numeric_limits<double>::quiet_NaN();
+    double y22 = numeric_limits<double>::quiet_NaN();
 
-    double midpoint_x = std::numeric_limits<double>::quiet_NaN();
-    double midpoint_y = std::numeric_limits<double>::quiet_NaN();
+    double midpoint_x = numeric_limits<double>::quiet_NaN();
+    double midpoint_y = numeric_limits<double>::quiet_NaN();
 
 
 
