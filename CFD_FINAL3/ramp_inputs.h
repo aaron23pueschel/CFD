@@ -6,15 +6,14 @@ struct Inputs {
 int NI = 17;
 int NJ = 53;
 
-string MeshName = "Coarse";
-string xx_filename = "Ramp_Fine_xx.csv";
-string yy_filename = "Ramp_Fine_yy.csv";
-double mach = 2.0;
-double p0 = 65855.8;
+string MeshName = "Ramp";
+string xx_filename = "Ramp_Coarse_cells_xx.csv";
+string yy_filename = "Ramp_Coarse_cells_yy.csv";
+double mach = 2.1;
+double p0 = 65.8558;
 double t0 = 300.0;
 double ru = 8314.0;
-double m  = 28.97;
-double cfl = 0.1;
+double cfl = 0.0001;
 double gamma = 1.4;
 
 int extrapolation_order = 0;

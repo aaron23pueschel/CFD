@@ -30,7 +30,7 @@ public:
                                 {"p0", input_config.p0},
                                 {"t0", input_config.t0},
                                 {"ru", input_config.ru},
-                                {"mach", input_config.m}
+                                {"mach", input_config.mach}
                             },
                             input_config.cfl, input_config.local_timestep)
     {}

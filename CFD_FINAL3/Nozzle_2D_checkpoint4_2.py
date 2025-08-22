@@ -3,7 +3,7 @@ import numpy as np
 import scipy
 import ctypes
 import fmodpy
-library = fmodpy.fimport("upwind.f95")
+#library = fmodpy.fimport("upwind.f95")
 import matplotlib.pyplot as plt
 class Nozzle:
     def __init__(self,input_file):
@@ -744,13 +744,14 @@ class Nozzle:
 
         if visualize:
             midpoint_tempx = (xx[1:,:]+xx[0:-1,:])/2
-            midpointxx = (midpoint_tempx[:,1:]+midpoint_tempx[:,0:-1])/2
+            self.midpointxx = (midpoint_tempx[:,1:]+midpoint_tempx[:,0:-1])/2
             midpoint_tempy = (yy[1:,:]+yy[0:-1,:])/2
-            midpointyy = (midpoint_tempy[:,1:]+midpoint_tempy[:,0:-1])/2
-            plt.scatter(midpointxx.flatten(),midpointyy.flatten(),c=areas.flatten())
+            self.midpointyy = (midpoint_tempy[:,1:]+midpoint_tempy[:,0:-1])/2
+            plt.scatter(self.midpointxx.flatten(),self.midpointyy.flatten(),c=areas.flatten())
             plt.colorbar()
             plt.show()
         self.AREA = np.einsum("ij,jkl->ikl",np.ones((4,1)),areas[np.newaxis,:,:])  
+        return self.midpointxx,self.midpointyy
     
     def get_normal_directions(self,direction,UPWIND = False):
 
@@ -1418,10 +1419,10 @@ class Nozzle:
             F_plus_1_2 = (self.F[2:,:]+self.F[1:-1,:])/2 + d_plus_half
             F_minus_1_2 = (self.F[0:-2,:]+self.F[1:-1,:])/2 +d_minus_half
         elif self.damping_scheme==1:
-            F_plus_1_2 = ((self.f_convective(direction="right")+self.f_pressure_flux(direction="right")))
-            F_minus_1_2 = ((self.f_convective(direction="left")+self.f_pressure_flux(direction="left")))
-            F_UP = ((self.f_convective(direction="up")+self.f_pressure_flux(direction="up")))
-            F_DOWN = ((self.f_convective(direction="down")+self.f_pressure_flux(direction="down")))
+            F_plus_1_2 = (A_plus_1_2*(self.f_convective(direction="right")+self.f_pressure_flux(direction="right")))
+            F_minus_1_2 = (A_minus_1_2*(self.f_convective(direction="left")+self.f_pressure_flux(direction="left")))
+            F_UP = (A_UP*(self.f_convective(direction="up")+self.f_pressure_flux(direction="up")))
+            F_DOWN = (A_DOWN*(self.f_convective(direction="down")+self.f_pressure_flux(direction="down")))
         elif self.damping_scheme==2:
             F_plus_1_2 = self.compute_roe_flux(direction="right")
             F_minus_1_2 = self.compute_roe_flux(direction="left")
@@ -1441,10 +1442,7 @@ class Nozzle:
         #print("Convective",self.f_pressure_flux(i_plus_half=True))
         
         
-        self.residual[:,1:-1,1:-1] = (((F_minus_1_2[:,:,:-1])*self.A_left+\
-                (F_plus_1_2[:,:,1:])*self.A_right+\
-                F_UP[:,1:,:]*self.A_top+\
-                F_DOWN[:,0:-1,:]*self.A_bottom))
+        #residual = ( F_plus_1_2*A_plus_1_2+F_minus_1_2*A_minus_1_2 ) + (F_UP*A_UP+F_DOWN*A_DOWN )
         
         if self.damping_scheme==4:
 

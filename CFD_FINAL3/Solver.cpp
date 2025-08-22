@@ -11,6 +11,7 @@ using namespace std;
 
 void Solver::iteration_step(){
 
+    set_boundary_conditions();
     flux.compute_residual();
     update_delta_t();
     step();
@@ -27,8 +28,9 @@ void Solver::iteration_step(){
 void Solver::step(){
     
     for (Cell* cell : mesh.interior_cells){
-        for(int i=0;i<4;i++)
+        for(int i=0;i<4;i++){
             cell->U[i] = cell->U[i] - (cell->Residual[i]*cell->delta_t)/cell->Volume;
+        }
     }
 
 
@@ -73,7 +75,18 @@ static double total_velocity(double gamma, double M, double R, double T) {
 
 void Solver::set_boundary_conditions(){
 
-    return;
+    for (Cell* c : mesh.ghost_cells) {
+
+        
+        if(c->type == 2){
+            set_inflow_bcs(c,1.0,0.0);
+        }
+        if(c->type == 1)
+            set_normal_bcs(c); // slip
+        if(c->type == 0)
+            set_outflow_bcs(c);
+
+    }
 
 
 }
@@ -102,9 +115,9 @@ void Solver::set_inflow_bcs(Cell* inflow_cell,double nx, double ny){
     double p = total_p(gamma,inputs["mach"],inputs["p0"]);
     double T = total_T(gamma,inputs["mach"],inputs["t0"]);
     double rho = total_density(inputs["p0"],inputs["ru"],T,epsilon);
-    double u = nx*total_velocity(gamma,inputs["mach"],inputs["r0"],T);
-    double v = ny*total_velocity(gamma,inputs["mach"],inputs["r0"],T);
-
+    double u = nx*total_velocity(gamma,inputs["mach"],inputs["ru"],T);
+    double v = ny*total_velocity(gamma,inputs["mach"],inputs["ru"],T);
+    //cout << "Velocity  "<<u<<"    "<<v<<"  "<<gamma<<"  "<<inputs["mach"]<<"   "<<inputs["ru"]<<"   "<<T<<"  "<< rho<<endl;
     flux.set_conserved(inflow_cell,{rho,u,v,p});
 
 }

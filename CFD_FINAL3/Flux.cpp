@@ -72,7 +72,7 @@ array<double, 4> Flux::vanleer_flux(double* U_L, double* U_R, double nx, double 
 
     array<double, 4> F;
     for (int i = 0; i < 4; ++i) 
-        F[i] = F_convective[i] + F_pressure[i];
+        F[i] = F_convective[i]+ F_pressure[i];
     
     return F;
 

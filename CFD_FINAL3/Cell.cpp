@@ -11,6 +11,13 @@ void Cell::set_points(double X11, double Y11,
         x21 = X21; y21 = Y21;
         x22 = X22; y22 = Y22;
 
+        
+        
+
+        if ((std::isnan(x11) || std::isnan(x12) || std::isnan(x21) || std::isnan(x22) ||
+            std::isnan(y11) || std::isnan(y12) || std::isnan(y21) || std::isnan(y22))) {
+            cout<< "Recieved NaN argument"<<endl;
+            }
         // compute midpoint automatically
         midpoint_x = 0.25 * (x11 + x12 + x21 + x22);
         midpoint_y = 0.25 * (y11 + y12 + y21 + y22);
@@ -22,8 +29,8 @@ void Cell::initialize_areas(){
 
     A_L = sqrt(pow(x11 - x21, 2) + pow(y11 - y21, 2));
     A_R = sqrt(pow(x12 - x22, 2) + pow(y12 - y22, 2));
-    A_D = sqrt(pow(x11 - x12, 2) + pow(y11 - y12, 2));
-    A_U = sqrt(pow(x21 - x22, 2) + pow(y21 - y22, 2));
+    A_D = sqrt(pow(x21 - x22, 2) + pow(y22 - y21, 2));
+    A_U = sqrt(pow(x11 - x12, 2) + pow(y11 - y12, 2));
 
     double tri1 = 0.5 * fabs(x11*(y12 - y21) + x12*(y21 - y11) + x21*(y11 - y12));
     double tri2 = 0.5 * fabs(x21*(y12 - y22) + x12*(y22 - y21) + x22*(y21 - y12));
@@ -34,47 +41,21 @@ void Cell::initialize_areas(){
 
 
 
+void Cell::initialize_normals() {
 
-void Cell::initialize_normals(){
 
-    // Left face: (x11,y11) -> (x21,y21)
-    {
-        double ex = x21 - x11;
-        double ey = y21 - y11;
-        nx_L =  -ey / A_L;
-        ny_L = ex / A_L;
+    nx_U = (y11-y12)/A_U;
+    ny_U = -(x11-x12)/A_U;
 
-       
-    }
+    nx_D = -(y21-y22)/A_D;
+    ny_D = (x21-x22)/A_D;
 
-    // Right face: (x12,y12) -> (x22,y22)
-    {
-        double ex = x22 - x12;
-        double ey = y22 - y12;
-        nx_R =  ey / A_R;
-        ny_R = -ex / A_R;
+    nx_L = (y21-y11)/A_L;
+    ny_L = -(x21-x11)/A_L;
 
-    }
+    nx_R = -(y22-y12)/A_R;
+    ny_R = (x22-x12)/A_R;
 
-    // Bottom face: (x11,y11) -> (x12,y12)
-    {
-        double ex = x12 - x11;
-        double ey = y12 - y11;
-        nx_D =  -ey / A_D;
-        ny_D = ex / A_D;
-
-       
-    }
-
-    // Top face: (x21,y21) -> (x22,y22)
-    {
-        double ex = x22 - x21;
-        double ey = y22 - y21;
-        nx_U =  ey / A_U;
-        ny_U = -ex / A_U;
-
-       
-    }
 
 
 

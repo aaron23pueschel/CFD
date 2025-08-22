@@ -41,28 +41,163 @@ void Mesh::write_vector_to_binary(const vector<double>& data, const string& file
 
 
 
+void Mesh::print_mesh(){
+    for (int i = 0; i<=NI; i++) {
+
+        for (int j = 0; j <= NJ; j++) {
+            cout << yy[i][j]<<"  ";
+
+        }
+        cout<<""<<endl;
+    }
+
+
+
+}
+
+void Mesh::set_mesh_cells(){
+    std::size_t rows = xx.size();
+    std::size_t cols = (rows > 0 ? xx[0].size() : 0);
+
+    std::cout << "Shape = (" << rows << ", " << cols << ")\n";
+
+
+    for (int i = 0; i<NI; i++) {
+
+            Cell* temp_cell = new Cell("Interior");
+            temp_cell->set_points(
+                xx[i][0],     yy[i][0], 
+                xx[i][1],   yy[i][1],
+                xx[i][2],   yy[i][2],
+                xx[i][3],   yy[i][3]
+            );
+
+
+            temp_cell->initialize_areas();
+            temp_cell->initialize_normals();
+            temp_cell->i_idx = i;
+            temp_cell->j_idx = i;
+            interior_cells.push_back(temp_cell);
+        
+        }
+
+    set_pointers();
+
+    set_ramp_boundary_types();
+        
+}
+
+void Mesh::set_pointers(){
+    cout<<"setting pointers";
+    for (Cell* c_from : interior_cells) {
+
+        for (Cell* c_to : interior_cells){
+            if(c_from != c_to){
+                if (c_from->x11 == c_to->x12 && c_from->y11 == c_to->y12 &&
+                    c_from->x21 == c_to->x22 && c_from->y21 == c_to->y22) {
+                    c_from->cell_L = c_to;
+                    c_to->cell_R   = c_from;
+                }
+
+                // Right neighbor: (x12,y12)-(x22,y22) matches (x11,y11)-(x21,y21)
+                if (c_from->x12 == c_to->x11 && c_from->y12 == c_to->y11 &&
+                    c_from->x22 == c_to->x21 && c_from->y22 == c_to->y21) {
+                    c_from->cell_R = c_to;
+                    c_to->cell_L   = c_from;
+                }
+
+                // Up neighbor: (x11,y11)-(x12,y12) matches (x21,y21)-(x22,y22)
+                if (c_from->x11 == c_to->x21 && c_from->y11 == c_to->y21 &&
+                    c_from->x12 == c_to->x22 && c_from->y12 == c_to->y22) {
+                    c_from->cell_U = c_to;
+                    c_to->cell_D   = c_from;
+                }
+
+                // Down neighbor: (x21,y21)-(x22,y22) matches (x11,y11)-(x12,y12)
+                if (c_from->x21 == c_to->x11 && c_from->y21 == c_to->y11 &&
+                    c_from->x22 == c_to->x12 && c_from->y22 == c_to->y12) {
+                    c_from->cell_D = c_to;
+                    c_to->cell_U   = c_from;
+                }
+
+
+            }
+            else
+                continue;
+
+
+        }
+
+
+
+        if (c_from->cell_L == nullptr) {
+            Cell* ghost = new Cell("Ghost");
+            c_from->cell_L = ghost;
+            ghost->cell_R  = c_from;
+            ghost_cells.push_back(ghost);
+        }
+
+        // Right ghost
+        if (c_from->cell_R == nullptr) {
+            Cell* ghost = new Cell("Ghost");
+            c_from->cell_R = ghost;
+            ghost->cell_L  = c_from;
+            ghost_cells.push_back(ghost);
+        }
+
+        // Up ghost
+        if (c_from->cell_U == nullptr) {
+            Cell* ghost = new Cell("Ghost");
+            c_from->cell_U = ghost;
+            ghost->cell_D  = c_from;
+            ghost_cells.push_back(ghost);
+        }
+
+        // Down ghost
+        if (c_from->cell_D == nullptr) {
+            Cell* ghost = new Cell("Ghost");
+            c_from->cell_D = ghost;
+            ghost->cell_U  = c_from;
+            ghost_cells.push_back(ghost);
+        }
+
+
+
+
+
+
+    }
+
+
+
+
+}
+
+
+
 
 
 
 
 void Mesh::set_mesh(){
     Cell* temp_cells[NI][NJ];
-    for (int i = 0; i < NI; i++) {
+    for (int i = 0; i<NI; i++) {
         for (int j = 0; j < NJ; j++) {
-            temp_cells[i][j] = new Cell("Interior");
-            temp_cells[i][j]->set_points(
-                xx[i][j],     yy[i][j], 
-                xx[i][j+1],   yy[i][j+1],
+            int i_idx_ =  i; //NI-i-1;
+            temp_cells[i_idx_][j] = new Cell("Interior");
+            temp_cells[i_idx_][j]->set_points(
+                xx[i+1][j+1],     yy[i+1][j+1], 
                 xx[i+1][j],   yy[i+1][j],
-                xx[i+1][j+1], yy[i+1][j+1]
+                xx[i][j+1],   yy[i][j+1],
+                xx[i][j], yy[i][j]
             );
-            temp_cells[i][j]->initialize_areas();
-            temp_cells[i][j]->initialize_normals();
-            temp_cells[i][j]->i_idx = i;
-            temp_cells[i][j]->j_idx = j;
+            temp_cells[i_idx_][j]->initialize_areas();
+            temp_cells[i_idx_][j]->initialize_normals();
+            temp_cells[i_idx_][j]->i_idx = i;
+            temp_cells[i_idx_][j]->j_idx = j;
 
 
-            interior_cells.push_back(temp_cells[i][j]);
+            interior_cells.push_back(temp_cells[i_idx_][j]);
 
 
         }
@@ -157,6 +292,10 @@ void Mesh::set_mesh(){
         }
     }
 
+    if(name=="Ramp")
+        set_ramp_boundary_types();
+    else
+        throw(runtime_error("Error setting boundary types"));
 
 }
 
@@ -212,9 +351,14 @@ int Mesh::check_cell_points() {
 
 
 int Mesh::check_mesh_cellwise() {
-    for (size_t idx = 0; idx < interior_cells.size(); ++idx) {
-        Cell* c = interior_cells[idx];
+    cout << "Checking cellwise normals";
+    
+    std::size_t rows = interior_cells.size();
+    
 
+    std::cout << "Shape = (" << rows << ", ";
+    for (Cell* c : interior_cells) {
+        cout << "Here";
         double sum_x = 0.0;
         double sum_y = 0.0;
 
@@ -234,7 +378,7 @@ int Mesh::check_mesh_cellwise() {
         sum_x += c->nx_U + c->cell_U->nx_D;
         sum_y += c->ny_U + c->cell_U->ny_D;
 
-        cout << "Cell " << idx
+        cout << "Cell " << "Hi"
                   << " face-pair normal sum = ("
                   << sum_x << ", " << sum_y << ")\n" << c->midpoint_x << ",  "<< c->midpoint_y;
     }
@@ -292,27 +436,14 @@ int Mesh::check_interior_cells(){
 }
 
 
-void Mesh::assemble_conserved(){
-    
 
-    array<double,742> arr;
-
-
-    //ofstream out("array.bin", ios::binary);
-    //out.write(reinterpret_cast<const char*>(&arr[0][0]), NI * NJ * sizeof(double));
-    //out.close();
-
-
-
-
-
-}
 
 
 void Mesh::print_conserved() {
     vector<vector<double>> matrix(NI, vector<double>(NJ, 0.0));
     
     for (Cell* c : interior_cells) {
+
         matrix[c->i_idx][c->j_idx] = c->U[1]/c->U[0];
     }
 
@@ -325,7 +456,33 @@ void Mesh::print_conserved() {
 }
 
 
+void Mesh::check_divergence(){
 
+    
+    bool flag = false;
+    for (Cell* c : interior_cells) {
+        double temp_sum_x = c->nx_L*c->A_L +c->nx_R*c->A_R+c->nx_U*c->A_U +c->nx_D*c->A_D;
+        double temp_sum_y = c->ny_L*c->A_L +c->ny_R*c->A_R+c->ny_U*c->A_U +c->ny_D*c->A_D;
+        if(temp_sum_x > 1e-10){
+            flag = true;
+            cout <<"DIVERGENCE THEORY NOT MET IN X: "<<temp_sum_x;
+            
+        }
+        if(temp_sum_x > 1e-10){
+            flag = true;
+            cout <<"DIVERGENCE THEORY NOT MET IN Y: "<<temp_sum_y;
+            
+        }
+        if(flag)
+            return;
+
+    }
+
+
+    cout <<"DIVERGENCE THEORY MET!!!!! ";
+
+
+}
 
 
 
@@ -364,18 +521,19 @@ void Mesh::print_conserved() {
 int Mesh::set_ramp_boundary_types(){
 
     for (Cell* c : ghost_cells) {
-
-        if(c->cell_D != nullptr){
-            if(abs(c->cell_D->nx_U) > .001)
+       
+        if(c->cell_U != nullptr){
+            if(c->cell_U->y12 <.6 ){
                 c->type = 2; // inflow
+            }
             else
                 c->type = 1; // slip
         }   
-        if(c->cell_L !=nullptr)
-            c->type = 0; // outflow
         if(c->cell_R !=nullptr)
+            c->type = 0; // outflow
+        if(c->cell_L !=nullptr)
             c->type = 1; //slip
-        if(c->cell_U != nullptr)
+        if(c->cell_D != nullptr)
             c->type = 1;
 
     }
