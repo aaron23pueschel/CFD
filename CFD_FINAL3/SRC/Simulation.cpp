@@ -122,6 +122,7 @@ Inputs Simulation::load_inputs(const string& filename) {
     j.at("iter_max").get_to(inputs.iter_max);
     j.at("local_timestep").get_to(inputs.local_timestep);
     j.at("flux_limiter_scheme").get_to(inputs.flux_limiter_scheme);
+    j.at("is_mms").get_to(inputs.is_mms);
 
     return inputs;
 }

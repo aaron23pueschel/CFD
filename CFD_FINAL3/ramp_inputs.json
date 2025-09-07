@@ -18,6 +18,7 @@
     "damping_scheme": 1,
     "iter_max": 1000000,
     "local_timestep": true,
-    "flux_limiter_scheme": 1
+    "flux_limiter_scheme": 1,
+    "is_mms": false
   }
   

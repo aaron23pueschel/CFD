@@ -18,6 +18,7 @@ double t0 = 300.0;
 double ru = 8314.0;
 double cfl = 0.0001;
 double gamma = 1.4;
+bool is_mms = false;
 
 int extrapolation_order = 0;
 double epsilon = 1e-10;

@@ -11,6 +11,7 @@
 
 
 
+
 using namespace std;
 class Solver{
 public:
@@ -24,6 +25,16 @@ public:
     double CFL;
     double kappa;
     double epsilon;
+
+
+
+
+
+
+
+
+
+
     
     bool local_timestep;
     
@@ -37,7 +48,7 @@ public:
 
 
 
-    void iteration_step();
+    void iteration_step(int i);
 
 
     void update_delta_t();          
@@ -49,6 +60,7 @@ public:
     void set_outflow_bcs(Cell* cell);
     void set_inflow_bcs(Cell* cell,double nx,double ny);
     void set_ambient_conditions();
+
 
 
 

@@ -10,17 +10,32 @@
 using namespace std;
 int testmesh();
 
+extern "C" {
+
+// rho(x,y; L) → rho (out)
+void rmassconv(double* length, double* x, double* y, double* rho);
+
+
+}
 int main(){
 
-    
     Simulation test("ramp_inputs.json");
     test.simulation_solver.set_ambient_conditions();
     test.simulation_solver.set_flow_initial_conditions();
+    test.simulation_flux.set_MMS_source(test.in.is_mms);
     const string primvar = "primitives.csv";
 
-    for(int i=0;i< 580;i++){
+    for(int i=0;i< 1420;i++){
        cout << "Iteration: " << i<<endl; 
-       test.simulation_solver.iteration_step();
+
+       test.simulation_solver.iteration_step(i);
+       auto norms = test.simulation_flux.compute_norm();
+    cout << "Norms:\n"
+     << "  Density   : "   << norms[0] 
+     << "  U-velocity: "   << norms[1] 
+     << "  V-velocity: "   << norms[2]  
+     << "  Pressure  : "   << norms[3] << "\n";
+    
     }
      //test.simulation_solver.iteration_step();
      

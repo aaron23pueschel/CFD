@@ -55,6 +55,7 @@ class Mesh{
 
     vector<vector<double>> load_csv_file(const string& filename);
     void set_mesh();
+    int set_MMS_boundary_types();
     void set_uniform_points();
     void set_mesh_cells();
     int check_mesh();

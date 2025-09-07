@@ -14,6 +14,7 @@ public:
     // Euler variables
     double* U = new double[4]();  // Initializes all to 0
     double* Residual = new double[4]();
+    double* Source = new double[4]();
     // Solver variables
     double delta_t;
 

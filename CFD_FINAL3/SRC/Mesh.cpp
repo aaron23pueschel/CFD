@@ -86,6 +86,8 @@ void Mesh::set_mesh_cells(){
         set_ramp_boundary_types();
     else if(name=="Airfoil")
         set_airfoil_boundary_types();
+    else if(name=="MMS")
+        set_MMS_boundary_types();
     else{
         set_square_boundary_types();
         cout << "Setting Square BC";
@@ -612,6 +614,25 @@ int Mesh::set_square_boundary_types(){
     return 0;
 
 }
+
+
+
+int Mesh::set_MMS_boundary_types(){
+    cout << "Setting square inflow";
+    for (Cell* c : ghost_cells) {
+        c->type = 0; // outflow
+    }
+
+    return 0;
+
+}
+
+
+
+
+
+
+
 
 
 vector<vector<double>> Mesh::load_csv_file(const string& filename) {

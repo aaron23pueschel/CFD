@@ -6,18 +6,35 @@
 #include <cmath>
 #include <tuple>
 #include <array>
+#include <cmath>       // std::isnan, std::isinf
+#include <stdexcept>   // std::runtime_error
+#include <string>      // std::to_string
+
 using namespace std;
+
+
+
+
+    extern "C" {
+        void rmassconv   (double* length, double* x, double* y, double* rmass);
+        void xmtmconv    (double* length, double* x, double* y, double* xmtm);
+        void ymtmconv    (double* length, double* x, double* y, double* ymtm);
+        void energyconv  (double* gamma, double* length, double* x, double* y, double* energy);
+    }
+
+
 
 
 
 void print_norm(const array<double,4>& norm) {
 
 
-    cout << "Norms:\n";
-    cout << "  Density   : " << norm[0] << "\n";
-    cout << "  U-velocity: " << norm[1] << "\n";
-    cout << "  V-velocity: " << norm[2] << "\n";
-    cout << "  Pressure  : " << norm[3] << "\n";
+cout << 
+    "Norms:  Density   : " << norm[0] << 
+    " U-velocity: " << norm[1] << 
+    "  V-velocity: " << norm[2] << 
+    "  Pressure  : " << norm[3] << "\n";
+
 }
 
 
@@ -26,12 +43,10 @@ void print_norm(const array<double,4>& norm) {
 
 
 
-void Solver::iteration_step(){
+void Solver::iteration_step(int i){
 
     set_boundary_conditions();
     flux.compute_residual();
-    auto norm = flux.compute_norm();
-    print_norm(norm);
     update_delta_t();
     step();
 
@@ -41,11 +56,22 @@ void Solver::iteration_step(){
 
 
 
+
+
+
+
+
+
+
+
 void Solver::step(){
     
     for (Cell* cell : mesh.interior_cells){
         for(int i=0;i<4;i++){
-            cell->U[i] = cell->U[i] - (cell->Residual[i]*cell->delta_t)/cell->Volume;
+            //cout <<cell->Residual[i] <<"  "<<cell->Source[i]<<endl;
+            cell->U[i] = cell->U[i] - ((cell->Residual[i])*cell->delta_t)/cell->Volume+cell->Source[i]*cell->delta_t;
+
+            //cout << cell->U[i]<<endl;
         }
     }
 

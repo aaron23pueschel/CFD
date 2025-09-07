@@ -31,7 +31,8 @@ public:
                                 {"p0", in.p0},
                                 {"t0", in.t0},
                                 {"ru", in.ru},
-                                {"mach", in.mach}
+                                {"mach", in.mach},
+                                {"is_mms",in.is_mms}
                             },
                             in.cfl, in.local_timestep)
     {}

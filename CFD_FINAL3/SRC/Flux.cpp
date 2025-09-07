@@ -8,6 +8,64 @@
 #include <functional>
 using namespace std;
 
+
+
+
+
+
+
+
+double Flux::rho_mms(double length, double x, double y) {
+    return rho0
+         + rhoy * cos((pi * y) / (2.0 * length))
+         + rhox * sin((pi * x) / length);
+}
+
+double Flux::uvel_mms(double length, double x, double y) {
+    return uvel0
+         + uvely * cos((3.0 * pi * y) / (5.0 * length))
+         + uvelx * sin((3.0 * pi * x) / (2.0 * length));
+}
+
+double Flux::vvel_mms(double length, double x, double y) {
+    return vvel0
+         + vvelx * cos((pi * x) / (2.0 * length))
+         + vvely * sin((2.0 * pi * y) / (3.0 * length));
+}
+
+double Flux::press_mms(double length, double x, double y) {
+    return press0
+         + pressx * cos((2.0 * pi * x) / length)
+         + pressy * sin((pi * y) / length);
+}
+
+void Flux::set_MMS_source(bool is_mms){
+
+    for (Cell* cell : mesh.interior_cells) {
+        double length = 1.0;
+        double rho = rho_mms(length, cell->midpoint_x, cell->midpoint_y);
+        double u   = uvel_mms(length, cell->midpoint_x, cell->midpoint_y);
+        double v   = vvel_mms(length, cell->midpoint_x, cell->midpoint_y);
+        double p   = press_mms(length, cell->midpoint_x, cell->midpoint_y);
+
+        if(is_mms){
+            set_source(cell,{rho,u,v,p});
+        }
+        else{
+            for(int i=0;i<4;i++)
+            cell->Source[i] = 0.0; 
+        }
+
+
+    }
+
+
+
+
+}
+
+
+
 array<double,4> Flux::roe_flux(array<double,4>U_L,array<double,4> U_R,double nx, double ny)
 {
 
@@ -344,7 +402,7 @@ pair<array<double,4>, array<double,4>> Flux::MusclExtrapolation(Cell* cell,char 
 
 
 array<double,4> Flux::compute_norm(){
-    double sumP,sumU,sumV,sumRho = 0.0;
+    double sumP = 0.0; double sumU = 0.0;double sumV=0.0;double sumRho = 0.0;
     int N = mesh.interior_cells.size();
     for(Cell* cell: mesh.interior_cells){
         auto V = cell->Residual;
@@ -356,7 +414,7 @@ array<double,4> Flux::compute_norm(){
 
     }
 
-    return{sqrt(sumRho*N),sqrt(sumU*N),sqrt(sumV*N),sqrt(sumP*N)};
+    return{sqrt(sumRho)/N,sqrt(sumU)/N,sqrt(sumV)/N,sqrt(sumP)/N};
 
 
 
@@ -528,3 +586,25 @@ void Flux::set_conserved(Cell* cell, array<double, 4> primitive){
 
 
 }
+
+
+
+void Flux::set_source(Cell* cell, array<double, 4> primitive){
+
+        double rho = primitive[0];
+        double u = primitive[1];  
+        double v = primitive[2];
+        double p = primitive[3];  
+        
+        
+        double et = p / ((gamma - 1) * rho) + 0.5 * (u*u+v*v);
+
+        cell->Source[0] = rho;
+        cell->Source[1] = rho*u;
+        cell->Source[2] = rho*v;
+        cell->Source[3] = rho*et;
+         
+
+
+}
+

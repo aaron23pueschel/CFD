@@ -22,6 +22,48 @@ public:
     double epsilon;
     double damping_scheme;
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    const double pi     = 3.14159265358979323846;
+
+    const double rho0   = 1.0;
+    const double rhox   = 0.15;
+    const double rhoy   = -0.1;
+
+    const double uvel0  = 800.0;
+    const double uvelx  = 50.0;
+    const double uvely  = -30.0;
+
+    const double vvel0  = 800.0;
+    const double vvelx  = -75.0;
+    const double vvely  = 40.0;
+
+    const double press0 = 100000.0;
+    const double pressx = 20000.0;
+    const double pressy = 50000.0;
+
+
+
+
+
+
+
+
+
+
     
 
     Flux(Mesh mesh_, int upwind_order_, double kappa_, double epsilon_,double damping_scheme_): mesh(mesh_), upwind_order(upwind_order_), kappa(kappa_), epsilon(epsilon_),damping_scheme(damping_scheme_) {}
@@ -39,6 +81,13 @@ public:
     array<double,4> compute_norm();
     array<double,4> get_primvars(double* cell);
     void set_conserved(Cell*,array<double, 4>);
+    void set_source(Cell*,array<double, 4>);
+    void set_MMS_source(bool is_mms);
+    double rho_mms   (double length, double x, double y);
+    double uvel_mms  (double length, double x, double y);
+    double vvel_mms  (double length, double x, double y);
+    double press_mms (double length, double x, double y);
+
 
 
 
