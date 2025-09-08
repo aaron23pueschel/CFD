@@ -60,7 +60,7 @@ public:
     void write_primitives_csv(const string& filename);
     Inputs load_inputs(const string& filename);
     void write_residuals_csv(const string& filename);
-
+    void write_Cd(const string& filename);
 
 
 

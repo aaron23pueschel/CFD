@@ -55,6 +55,66 @@ void Simulation::write_primitives_csv(const string& filename)
 
 
 
+void Simulation::write_Cd(const string& filename){
+    ofstream file(filename);
+    if (!file) {
+        throw runtime_error("Could not open file: " + filename);
+    }
+    double Cd = 0.0;
+    for(Cell* cell:simulation_mesh.ghost_cells){
+
+        if(cell->type==1 && cell->cell_D==nullptr){
+
+        
+            auto V0 = simulation_flux.get_primvars(cell->cell_U);
+            auto V1 = simulation_flux.get_primvars(cell->cell_U->cell_U);
+            double p0 = V0[3]; double p1 = V1[3];
+
+
+            double pressure_at_face = p0 + .5*(p1-p0); 
+
+
+            double nx = cell->cell_U->nx_D;
+
+            double Area = sqrt(pow(cell->cell_U->x22-cell->cell_U->x21,2) + pow(cell->cell_U->y22-cell->cell_U->y21,2));
+
+            Cd += pressure_at_face*nx*Area;
+
+
+            
+
+
+        
+
+        }
+
+
+
+    }
+
+
+    file << Cd;
+
+
+
+
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 void Simulation::write_residuals_csv(const string& filename)
 {

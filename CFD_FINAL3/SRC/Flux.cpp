@@ -39,17 +39,141 @@ double Flux::press_mms(double length, double x, double y) {
          + pressy * sin((pi * y) / length);
 }
 
+double Flux::mass_mms(double L, double x, double y){
+
+    double mass = (3*pi*uvelx*cos((3*pi*x)/(2.*L))*(rho0 + rhoy*cos((pi*y)/(2.*L)) + rhox*sin((pi*x)/L)))/(2.*L) + 
+   (2*pi*vvely*cos((2*pi*y)/(3.*L))*(rho0 + rhoy*cos((pi*y)/(2.*L)) + rhox*sin((pi*x)/L)))/(3.*L) + 
+   (pi*rhox*cos((pi*x)/L)*(uvel0 + uvely*cos((3*pi*y)/(5.*L)) + uvelx*sin((3*pi*x)/(2.*L))))/L - 
+   (pi*rhoy*sin((pi*y)/(2.*L))*(vvel0 + vvelx*cos((pi*x)/(2.*L)) + vvely*sin((2*pi*y)/(3.*L))))/(2.*L);
+
+
+    return mass;
+
+}
+
+
+
+double Flux::xmtm_mms(double L,double x,double y){
+
+
+    double xmtm = (2*pi*vvely*cos((2*pi*y)/(3.*L))*(rho0 + rhoy*cos((pi*y)/(2.*L)) + rhox*sin((pi*x)/L))*
+      (uvel0 + uvely*cos((3*pi*y)/(5.*L)) + uvelx*sin((3*pi*x)/(2.*L))))/(3.*L) - 
+   (pi*rhoy*(uvel0 + uvely*cos((3*pi*y)/(5.*L)) + uvelx*sin((3*pi*x)/(2.*L)))*sin((pi*y)/(2.*L))*
+      (vvel0 + vvelx*cos((pi*x)/(2.*L)) + vvely*sin((2*pi*y)/(3.*L))))/(2.*L) - 
+   (3*pi*uvely*(rho0 + rhoy*cos((pi*y)/(2.*L)) + rhox*sin((pi*x)/L))*sin((3*pi*y)/(5.*L))*
+      (vvel0 + vvelx*cos((pi*x)/(2.*L)) + vvely*sin((2*pi*y)/(3.*L))))/(5.*L);
+
+    return xmtm;
+
+
+}
+
+
+
+double Flux::ymtm_mms(double L,double x,double y){
+
+    double ymtm = (pi*pressy*cos((pi*y)/L))/L + (4*pi*vvely*cos((2*pi*y)/(3.*L))*(rho0 + rhoy*cos((pi*y)/(2.*L)) + rhox*sin((pi*x)/L))*
+      (vvel0 + vvelx*cos((pi*x)/(2.*L)) + vvely*sin((2*pi*y)/(3.*L))))/(3.*L) - 
+   (pi*rhoy*sin((pi*y)/(2.*L))*pow(vvel0 + vvelx*cos((pi*x)/(2.*L)) + vvely*sin((2*pi*y)/(3.*L)),2))/(2.*L);
+
+
+    return ymtm;
+
+
+}
+
+
+
+
+
+double Flux::energy_mms(double L,double x,double y){
+
+
+    double energy = (uvel0 + uvely*cos((3*pi*y)/(5.*L)) + uvelx*sin((3*pi*x)/(2.*L)))*
+    ((-2*pi*pressx*sin((2*pi*x)/L))/L + (rho0 + rhoy*cos((pi*y)/(2.*L)) + rhox*sin((pi*x)/L))*
+       ((-2*pi*pressx*sin((2*pi*x)/L))/((-1 + gamma)*L*(rho0 + rhoy*cos((pi*y)/(2.*L)) + rhox*sin((pi*x)/L))) + 
+         ((3*pi*uvelx*cos((3*pi*x)/(2.*L))*(uvel0 + uvely*cos((3*pi*y)/(5.*L)) + uvelx*sin((3*pi*x)/(2.*L))))/L - 
+            (pi*vvelx*sin((pi*x)/(2.*L))*(vvel0 + vvelx*cos((pi*x)/(2.*L)) + vvely*sin((2*pi*y)/(3.*L))))/L)/2. - 
+         (pi*rhox*cos((pi*x)/L)*(press0 + pressx*cos((2*pi*x)/L) + pressy*sin((pi*y)/L)))/
+          ((-1 + gamma)*L*pow(rho0 + rhoy*cos((pi*y)/(2.*L)) + rhox*sin((pi*x)/L),2))) + 
+      (pi*rhox*cos((pi*x)/L)*((pow(0.0,2) + pow(uvel0 + uvely*cos((3*pi*y)/(5.*L)) + uvelx*sin((3*pi*x)/(2.*L)),2) + 
+              pow(vvel0 + vvelx*cos((pi*x)/(2.*L)) + vvely*sin((2*pi*y)/(3.*L)),2))/2. + 
+           (press0 + pressx*cos((2*pi*x)/L) + pressy*sin((pi*y)/L))/
+            ((-1 + gamma)*(rho0 + rhoy*cos((pi*y)/(2.*L)) + rhox*sin((pi*x)/L)))))/L) + 
+   (3*pi*uvelx*cos((3*pi*x)/(2.*L))*(press0 + pressx*cos((2*pi*x)/L) + pressy*sin((pi*y)/L) + 
+        (rho0 + rhoy*cos((pi*y)/(2.*L)) + rhox*sin((pi*x)/L))*
+         ((pow(0.0,2) + pow(uvel0 + uvely*cos((3*pi*y)/(5.*L)) + uvelx*sin((3*pi*x)/(2.*L)),2) + 
+              pow(vvel0 + vvelx*cos((pi*x)/(2.*L)) + vvely*sin((2*pi*y)/(3.*L)),2))/2. + 
+           (press0 + pressx*cos((2*pi*x)/L) + pressy*sin((pi*y)/L))/
+            ((-1 + gamma)*(rho0 + rhoy*cos((pi*y)/(2.*L)) + rhox*sin((pi*x)/L))))))/(2.*L) + 
+   (2*pi*vvely*cos((2*pi*y)/(3.*L))*(press0 + pressx*cos((2*pi*x)/L) + pressy*sin((pi*y)/L) + 
+        (rho0 + rhoy*cos((pi*y)/(2.*L)) + rhox*sin((pi*x)/L))*
+         ((pow(0.0,2) + pow(uvel0 + uvely*cos((3*pi*y)/(5.*L)) + uvelx*sin((3*pi*x)/(2.*L)),2) + 
+              pow(vvel0 + vvelx*cos((pi*x)/(2.*L)) + vvely*sin((2*pi*y)/(3.*L)),2))/2. + 
+           (press0 + pressx*cos((2*pi*x)/L) + pressy*sin((pi*y)/L))/
+            ((-1 + gamma)*(rho0 + rhoy*cos((pi*y)/(2.*L)) + rhox*sin((pi*x)/L))))))/(3.*L) + 
+   (vvel0 + vvelx*cos((pi*x)/(2.*L)) + vvely*sin((2*pi*y)/(3.*L)))*
+    ((pi*pressy*cos((pi*y)/L))/L - (pi*rhoy*sin((pi*y)/(2.*L))*
+         ((pow(0.0,2) + pow(uvel0 + uvely*cos((3*pi*y)/(5.*L)) + uvelx*sin((3*pi*x)/(2.*L)),2) + 
+              pow(vvel0 + vvelx*cos((pi*x)/(2.*L)) + vvely*sin((2*pi*y)/(3.*L)),2))/2. + 
+           (press0 + pressx*cos((2*pi*x)/L) + pressy*sin((pi*y)/L))/
+            ((-1 + gamma)*(rho0 + rhoy*cos((pi*y)/(2.*L)) + rhox*sin((pi*x)/L)))))/(2.*L) + 
+      (rho0 + rhoy*cos((pi*y)/(2.*L)) + rhox*sin((pi*x)/L))*
+       ((pi*pressy*cos((pi*y)/L))/((-1 + gamma)*L*(rho0 + rhoy*cos((pi*y)/(2.*L)) + rhox*sin((pi*x)/L))) + 
+         ((-6*pi*uvely*(uvel0 + uvely*cos((3*pi*y)/(5.*L)) + uvelx*sin((3*pi*x)/(2.*L)))*sin((3*pi*y)/(5.*L)))/(5.*L) + 
+            (4*pi*vvely*cos((2*pi*y)/(3.*L))*(vvel0 + vvelx*cos((pi*x)/(2.*L)) + vvely*sin((2*pi*y)/(3.*L))))/(3.*L))/2. + 
+         (pi*rhoy*sin((pi*y)/(2.*L))*(press0 + pressx*cos((2*pi*x)/L) + pressy*sin((pi*y)/L)))/
+          (2.*(-1 + gamma)*L*pow(rho0 + rhoy*cos((pi*y)/(2.*L)) + rhox*sin((pi*x)/L),2))));
+
+
+
+
+    return energy;
+
+
+
+
+
+
+
+
+
+
+
+
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
 void Flux::set_MMS_source(bool is_mms){
 
     for (Cell* cell : mesh.interior_cells) {
         double length = 1.0;
-        double rho = rho_mms(length, cell->midpoint_x, cell->midpoint_y);
-        double u   = uvel_mms(length, cell->midpoint_x, cell->midpoint_y);
-        double v   = vvel_mms(length, cell->midpoint_x, cell->midpoint_y);
-        double p   = press_mms(length, cell->midpoint_x, cell->midpoint_y);
+        // double rho = rho_mms(length, cell->midpoint_x, cell->midpoint_y);
+        // double u   = uvel_mms(length, cell->midpoint_x, cell->midpoint_y);
+        // double v   = vvel_mms(length, cell->midpoint_x, cell->midpoint_y);
+        // double p   = press_mms(length, cell->midpoint_x, cell->midpoint_y);
+
+
+        double mass = mass_mms(length, cell->midpoint_x, cell->midpoint_y);
+        double xmtm   = xmtm_mms(length, cell->midpoint_x, cell->midpoint_y);
+        double ymtm   = ymtm_mms(length, cell->midpoint_x, cell->midpoint_y);
+        double E   = energy_mms(length, cell->midpoint_x, cell->midpoint_y);
+
+
 
         if(is_mms){
-            set_source(cell,{rho,u,v,p});
+            set_source(cell,{mass,xmtm,ymtm,E});
         }
         else{
             for(int i=0;i<4;i++)
@@ -591,18 +715,12 @@ void Flux::set_conserved(Cell* cell, array<double, 4> primitive){
 
 void Flux::set_source(Cell* cell, array<double, 4> primitive){
 
-        double rho = primitive[0];
-        double u = primitive[1];  
-        double v = primitive[2];
-        double p = primitive[3];  
         
-        
-        double et = p / ((gamma - 1) * rho) + 0.5 * (u*u+v*v);
 
-        cell->Source[0] = rho;
-        cell->Source[1] = rho*u;
-        cell->Source[2] = rho*v;
-        cell->Source[3] = rho*et;
+        cell->Source[0] = primitive[0]; // This is actually a conserved source term. 
+        cell->Source[1] =  primitive[1];
+        cell->Source[2] =  primitive[2];
+        cell->Source[3] =  primitive[3];
          
 
 

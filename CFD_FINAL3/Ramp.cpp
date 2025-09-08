@@ -10,37 +10,46 @@
 using namespace std;
 int testmesh();
 
+extern "C" {
+
+// rho(x,y; L) → rho (out)
+void rmassconv(double* length, double* x, double* y, double* rho);
+
+
+}
 int main(){
 
-    
-    Simulation test("inputs/airfoil_inputs.json");
+    Simulation test("inputs/ramp_inputs.json");
     test.simulation_solver.set_ambient_conditions();
     test.simulation_solver.set_flow_initial_conditions();
+    test.simulation_flux.set_MMS_source(test.in.is_mms);
     const string primvar = "primitives.csv";
-    const string drag_coef = "drag_coef.csv";
-
-    for(int i=0;i<10550;i++){
+    for(int i=0;i< 2000;i++){
        cout << "Iteration: " << i<<endl; 
+
        test.simulation_solver.iteration_step(i);
+       
+        if(i<1997)
+            test.simulation_solver.flux.upwind_order = 0;
+        else
+            test.simulation_solver.flux.upwind_order = 1;
 
 
-        
+
        auto norms = test.simulation_flux.compute_norm();
-
-     cout<< "  Density   : "   << norms[0] 
+    cout <<"Upwind Order: "<<test.simulation_flux.upwind_order<< ";  Norms:\n"
+     << "  Density   : "   << norms[0] 
      << "  U-velocity: "   << norms[1] 
      << "  V-velocity: "   << norms[2]  
      << "  Pressure  : "   << norms[3] << "\n";
     
-
-
     }
      //test.simulation_solver.iteration_step();
      
-    test.write_Cd(drag_coef);
-    //test.write_primitives_csv(primvar);
-    test.write_primitives_csv(primvar);
     //test.write_residuals_csv(primvar);
+    test.write_primitives_csv(primvar);
+    // test.write_primitives_csv(primvar);
+    
     auto norms = test.simulation_flux.compute_norm();
     cout << "Norms:\n"
      << "  Density   : "   << norms[0] << "\n"

@@ -88,6 +88,11 @@ public:
     double vvel_mms  (double length, double x, double y);
     double press_mms (double length, double x, double y);
 
+    double mass_mms(double length, double x, double y);
+    double xmtm_mms(double length, double x, double y);
+    double ymtm_mms(double length, double x, double y);
+    double energy_mms(double length, double x, double y);
+
 
 
 

@@ -536,6 +536,7 @@ void Mesh::set_airfoil_boundary_types(){
             c->type = 0; //slip
         if(c->cell_U != nullptr){
             Cell* cell_temp = c->cell_U;
+            bool found = false;
             for (Cell* c_ : ghost_cells) {
 
                 if(c_->cell_U && c_->cell_U!=cell_temp && cell_temp->x22==c_->cell_U->x21 &&cell_temp->x21==c_->cell_U->x22
@@ -544,11 +545,15 @@ void Mesh::set_airfoil_boundary_types(){
                     c->cell_U->cell_D = c_->cell_U;
                     //c_->cell_U = c->cell_U->cell_D;
                     cout << "Found matching condition"<<endl;
-
+                    found = true;
+                    c->type = 0;
                     break;
                 }
 
             }
+
+            if(found)
+                continue;
             c->type =1;
 
         }   
@@ -618,9 +623,9 @@ int Mesh::set_square_boundary_types(){
 
 
 int Mesh::set_MMS_boundary_types(){
-    cout << "Setting square inflow";
+    cout << "MMS boundary inflow";
     for (Cell* c : ghost_cells) {
-        c->type = 0; // outflow
+        c->type = 3; // MMS inflow BCS
     }
 
     return 0;

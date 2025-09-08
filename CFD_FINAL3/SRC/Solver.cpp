@@ -158,7 +158,8 @@ void Solver::set_flow_initial_conditions(){
     double pi = 3.1415926;
     double u = total_velocity(gamma,inputs["mach"],inputs["ru"],T)*cos(0*(pi/180.0));
     double v = total_velocity(gamma,inputs["mach"],inputs["ru"],T)*sin(0*(pi/180.0));
-
+    
+    cout << "Freestream Pressure: "<<p<<"   Freestream Density: "<<rho<<" Freestream vel"<<u;
 
     for (Cell* cell : mesh.interior_cells){
         flux.set_conserved(cell,{rho,u,v,p});
