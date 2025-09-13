@@ -15,13 +15,6 @@ using namespace std;
 
 
 
-    extern "C" {
-        void rmassconv   (double* length, double* x, double* y, double* rmass);
-        void xmtmconv    (double* length, double* x, double* y, double* xmtm);
-        void ymtmconv    (double* length, double* x, double* y, double* ymtm);
-        void energyconv  (double* gamma, double* length, double* x, double* y, double* energy);
-    }
-
 
 
 
@@ -49,6 +42,7 @@ void Solver::iteration_step(int i){
     flux.compute_residual();
     update_delta_t();
     step();
+    //RK4_step();
 
 
 
@@ -56,11 +50,63 @@ void Solver::iteration_step(int i){
 
 
 
+void Solver::RK4_step() {
+
+    for (Cell* c : mesh.interior_cells)
+        for (int i = 0; i < 4; ++i)
+            c->temp_U[i] = c->U[i];
+
+    auto compute_stage = [&](int stage){
+        set_boundary_conditions();
+        flux.compute_residual();      
+        
+
+        for (Cell* c : mesh.interior_cells) {
+            for (int i = 0; i < 4; ++i) {
+                const double f = - (c->Residual[i] / c->Volume + c->Source[i]); // slope f(U)
+                if      (stage == 1) c->K1[i] = f;
+                else if (stage == 2) c->K2[i] = f;
+                else if (stage == 3) c->K3[i] = f;
+                else                  c->K4[i] = f;
+            }
+        }
+    };
+
+    compute_stage(1);
 
 
+    for (Cell* c : mesh.interior_cells) {
+        const double dt = c->delta_t;   
+        for (int i = 0; i < 4; ++i)
+            c->U[i] = c->temp_U[i] + 0.5 * dt * c->K1[i];
+    }
+    compute_stage(2);
 
 
+    for (Cell* c : mesh.interior_cells) {
+        const double dt = c->delta_t;
+        for (int i = 0; i < 4; ++i)
+            c->U[i] = c->temp_U[i] + 0.5 * dt * c->K2[i];
+    }
+    compute_stage(3);
 
+
+    for (Cell* c : mesh.interior_cells) {
+        const double dt = c->delta_t;
+        for (int i = 0; i < 4; ++i)
+            c->U[i] = c->temp_U[i] + dt * c->K3[i];
+    }
+    compute_stage(4);
+
+
+    for (Cell* c : mesh.interior_cells) {
+        const double dt = c->delta_t;
+        for (int i = 0; i < 4; ++i) {
+            c->U[i] = c->temp_U[i]
+                    + (dt/6.0) * (c->K1[i] + 2.0*c->K2[i] + 2.0*c->K3[i] + c->K4[i]);
+        }
+    }
+}
 
 
 
@@ -68,10 +114,11 @@ void Solver::step(){
     
     for (Cell* cell : mesh.interior_cells){
         for(int i=0;i<4;i++){
-            //cout <<cell->Residual[i] <<"  "<<cell->Source[i]<<endl;
-            cell->U[i] = cell->U[i] - ((cell->Residual[i])*cell->delta_t)/cell->Volume+cell->Source[i]*cell->delta_t;
+            
+            cell->U[i] = cell->U[i] - (((cell->Residual[i]))/cell->Volume+cell->Source[i])*cell->delta_t;
 
-            //cout << cell->U[i]<<endl;
+
+
         }
     }
 
@@ -109,8 +156,37 @@ static double total_velocity(double gamma, double M, double R, double T) {
 }
 
 
+void Solver::set_mms_bcs(Cell* outflow_cell){
+
+    Cell* neighbor = nullptr;
+    if (outflow_cell->cell_L) 
+        neighbor = outflow_cell->cell_L;
+     else if (outflow_cell->cell_R) 
+        neighbor = outflow_cell->cell_R;
+     else if (outflow_cell->cell_U) 
+        neighbor = outflow_cell->cell_U;
+     else if (outflow_cell->cell_D) 
+        neighbor = outflow_cell->cell_D;
+    else
+        throw std::invalid_argument("Cannot set outflow");
+    double length = 1.0;
+    double gamma = 1.4;
+    
+    array<double,4> temp;
+
+    temp[0] = flux.rho_mms(length,neighbor->midpoint_x,neighbor->midpoint_y);
+    temp[1] = flux.uvel_mms(length,neighbor->midpoint_x,neighbor->midpoint_y);
+    temp[2] = flux.vvel_mms(length,neighbor->midpoint_x,neighbor->midpoint_y);
+    temp[3] = flux.press_mms(length,neighbor->midpoint_x,neighbor->midpoint_y);
+
+    flux.set_conserved(outflow_cell,temp);
+    
+    // for(int i=0;i<4;i++)
+    //     cout << outflow_cell->U[i] <<",  "<<endl;
 
 
+
+}
 
 
 
@@ -125,10 +201,14 @@ void Solver::set_boundary_conditions(){
             
             set_inflow_bcs(c,1,0);
         }
-        //if(c->type == 1)
-        //    set_normal_bcs(c); // slip
+
         if(c->type == 0)
             set_outflow_bcs(c);
+
+
+
+        if(c->type==3)
+            set_mms_bcs(c);
 
     }
 

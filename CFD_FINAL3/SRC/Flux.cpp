@@ -6,6 +6,7 @@
 #include <tuple>
 #include <array>
 #include <functional>
+#include <stdexcept>
 using namespace std;
 
 
@@ -393,7 +394,22 @@ array<double, 4> Flux::vanleer_flux(array<double, 4> U_L, array<double, 4> U_R, 
 
 
 
+double p_func(double i4,double i3,double i2,double i1){
 
+    if(isnan(i4)|| isnan(i3)||isnan(i2)||isnan(i1))
+         throw invalid_argument("NaN encountered in Flux::p_func");
+    double NUM = i4-i3;
+    double DEN = i2-i1;
+
+    if(DEN<.00000001)
+        return 0.0;
+    double r = NUM/DEN;
+    auto den = (1+r > 0) - (1+r < 0);
+    //return (r+abs(r))/(1+abs(r));
+    return (r*r+r)/max(.00000001,1+r*r);
+        
+
+}
 
 
 
@@ -406,8 +422,9 @@ pair<array<double,4>, array<double,4>> Flux::MusclExtrapolation(Cell* cell,char 
         array<double,4> FL;
         array<double,4> FR;
         int i=0;
+        double p1; double p3;
         
-
+        double upwind_order_ = upwind_order;
         
         for(;i<4;i++){
 
@@ -415,48 +432,33 @@ pair<array<double,4>, array<double,4>> Flux::MusclExtrapolation(Cell* cell,char 
 
             // ---------- RIGHT face ----------
             if (direction=='R') {
+                Cell temp_cell("temp_cell");
+                
                 auto CRR = cell->cell_R->cell_R ? cell->cell_R->cell_R : cell->cell_R;
                 auto CL  = cell->cell_L;
                 auto CR  = cell->cell_R;
 
-                // p1 at center (cell): r = (U - UL)/(UR - U)
-                double dL  =  cell->U[i] - CL->U[i];
-                double dR  =  CR->U[i]   - cell->U[i];
-                double r   = (std::abs(dR) > tol) ? dL/dR : (dL>0 ? 1e9 : (dL<0 ? -1e9 : 0.0));
-                double p1  = (r + std::abs(r)) / (1.0 + std::abs(r)); // van Leer
-
-                // p3 at right cell (CR): rinv = 1/((UR - U)/(URR - UR))
-                double dLr =  CR->U[i]   - cell->U[i];
-                double dRr =  CRR->U[i]  - CR->U[i];
-                double rr  = (std::abs(dRr) > tol) ? dLr/dRr : (dLr>0 ? 1e9 : (dLr<0 ? -1e9 : 0.0));
-                double rinv= (std::abs(rr)  > tol) ? 1.0/rr : (rr>0 ? 1e9 : (rr<0 ? -1e9 : 0.0));
-                double p3  = (rinv + std::abs(rinv)) / (1.0 + std::abs(rinv)); // van Leer
-
-                FL[i] = cell->U[i]+ 0.5*upwind_order * (p1 * (cell->U[i] - CL->U[i]));
-                FR[i] = CR->U[i]- 0.5*upwind_order * (p3 * (CRR->U[i]  - CR->U[i]));
+                
+                p3 = p_func(CR->U[i],cell->U[i],CRR->U[i],CR->U[i]);
+                p1 = p_func(CR->U[i],cell->U[i],cell->U[i],CL->U[i]);
+                
+                FL[i] = cell->U[i]+ 0.5*upwind_order_ * (p1 * (cell->U[i] - CL->U[i]));
+                FR[i] = CR->U[i]- 0.5*upwind_order_ * (p3 * (CRR->U[i]  - CR->U[i]));
             }
 
             // ---------- LEFT face ----------
             if (direction=='L') {
+                
                 auto CLL = cell->cell_L->cell_L ? cell->cell_L->cell_L : cell->cell_L;
                 auto CL  = cell->cell_L;
                 auto CR  = cell->cell_R;
 
-                // p1 at left cell (CL): r = (U_CL - U_CLL)/(U_cell - U_CL)
-                double dL  =  CL->U[i]   - CLL->U[i];
-                double dR  =  cell->U[i] - CL->U[i];
-                double r   = (std::abs(dR) > tol) ? dL/dR : (dL>0 ? 1e9 : (dL<0 ? -1e9 : 0.0));
-                double p1  = (r + std::abs(r)) / (1.0 + std::abs(r));
+                
+                    p1 = p_func(cell->U[i],CL->U[i],CL->U[i],CLL->U[i]);
+                p3 = p_func(cell->U[i],CL->U[i],CR->U[i],cell->U[i]);
 
-                // p3 at center (cell): rinv = 1/((U_cell - U_CL)/(U_CR - U_cell))
-                double dLc =  cell->U[i] - CL->U[i];
-                double dRc =  CR->U[i]   - cell->U[i];
-                double rc  = (std::abs(dRc) > tol) ? dLc/dRc : (dLc>0 ? 1e9 : (dLc<0 ? -1e9 : 0.0));
-                double rinv= (std::abs(rc)  > tol) ? 1.0/rc : (rc>0 ? 1e9 : (rc<0 ? -1e9 : 0.0));
-                double p3  = (rinv + std::abs(rinv)) / (1.0 + std::abs(rinv));
-
-                FL[i] = CL->U[i]+ 0.5*upwind_order * (p1 * (CL->U[i]   - CLL->U[i]));
-                FR[i] = cell->U[i]- 0.5*upwind_order * (p3 * (CR->U[i]   - cell->U[i]));
+                FL[i] = CL->U[i]+ 0.5*upwind_order_ * (p1 * (CL->U[i]   - CLL->U[i]));
+                FR[i] = cell->U[i]- 0.5*upwind_order_ * (p3 * (CR->U[i]   - cell->U[i]));
             }
 
             // ---------- UP face ----------
@@ -465,21 +467,13 @@ pair<array<double,4>, array<double,4>> Flux::MusclExtrapolation(Cell* cell,char 
                 auto CD  = cell->cell_D;
                 auto CU  = cell->cell_U;
 
-                // p1 at center (cell): r = (U - UD)/(UU - U)
-                double dL  =  cell->U[i] - CD->U[i];
-                double dR  =  CU->U[i]   - cell->U[i];
-                double r   = (std::abs(dR) > tol) ? dL/dR : (dL>0 ? 1e9 : (dL<0 ? -1e9 : 0.0));
-                double p1  = (r + std::abs(r)) / (1.0 + std::abs(r));
+                
+                    p3 = p_func(CU->U[i],cell->U[i],CUU->U[i],CU->U[i]);
+                p1 = p_func(CU->U[i],cell->U[i],cell->U[i],CD->U[i]);
+                
 
-                // p3 at up cell (CU): rinv = 1/((U_U - U)/(U_UU - U_U))
-                double dLu =  CU->U[i]   - cell->U[i];
-                double dRu =  CUU->U[i]  - CU->U[i];
-                double ru  = (std::abs(dRu) > tol) ? dLu/dRu : (dLu>0 ? 1e9 : (dLu<0 ? -1e9 : 0.0));
-                double rinv= (std::abs(ru)  > tol) ? 1.0/ru : (ru>0 ? 1e9 : (ru<0 ? -1e9 : 0.0));
-                double p3  = (rinv + std::abs(rinv)) / (1.0 + std::abs(rinv));
-
-                FL[i] = cell->U[i]+ 0.5*upwind_order * (p1 * (cell->U[i] - CD->U[i]));
-                FR[i] = CU->U[i]- 0.5*upwind_order * (p3 * (CUU->U[i]  - CU->U[i]));
+                FL[i] = cell->U[i]+ 0.5*upwind_order_ * (p1 * (cell->U[i] - CD->U[i]));
+                FR[i] = CU->U[i]- 0.5*upwind_order_ * (p3 * (CUU->U[i]  - CU->U[i]));
             }
 
             // ---------- DOWN face ----------
@@ -487,23 +481,22 @@ pair<array<double,4>, array<double,4>> Flux::MusclExtrapolation(Cell* cell,char 
                 auto CDD = cell->cell_D->cell_D ? cell->cell_D->cell_D : cell->cell_D;
                 auto CD  = cell->cell_D;
                 auto CU  = cell->cell_U;
+                
 
-                // p1 at down cell (CD): r = (U_CD - U_CDD)/(U_cell - U_CD)
-                double dL  =  CD->U[i]   - CDD->U[i];
-                double dR  =  cell->U[i] - CD->U[i];
-                double r   = (std::abs(dR) > tol) ? dL/dR : (dL>0 ? 1e9 : (dL<0 ? -1e9 : 0.0));
-                double p1  = (r + std::abs(r)) / (1.0 + std::abs(r));
-
-                // p3 at center (cell): rinv = 1/((U_cell - U_CD)/(U_CU - U_cell))
-                double dLc =  cell->U[i] - CD->U[i];
-                double dRc =  CU->U[i]   - cell->U[i];
-                double rc  = (std::abs(dRc) > tol) ? dLc/dRc : (dLc>0 ? 1e9 : (dLc<0 ? -1e9 : 0.0));
-                double rinv= (std::abs(rc)  > tol) ? 1.0/rc : (rc>0 ? 1e9 : (rc<0 ? -1e9 : 0.0));
-                double p3  = (rinv + std::abs(rinv)) / (1.0 + std::abs(rinv));
-
-                FL[i] = CD->U[i] + 0.5*upwind_order * (p1 * (CD->U[i]   - CDD->U[i]));
-                FR[i] = cell->U[i]- 0.5*upwind_order * (p3 * (CU->U[i]   - cell->U[i]));
+                
+                p1 = p_func(cell->U[i],CD->U[i],CD->U[i],CDD->U[i]);
+                p3 = p_func(cell->U[i],CD->U[i],CU->U[i],cell->U[i]);
+                
+                FL[i] = CD->U[i] + 0.5*upwind_order_ * (p1 * (CD->U[i]   - CDD->U[i]));
+                FR[i] = cell->U[i]- 0.5*upwind_order_ * (p3 * (CU->U[i]   - cell->U[i]));
             }
+
+
+        if(isnan(FL[i])||isnan(FR[i])){
+            cout<<"Nan encountered at index: "<<i<<", Direction: "<<direction<<endl;
+            throw invalid_argument("NaN encountered");
+        }
+
 
 
     
@@ -637,7 +630,6 @@ void Flux::compute_residual(){
         for(int i=0;i<4;i++)
             cell->Residual[i] = (FL[i]*cell->A_L + FR[i]*cell->A_R + FU[i]*cell->A_U + FD[i]*cell->A_D);
 
-        //cout << cell->Residual[1]<< ", " << cell->Residual[2];
     }
 
     

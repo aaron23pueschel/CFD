@@ -219,6 +219,7 @@ class Upwind(object):
         if self.flux_limiter_scheme==0:
             return 1
         if not F_flux:
+            # (M-L)/(R-M)
             NUM =  (Flux[2+shift_indx:self.shift_func(-2+shift_indx),:]-Flux[1+shift_indx:-3+shift_indx,:])
             DEN = self.min_func(Flux[3+shift_indx:self.shift_func(-1+shift_indx),:]-Flux[2+shift_indx:self.shift_func(-2+shift_indx),:])
         else:
@@ -236,6 +237,7 @@ class Upwind(object):
         if self.flux_limiter_scheme==0:
             return 1
         if F_flux:
+            # (R - M)/(M-L)
             NUM = (Flux[:,4+shift_indx:self.shift_func(shift_indx)]-Flux[:,3+shift_indx:self.shift_func(-1+shift_indx)])
             DEN = self.min_func(Flux[:,3+shift_indx:self.shift_func(-1+shift_indx)]-Flux[:,2+shift_indx:self.shift_func(-2+shift_indx)])
         else:

@@ -13,8 +13,13 @@ public:
     
     // Euler variables
     double* U = new double[4]();  // Initializes all to 0
+    double* temp_U = new double[4]();
     double* Residual = new double[4]();
     double* Source = new double[4]();
+    double* K1 = new double[4]();
+    double* K2 = new double[4]();
+    double* K3 = new double[4]();
+    double* K4 = new double[4]();
     // Solver variables
     double delta_t;
 

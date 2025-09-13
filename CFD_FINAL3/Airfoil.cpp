@@ -19,7 +19,7 @@ int main(){
     const string primvar = "primitives.csv";
     const string drag_coef = "drag_coef.csv";
 
-    for(int i=0;i<10550;i++){
+    for(int i=0;i<13050;i++){
        cout << "Iteration: " << i<<endl; 
        test.simulation_solver.iteration_step(i);
 

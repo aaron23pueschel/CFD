@@ -60,6 +60,8 @@ public:
     void set_outflow_bcs(Cell* cell);
     void set_inflow_bcs(Cell* cell,double nx,double ny);
     void set_ambient_conditions();
+    void set_mms_bcs(Cell* outflow_cell);
+    void RK4_step();
 
 
 
