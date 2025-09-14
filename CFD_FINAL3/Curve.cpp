@@ -15,18 +15,18 @@ int main(){
     Simulation test("inputs/curve_inputs.json");
     test.simulation_solver.set_ambient_conditions();
     test.simulation_solver.set_boundary_conditions();
-    test.simulation_solver.flux.set_MMS_source(true);
+    test.simulation_solver.flux.set_MMS_source(false);
      test.simulation_flux.compute_residual();
     
     // //test.simulation_solver.set_flow_initial_conditions();
     const string primvar = "primitives.csv";
     //test.write_primitives_csv(primvar);
     // // test.simulation_mesh.test_boundary_normals();
-     for(int i=0;i<4000;i++){
-    //     cout << "Iteration: " << i<<endl; 
-    //      test.simulation_solver.iteration_step();
-    //  }
-    test.simulation_solver.iteration_step(1);
+     for(int i=0;i<3000;i++){
+        cout << "Iteration: " << i<<endl; 
+         test.simulation_solver.iteration_step(i);
+     
+    //test.simulation_solver.iteration_step(1);
       auto norms = test.simulation_flux.compute_norm();
 
      cout<< "  Density   : "   << norms[0] 
@@ -37,6 +37,12 @@ int main(){
      }
 
     test.write_primitives_csv(primvar);
+
+
+    for(Cell* cell: test.simulation_mesh.ghost_cells){
+        auto P = test.simulation_flux.get_primvars(cell->U);
+        cout<<"  rho: "<< P[0]<<endl;
+    }
 
     return 0;
 }

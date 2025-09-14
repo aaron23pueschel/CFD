@@ -78,7 +78,7 @@ void Simulation::write_Cd(const string& filename){
 
             double Area = sqrt(pow(cell->cell_U->x22-cell->cell_U->x21,2) + pow(cell->cell_U->y22-cell->cell_U->y21,2));
 
-            Cd += pressure_at_face*nx*Area;
+            file << pressure_at_face*nx*Area;
 
 
             
@@ -93,7 +93,7 @@ void Simulation::write_Cd(const string& filename){
     }
 
 
-    file << Cd;
+    //file << Cd;
 
 
 

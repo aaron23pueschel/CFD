@@ -16,7 +16,8 @@ int main(){
     Simulation test("inputs/airfoil_inputs.json");
     test.simulation_solver.set_ambient_conditions();
     test.simulation_solver.set_flow_initial_conditions();
-    const string primvar = "primitives.csv";
+    const string primvar = "airfoil_primitives.csv";
+    const string resvar = "airfoil_residuals.csv";
     const string drag_coef = "drag_coef.csv";
 
     for(int i=0;i<13050;i++){
@@ -39,8 +40,9 @@ int main(){
      
     test.write_Cd(drag_coef);
     //test.write_primitives_csv(primvar);
+    //test.write_primitives_csv(primvar);
     test.write_primitives_csv(primvar);
-    //test.write_residuals_csv(primvar);
+    test.write_residuals_csv(resvar);
     auto norms = test.simulation_flux.compute_norm();
     cout << "Norms:\n"
      << "  Density   : "   << norms[0] << "\n"

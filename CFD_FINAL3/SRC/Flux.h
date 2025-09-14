@@ -17,7 +17,7 @@ public:
 
 
     Mesh mesh;
-    int upwind_order;
+    double upwind_order;
     double kappa;
     double epsilon;
     double damping_scheme;
@@ -66,7 +66,7 @@ public:
 
     
 
-    Flux(Mesh mesh_, int upwind_order_, double kappa_, double epsilon_,double damping_scheme_): mesh(mesh_), upwind_order(upwind_order_), kappa(kappa_), epsilon(epsilon_),damping_scheme(damping_scheme_) {}
+    Flux(Mesh mesh_, double upwind_order_, double kappa_, double epsilon_,double damping_scheme_): mesh(mesh_), upwind_order(upwind_order_), kappa(kappa_), epsilon(epsilon_),damping_scheme(damping_scheme_) {}
 
 
 

@@ -9,6 +9,10 @@
 #include <cmath>       // std::isnan, std::isinf
 #include <stdexcept>   // std::runtime_error
 #include <string>      // std::to_string
+#include <cmath>
+#ifndef M_PI
+#define M_PI 3.14159265358979323846
+#endif
 
 using namespace std;
 
@@ -117,8 +121,6 @@ void Solver::step(){
             
             cell->U[i] = cell->U[i] - (((cell->Residual[i]))/cell->Volume+cell->Source[i])*cell->delta_t;
 
-
-
         }
     }
 
@@ -126,8 +128,25 @@ void Solver::step(){
 
 }
 void Solver::update_delta_t(){
-    for (Cell* cell : mesh.interior_cells) 
-        cell->delta_t = delta_t(cell);
+    double min = 10000.0;
+
+
+    if(local_timestep)
+        for (Cell* cell : mesh.interior_cells)
+            cell->delta_t = delta_t(cell);
+    else{
+        for (Cell* cell : mesh.interior_cells){
+            double temp_min = delta_t(cell);
+                if(temp_min<min)
+                    min = temp_min;
+        }
+
+        for (Cell* cell : mesh.interior_cells){
+            cell->delta_t = min;
+        }
+
+    }
+    
 }
 
 static double psi(double gamma, double M) {
@@ -159,14 +178,29 @@ static double total_velocity(double gamma, double M, double R, double T) {
 void Solver::set_mms_bcs(Cell* outflow_cell){
 
     Cell* neighbor = nullptr;
-    if (outflow_cell->cell_L) 
-        neighbor = outflow_cell->cell_L;
-     else if (outflow_cell->cell_R) 
+    double midpointx;
+    double midpointy;
+    if (outflow_cell->cell_R){
         neighbor = outflow_cell->cell_R;
-     else if (outflow_cell->cell_U) 
-        neighbor = outflow_cell->cell_U;
-     else if (outflow_cell->cell_D) 
+        midpointx = (neighbor->x12 +neighbor->x22)/2;
+        midpointy = (neighbor->y12 +neighbor->y22)/2;
+    }
+     else if (outflow_cell->cell_L){
+        neighbor = outflow_cell->cell_L;
+        midpointx = (neighbor->x11 +neighbor->x21)/2;
+        midpointy = (neighbor->y11 +neighbor->y21)/2;
+     }
+     else if (outflow_cell->cell_D){
         neighbor = outflow_cell->cell_D;
+        midpointx = (neighbor->x21 +neighbor->x22)/2;
+        midpointy = (neighbor->y21 +neighbor->y22)/2;
+     }
+     else if (outflow_cell->cell_U) {
+        neighbor = outflow_cell->cell_U;
+        midpointx = (neighbor->x11 +neighbor->x12)/2;
+        midpointy = (neighbor->y11 +neighbor->y12)/2;
+
+     }
     else
         throw std::invalid_argument("Cannot set outflow");
     double length = 1.0;
@@ -174,10 +208,10 @@ void Solver::set_mms_bcs(Cell* outflow_cell){
     
     array<double,4> temp;
 
-    temp[0] = flux.rho_mms(length,neighbor->midpoint_x,neighbor->midpoint_y);
-    temp[1] = flux.uvel_mms(length,neighbor->midpoint_x,neighbor->midpoint_y);
-    temp[2] = flux.vvel_mms(length,neighbor->midpoint_x,neighbor->midpoint_y);
-    temp[3] = flux.press_mms(length,neighbor->midpoint_x,neighbor->midpoint_y);
+    temp[0] = flux.rho_mms(length,midpointx,midpointy);
+    temp[1] = flux.uvel_mms(length,midpointx,midpointy);
+    temp[2] = flux.vvel_mms(length,midpointx,midpointy);
+    temp[3] = flux.press_mms(length,midpointx,midpointy);
 
     flux.set_conserved(outflow_cell,temp);
     
@@ -232,12 +266,28 @@ void Solver::set_boundary_conditions(){
 void Solver::set_flow_initial_conditions(){
     cout << "Setting inflow Conditions...";
 
-    double p = total_p(gamma,inputs["mach"],inputs["p0"]);
-    double T = total_T(gamma,inputs["mach"],inputs["t0"]);
-    double rho = total_density(p,inputs["ru"],T,epsilon);
-    double pi = 3.1415926;
-    double u = total_velocity(gamma,inputs["mach"],inputs["ru"],T)*cos(0*(pi/180.0));
-    double v = total_velocity(gamma,inputs["mach"],inputs["ru"],T)*sin(0*(pi/180.0));
+    // double p = total_p(gamma,inputs["mach"],inputs["p0"]);
+    // double T = total_T(gamma,inputs["mach"],inputs["t0"]);
+    // double rho = total_density(p,inputs["ru"],T,epsilon);
+    // double pi = 3.1415926;
+    // double u = total_velocity(gamma,inputs["mach"],inputs["ru"],T)*cos(0*(pi/180.0));
+    // double v = total_velocity(gamma,inputs["mach"],inputs["ru"],T)*sin(0*(pi/180.0));
+
+
+
+    const double gamma = this->gamma;
+    const double M     = inputs["mach"];     // freestream Mach (static)
+    const double R     = inputs["ru"];       // specific gas constant
+    const double p     = inputs["p0"];       // static pressure (Pa)
+    const double T     = inputs["t0"];       // static temperature (K)
+    const double ang   = inputs.count("angle_deg") ? inputs["angle_deg"] : 0.0; // optional
+    const double ang_r = ang * M_PI / 180.0;
+
+    const double rho = p / (R * T);
+    const double a   = std::sqrt(gamma * R * T);
+    const double U   = M * a;           // speed magnitude
+    const double u   = U * std::cos(ang_r);
+    const double v   = U * std::sin(ang_r);
     
     cout << "Freestream Pressure: "<<p<<"   Freestream Density: "<<rho<<" Freestream vel"<<u;
 
@@ -287,25 +337,50 @@ void Solver::set_ambient_conditions(){
 
 
 }
-void Solver::set_inflow_bcs(Cell* inflow_cell,double nx, double ny){
+// void Solver::set_inflow_bcs(Cell* inflow_cell,double nx, double ny){
 
-    //double nx = 1.0;
-    //double ny = 0.0;
-    double p = total_p(gamma,inputs["mach"],inputs["p0"]);
-    double T = total_T(gamma,inputs["mach"],inputs["t0"]);
-    double rho = total_density(p,inputs["ru"],T,epsilon);
-    double pi = 3.1415926;
-    double u = total_velocity(gamma,inputs["mach"],inputs["ru"],T)*cos(0*(pi/180.0));
-    double v = total_velocity(gamma,inputs["mach"],inputs["ru"],T)*sin(0*(pi/180.0));
+//     //double nx = 1.0;
+//     //double ny = 0.0;
+//     double p = total_p(gamma,inputs["mach"],inputs["p0"]);
+//     double T = total_T(gamma,inputs["mach"],inputs["t0"]);
+//     double rho = total_density(p,inputs["ru"],T,epsilon);
+//     double pi = 3.1415926;
+//     double u = total_velocity(gamma,inputs["mach"],inputs["ru"],T)*cos(0*(pi/180.0));
+//     double v = total_velocity(gamma,inputs["mach"],inputs["ru"],T)*sin(0*(pi/180.0));
 
-    // cout << "SETTING INFLOW";
-    // std::cout << "rho = " << rho << "\n";
-    // std::cout << "u   = " << u   << "\n";
-    // std::cout << "v   = " << v   << "\n";
-    // std::cout << "p   = " << p   << "\n";
+//     // cout << "SETTING INFLOW";
+//     // std::cout << "rho = " << rho << "\n";
+//     // std::cout << "u   = " << u   << "\n";
+//     // std::cout << "v   = " << v   << "\n";
+//     // std::cout << "p   = " << p   << "\n";
     
-    flux.set_conserved(inflow_cell,{rho,u,v,p});
+//     flux.set_conserved(inflow_cell,{rho,u,v,p});
 
+// }
+
+
+
+void Solver::set_inflow_bcs(Cell* inflow_cell, double nx, double ny)
+{
+    // Inputs: static freestream
+    const double gamma = this->gamma;
+    const double M     = inputs["mach"];   // freestream Mach (static)
+    const double R     = inputs["ru"];     // gas constant
+    const double p     = inputs["p0"];     // static pressure (Pa)
+    const double T     = inputs["t0"];     // static temperature (K)
+
+    // Derived freestream
+    const double rho = p / (R * T);
+    const double a   = std::sqrt(gamma * R * T);
+    const double U   = M * a;              // speed magnitude
+
+
+    // Velocity INTO the domain: V · n < 0  -> choose V = -U * n
+    const double u = U;
+    const double v = 0.0;
+
+    // Set full state (Dirichlet) for supersonic inflow
+    flux.set_conserved(inflow_cell, {rho, u, v, p});
 }
 
 

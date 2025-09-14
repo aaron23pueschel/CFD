@@ -57,14 +57,41 @@ double Flux::mass_mms(double L, double x, double y){
 double Flux::xmtm_mms(double L,double x,double y){
 
 
-    double xmtm = (2*pi*vvely*cos((2*pi*y)/(3.*L))*(rho0 + rhoy*cos((pi*y)/(2.*L)) + rhox*sin((pi*x)/L))*
-      (uvel0 + uvely*cos((3*pi*y)/(5.*L)) + uvelx*sin((3*pi*x)/(2.*L))))/(3.*L) - 
-   (pi*rhoy*(uvel0 + uvely*cos((3*pi*y)/(5.*L)) + uvelx*sin((3*pi*x)/(2.*L)))*sin((pi*y)/(2.*L))*
-      (vvel0 + vvelx*cos((pi*x)/(2.*L)) + vvely*sin((2*pi*y)/(3.*L))))/(2.*L) - 
-   (3*pi*uvely*(rho0 + rhoy*cos((pi*y)/(2.*L)) + rhox*sin((pi*x)/L))*sin((3*pi*y)/(5.*L))*
-      (vvel0 + vvelx*cos((pi*x)/(2.*L)) + vvely*sin((2*pi*y)/(3.*L))))/(5.*L);
+//     double xmtm = (2*pi*vvely*cos((2*pi*y)/(3.*L))*(rho0 + rhoy*cos((pi*y)/(2.*L)) + rhox*sin((pi*x)/L))*
+//       (uvel0 + uvely*cos((3*pi*y)/(5.*L)) + uvelx*sin((3*pi*x)/(2.*L))))/(3.*L) - 
+//    (pi*rhoy*(uvel0 + uvely*cos((3*pi*y)/(5.*L)) + uvelx*sin((3*pi*x)/(2.*L)))*sin((pi*y)/(2.*L))*
+//       (vvel0 + vvelx*cos((pi*x)/(2.*L)) + vvely*sin((2*pi*y)/(3.*L))))/(2.*L) - 
+//    (3*pi*uvely*(rho0 + rhoy*cos((pi*y)/(2.*L)) + rhox*sin((pi*x)/L))*sin((3*pi*y)/(5.*L))*
+//       (vvel0 + vvelx*cos((pi*x)/(2.*L)) + vvely*sin((2*pi*y)/(3.*L))))/(5.*L);
 
-    return xmtm;
+//     return xmtm;
+
+
+return (3.0*pi*uvelx*cos((3.0*pi*x)/(2.0*L)) *
+        (rho0 + rhoy*cos((pi*y)/(2.0*L)) + rhox*sin((pi*x)/L)) *
+        (uvel0 + uvely*cos((3.0*pi*y)/(5.0*L)) +
+         uvelx*sin((3.0*pi*x)/(2.0*L))))/L
+     + (2.0*pi*vvely*cos((2.0*pi*y)/(3.0*L)) *
+        (rho0 + rhoy*cos((pi*y)/(2.0*L)) + rhox*sin((pi*x)/L)) *
+        (uvel0 + uvely*cos((3.0*pi*y)/(5.0*L)) +
+         uvelx*sin((3.0*pi*x)/(2.0*L))))/(3.0*L)
+     + (pi*rhox*cos((pi*x)/L) *
+        (uvel0 + uvely*cos((3.0*pi*y)/(5.0*L)) +
+         uvelx*sin((3.0*pi*x)/(2.0*L))) *
+        (uvel0 + uvely*cos((3.0*pi*y)/(5.0*L)) +
+         uvelx*sin((3.0*pi*x)/(2.0*L))))/L
+     - (2.0*pi*pressx*sin((2.0*pi*x)/L))/L
+     - (pi*rhoy*(uvel0 + uvely*cos((3.0*pi*y)/(5.0*L)) +
+                 uvelx*sin((3.0*pi*x)/(2.0*L))) *
+        sin((pi*y)/(2.0*L)) *
+        (vvel0 + vvelx*cos((pi*x)/(2.0*L)) +
+         vvely*sin((2.0*pi*y)/(3.0*L))))/(2.0*L)
+     - (3.0*pi*uvely*(rho0 + rhoy*cos((pi*y)/(2.0*L)) +
+                      rhox*sin((pi*x)/L)) *
+        sin((3.0*pi*y)/(5.0*L)) *
+        (vvel0 + vvelx*cos((pi*x)/(2.0*L)) +
+         vvely*sin((2.0*pi*y)/(3.0*L))))/(5.0*L);
+
 
 
 }
@@ -73,12 +100,25 @@ double Flux::xmtm_mms(double L,double x,double y){
 
 double Flux::ymtm_mms(double L,double x,double y){
 
-    double ymtm = (pi*pressy*cos((pi*y)/L))/L + (4*pi*vvely*cos((2*pi*y)/(3.*L))*(rho0 + rhoy*cos((pi*y)/(2.*L)) + rhox*sin((pi*x)/L))*
-      (vvel0 + vvelx*cos((pi*x)/(2.*L)) + vvely*sin((2*pi*y)/(3.*L))))/(3.*L) - 
-   (pi*rhoy*sin((pi*y)/(2.*L))*pow(vvel0 + vvelx*cos((pi*x)/(2.*L)) + vvely*sin((2*pi*y)/(3.*L)),2))/(2.*L);
+//     double ymtm = (pi*pressy*cos((pi*y)/L))/L + (4*pi*vvely*cos((2*pi*y)/(3.*L))*(rho0 + rhoy*cos((pi*y)/(2.*L)) + rhox*sin((pi*x)/L))*
+//       (vvel0 + vvelx*cos((pi*x)/(2.*L)) + vvely*sin((2*pi*y)/(3.*L))))/(3.*L) - 
+//    (pi*rhoy*sin((pi*y)/(2.*L))*pow(vvel0 + vvelx*cos((pi*x)/(2.*L)) + vvely*sin((2*pi*y)/(3.*L)),2))/(2.*L);
 
 
-    return ymtm;
+//     return ymtm;
+
+return (pi*pressy*cos((pi*y)/L))/L
+     - (pi*vvelx*sin((pi*x)/(2.0*L)) * (rho0 + rhoy*cos((pi*y)/(2.0*L)) + rhox*sin((pi*x)/L))
+        * (uvel0 + uvely*cos((3.0*pi*y)/(5.0*L)) + uvelx*sin((3.0*pi*x)/(2.0*L))))/(2.0*L)
+     + (3.0*pi*uvelx*cos((3.0*pi*x)/(2.0*L)) * (rho0 + rhoy*cos((pi*y)/(2.0*L)) + rhox*sin((pi*x)/L))
+        * (vvel0 + vvelx*cos((pi*x)/(2.0*L)) + vvely*sin((2.0*pi*y)/(3.0*L))))/(2.0*L)
+     + (4.0*pi*vvely*cos((2.0*pi*y)/(3.0*L)) * (rho0 + rhoy*cos((pi*y)/(2.0*L)) + rhox*sin((pi*x)/L))
+        * (vvel0 + vvelx*cos((pi*x)/(2.0*L)) + vvely*sin((2.0*pi*y)/(3.0*L))))/(3.0*L)
+     + (pi*rhox*cos((pi*x)/L) * (uvel0 + uvely*cos((3.0*pi*y)/(5.0*L)) + uvelx*sin((3.0*pi*x)/(2.0*L)))
+        * (vvel0 + vvelx*cos((pi*x)/(2.0*L)) + vvely*sin((2.0*pi*y)/(3.0*L))))/L
+     - (pi*rhoy*sin((pi*y)/(2.0*L)) * std::pow(vvel0 + vvelx*cos((pi*x)/(2.0*L))
+        + vvely*sin((2.0*pi*y)/(3.0*L)), 2))/(2.0*L);
+
 
 
 }
@@ -575,18 +615,6 @@ void Flux::compute_residual(){
                 auto V = get_primvars(cell);
                 FL = {0,cell->nx_L*V[3],cell->ny_L*V[3],0};
             }   
-            // if(cell->cell_L->name=="Ghost" && cell->cell_L->type == 2){
-            //     auto V = get_primvars(cell->cell_L);
-            //     auto rho = V[0];
-            //     auto u = V[1];
-            //     auto v = V[2];
-            //     auto p = V[3];
-            //     auto nx = cell->nx_L;
-            //     auto ny = cell->ny_L;
-            //     double U = u*nx + v*ny;
-            //     auto E =  p/((gamma - 1.0) * rho) + 0.5*(u*u + v*v);
-            //     FL = {rho*U,rho*u*U+p*nx,rho*v*U+p*ny,(rho*E+p)*U};
-            // }   
 
         }
 
@@ -625,7 +653,16 @@ void Flux::compute_residual(){
             }   
 
         }
-        
+        for(int i=0;i<4;i++)
+            if(isnan(FL[i])||isnan(FR[i])||isnan(FU[i])||isnan(FD[i])){
+                cout<<"Nan encountered at index: "<<i<<"  ";
+                if(i==0)
+                    cout<<"Density";
+                if(i==3)
+                    cout<<"pressure";
+                throw invalid_argument("NaN encountered");
+            }
+
 
         for(int i=0;i<4;i++)
             cell->Residual[i] = (FL[i]*cell->A_L + FR[i]*cell->A_R + FU[i]*cell->A_U + FD[i]*cell->A_D);
@@ -646,7 +683,7 @@ array<double, 4> Flux::get_primvars(array<double,4> U){
     double rho = max(U[0],epsilon);
     double u = U[1] / rho;
     double v = U[2]/rho;
-    double p = max(0.0, (gamma - 1.0) * (U[3] - 0.5 * rho * (u * u + v * v)));
+    double p = max(epsilon, (gamma - 1.0) * (U[3] - 0.5 * rho * (u * u + v * v)));
 
 
     return {rho,u,v,p};
@@ -658,7 +695,7 @@ array<double, 4> Flux::get_primvars(double* U){
     double rho = max(U[0],epsilon);
     double u = U[1] / rho;
     double v = U[2]/rho;
-    double p = max(0.0, (gamma - 1.0) * (U[3] - 0.5 * rho * (u * u + v * v)));
+    double p = max(epsilon, (gamma - 1.0) * (U[3] - 0.5 * rho * (u * u + v * v)));
 
 
     return {rho,u,v,p};
@@ -678,7 +715,7 @@ array<double, 4> Flux::get_primvars(Cell* cell){
     double rho = max(cell->U[0],epsilon);
     double u = cell->U[1] / rho;
     double v = cell->U[2]/rho;
-    double p = max(0.0, (gamma - 1.0) * (cell->U[3] - 0.5 * rho * (u * u + v * v)));
+    double p = max(epsilon, (gamma - 1.0) * (cell->U[3] - 0.5 * rho * (u * u + v * v)));
 
 
     return {rho,u,v,p};

@@ -1,6 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
-#import MMS_FORTRAN
+import MMS_FORTRAN
 class DataStructures(object):
     
     def __init__(self,NI,NJ,grd_name):
