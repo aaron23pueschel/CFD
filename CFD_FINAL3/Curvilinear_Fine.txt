@@ -1,0 +1,1337 @@
+nohup: ignoring input
+Shape = (65536, 4)
+setting pointersMMS boundary inflowSetting inflow Conditions...Iteration: 0
+  Density   : 10.6246  U-velocity: 8358.52  V-velocity: 6415.55  Pressure  : 7.07586e+06
+Iteration: 1
+  Density   : 10.5201  U-velocity: 8352  V-velocity: 6362.18  Pressure  : 6.87838e+06
+Iteration: 2
+  Density   : 10.194  U-velocity: 8306.77  V-velocity: 6216.9  Pressure  : 6.45917e+06
+Iteration: 3
+  Density   : 9.6922  U-velocity: 8190.07  V-velocity: 6011.05  Pressure  : 6.07617e+06
+Iteration: 4
+  Density   : 9.0962  U-velocity: 7965.44  V-velocity: 5767  Pressure  : 5.87886e+06
+Iteration: 5
+  Density   : 8.52497  U-velocity: 7653.16  V-velocity: 5506.52  Pressure  : 5.8072e+06
+Iteration: 6
+  Density   : 8.10894  U-velocity: 7336.4  V-velocity: 5265.3  Pressure  : 5.78811e+06
+Iteration: 7
+  Density   : 7.93102  U-velocity: 7061.01  V-velocity: 5069.21  Pressure  : 5.65517e+06
+Iteration: 8
+  Density   : 7.98099  U-velocity: 6971.17  V-velocity: 5015.12  Pressure  : 5.5226e+06
+Iteration: 9
+  Density   : 8.12284  U-velocity: 7036.05  V-velocity: 5078.54  Pressure  : 5.42848e+06
+Iteration: 10
+  Density   : 8.24217  U-velocity: 7171.97  V-velocity: 5188.28  Pressure  : 5.3975e+06
+Iteration: 11
+  Density   : 8.28924  U-velocity: 7295.55  V-velocity: 5271.91  Pressure  : 5.42949e+06
+Iteration: 12
+  Density   : 8.27359  U-velocity: 7376.52  V-velocity: 5291.19  Pressure  : 5.5168e+06
+Iteration: 13
+  Density   : 8.23833  U-velocity: 7416.92  V-velocity: 5273.25  Pressure  : 5.60338e+06
+Iteration: 14
+  Density   : 8.20842  U-velocity: 7418.37  V-velocity: 5253.17  Pressure  : 5.64598e+06
+Iteration: 15
+  Density   : 8.1941  U-velocity: 7392.71  V-velocity: 5221.17  Pressure  : 5.63756e+06
+Iteration: 16
+  Density   : 8.20081  U-velocity: 7381.19  V-velocity: 5207.88  Pressure  : 5.66869e+06
+Iteration: 17
+  Density   : 8.23017  U-velocity: 7365.15  V-velocity: 5234.56  Pressure  : 5.7084e+06
+Iteration: 18
+  Density   : 8.30018  U-velocity: 7365.3  V-velocity: 5305.53  Pressure  : 5.73634e+06
+Iteration: 19
+  Density   : 8.40195  U-velocity: 7393.94  V-velocity: 5384.03  Pressure  : 5.74972e+06
+Iteration: 20
+  Density   : 8.5031  U-velocity: 7454.71  V-velocity: 5459.58  Pressure  : 5.76177e+06
+Iteration: 21
+  Density   : 8.56751  U-velocity: 7533.66  V-velocity: 5515.81  Pressure  : 5.82808e+06
+Iteration: 22
+  Density   : 8.58515  U-velocity: 7594.56  V-velocity: 5546.55  Pressure  : 5.91979e+06
+Iteration: 23
+  Density   : 8.56621  U-velocity: 7619.3  V-velocity: 5549.52  Pressure  : 5.99951e+06
+Iteration: 24
+  Density   : 8.53266  U-velocity: 7605.92  V-velocity: 5533.01  Pressure  : 6.0368e+06
+Iteration: 25
+  Density   : 8.50755  U-velocity: 7567.55  V-velocity: 5511.73  Pressure  : 6.03254e+06
+Iteration: 26
+  Density   : 8.51164  U-velocity: 7526.82  V-velocity: 5499.18  Pressure  : 5.99126e+06
+Iteration: 27
+  Density   : 8.55403  U-velocity: 7512.82  V-velocity: 5510.97  Pressure  : 5.95376e+06
+Iteration: 28
+  Density   : 8.6245  U-velocity: 7539.57  V-velocity: 5550.37  Pressure  : 5.96322e+06
+Iteration: 29
+  Density   : 8.69927  U-velocity: 7594.34  V-velocity: 5608.18  Pressure  : 6.02946e+06
+Iteration: 30
+  Density   : 8.75986  U-velocity: 7652.61  V-velocity: 5668.34  Pressure  : 6.12428e+06
+Iteration: 31
+  Density   : 8.80331  U-velocity: 7706.71  V-velocity: 5717.58  Pressure  : 6.22358e+06
+Iteration: 32
+  Density   : 8.82592  U-velocity: 7752.08  V-velocity: 5743.73  Pressure  : 6.31281e+06
+Iteration: 33
+  Density   : 8.8288  U-velocity: 7776.33  V-velocity: 5746.35  Pressure  : 6.37112e+06
+Iteration: 34
+  Density   : 8.82557  U-velocity: 7778.16  V-velocity: 5735.23  Pressure  : 6.38757e+06
+Iteration: 35
+  Density   : 8.83208  U-velocity: 7770.61  V-velocity: 5731.81  Pressure  : 6.37574e+06
+Iteration: 36
+  Density   : 8.85452  U-velocity: 7766.91  V-velocity: 5744.1  Pressure  : 6.35916e+06
+Iteration: 37
+  Density   : 8.88924  U-velocity: 7781.76  V-velocity: 5774.19  Pressure  : 6.36748e+06
+Iteration: 38
+  Density   : 8.92376  U-velocity: 7808.91  V-velocity: 5808  Pressure  : 6.40374e+06
+Iteration: 39
+  Density   : 8.94992  U-velocity: 7836.44  V-velocity: 5835.54  Pressure  : 6.4561e+06
+Iteration: 40
+  Density   : 8.96735  U-velocity: 7856.28  V-velocity: 5855  Pressure  : 6.50442e+06
+Iteration: 41
+  Density   : 8.97936  U-velocity: 7869.26  V-velocity: 5868.13  Pressure  : 6.54059e+06
+Iteration: 42
+  Density   : 8.98929  U-velocity: 7877.92  V-velocity: 5879.16  Pressure  : 6.56476e+06
+Iteration: 43
+  Density   : 8.99716  U-velocity: 7884.92  V-velocity: 5887.61  Pressure  : 6.58471e+06
+Iteration: 44
+  Density   : 9.00352  U-velocity: 7887.84  V-velocity: 5893.82  Pressure  : 6.60007e+06
+Iteration: 45
+  Density   : 9.01197  U-velocity: 7891.34  V-velocity: 5898.25  Pressure  : 6.61108e+06
+Iteration: 46
+  Density   : 9.02575  U-velocity: 7899.48  V-velocity: 5904.76  Pressure  : 6.62243e+06
+Iteration: 47
+  Density   : 9.04374  U-velocity: 7914.76  V-velocity: 5916.03  Pressure  : 6.64109e+06
+Iteration: 48
+  Density   : 9.06124  U-velocity: 7934.17  V-velocity: 5929.16  Pressure  : 6.66836e+06
+Iteration: 49
+  Density   : 9.0745  U-velocity: 7951.06  V-velocity: 5941.29  Pressure  : 6.69676e+06
+Iteration: 50
+  Density   : 9.08447  U-velocity: 7963.05  V-velocity: 5952.89  Pressure  : 6.72132e+06
+Iteration: 51
+  Density   : 9.09335  U-velocity: 7973.41  V-velocity: 5965.37  Pressure  : 6.74565e+06
+Iteration: 52
+  Density   : 9.10011  U-velocity: 7982.38  V-velocity: 5977.29  Pressure  : 6.76912e+06
+Iteration: 53
+  Density   : 9.10223  U-velocity: 7988.2  V-velocity: 5983.45  Pressure  : 6.78767e+06
+Iteration: 54
+  Density   : 9.10161  U-velocity: 7990.26  V-velocity: 5983.95  Pressure  : 6.79691e+06
+Iteration: 55
+  Density   : 9.10207  U-velocity: 7990.29  V-velocity: 5983.22  Pressure  : 6.79912e+06
+Iteration: 56
+  Density   : 9.10684  U-velocity: 7994.04  V-velocity: 5987.19  Pressure  : 6.80373e+06
+Iteration: 57
+  Density   : 9.1138  U-velocity: 8002.7  V-velocity: 5995.68  Pressure  : 6.81722e+06
+Iteration: 58
+  Density   : 9.11784  U-velocity: 8011.09  V-velocity: 6002.13  Pressure  : 6.83495e+06
+Iteration: 59
+  Density   : 9.11685  U-velocity: 8014.73  V-velocity: 6004.14  Pressure  : 6.8484e+06
+Iteration: 60
+  Density   : 9.11244  U-velocity: 8012.82  V-velocity: 6002.55  Pressure  : 6.85406e+06
+Iteration: 61
+  Density   : 9.1091  U-velocity: 8009.81  V-velocity: 6001.86  Pressure  : 6.85581e+06
+Iteration: 62
+  Density   : 9.10878  U-velocity: 8010.84  V-velocity: 6004.24  Pressure  : 6.86107e+06
+Iteration: 63
+  Density   : 9.10916  U-velocity: 8015.49  V-velocity: 6007.92  Pressure  : 6.87194e+06
+Iteration: 64
+  Density   : 9.10736  U-velocity: 8019.49  V-velocity: 6009.38  Pressure  : 6.88376e+06
+Iteration: 65
+  Density   : 9.10289  U-velocity: 8021.12  V-velocity: 6008.53  Pressure  : 6.89323e+06
+Iteration: 66
+  Density   : 9.09626  U-velocity: 8019.81  V-velocity: 6005.79  Pressure  : 6.89884e+06
+Iteration: 67
+  Density   : 9.08858  U-velocity: 8016.66  V-velocity: 6002.12  Pressure  : 6.90139e+06
+Iteration: 68
+  Density   : 9.08054  U-velocity: 8012.8  V-velocity: 5998.56  Pressure  : 6.90225e+06
+Iteration: 69
+  Density   : 9.07226  U-velocity: 8008.24  V-velocity: 5994.63  Pressure  : 6.90094e+06
+Iteration: 70
+  Density   : 9.0649  U-velocity: 8004.34  V-velocity: 5991.81  Pressure  : 6.89939e+06
+Iteration: 71
+  Density   : 9.0589  U-velocity: 8002.46  V-velocity: 5990.21  Pressure  : 6.89983e+06
+Iteration: 72
+  Density   : 9.05356  U-velocity: 8002.18  V-velocity: 5989.57  Pressure  : 6.90274e+06
+Iteration: 73
+  Density   : 9.04743  U-velocity: 8003.18  V-velocity: 5988.74  Pressure  : 6.90887e+06
+Iteration: 74
+  Density   : 9.03862  U-velocity: 8001.85  V-velocity: 5985.49  Pressure  : 6.91345e+06
+Iteration: 75
+  Density   : 9.0277  U-velocity: 7997.13  V-velocity: 5979.98  Pressure  : 6.91428e+06
+Iteration: 76
+  Density   : 9.01611  U-velocity: 7990.1  V-velocity: 5973.7  Pressure  : 6.91192e+06
+Iteration: 77
+  Density   : 9.00476  U-velocity: 7982.47  V-velocity: 5967.36  Pressure  : 6.90761e+06
+Iteration: 78
+  Density   : 8.994  U-velocity: 7975.53  V-velocity: 5961.5  Pressure  : 6.9022e+06
+Iteration: 79
+  Density   : 8.98361  U-velocity: 7970.12  V-velocity: 5955.95  Pressure  : 6.89788e+06
+Iteration: 80
+  Density   : 8.97335  U-velocity: 7965.77  V-velocity: 5950.53  Pressure  : 6.89505e+06
+Iteration: 81
+  Density   : 8.96281  U-velocity: 7961.99  V-velocity: 5945.87  Pressure  : 6.89438e+06
+Iteration: 82
+  Density   : 8.95123  U-velocity: 7957.82  V-velocity: 5941.15  Pressure  : 6.89526e+06
+Iteration: 83
+  Density   : 8.93799  U-velocity: 7951.71  V-velocity: 5935.61  Pressure  : 6.89533e+06
+Iteration: 84
+  Density   : 8.92312  U-velocity: 7943.22  V-velocity: 5928.28  Pressure  : 6.89267e+06
+Iteration: 85
+  Density   : 8.90718  U-velocity: 7932.57  V-velocity: 5919.53  Pressure  : 6.88618e+06
+Iteration: 86
+  Density   : 8.89147  U-velocity: 7921.44  V-velocity: 5910.44  Pressure  : 6.87743e+06
+Iteration: 87
+  Density   : 8.87675  U-velocity: 7911.41  V-velocity: 5901.8  Pressure  : 6.86872e+06
+Iteration: 88
+  Density   : 8.86297  U-velocity: 7903.31  V-velocity: 5893.96  Pressure  : 6.86198e+06
+Iteration: 89
+  Density   : 8.84952  U-velocity: 7895.93  V-velocity: 5886.73  Pressure  : 6.85628e+06
+Iteration: 90
+  Density   : 8.83608  U-velocity: 7888.8  V-velocity: 5879.71  Pressure  : 6.85161e+06
+Iteration: 91
+  Density   : 8.82222  U-velocity: 7881.24  V-velocity: 5872.26  Pressure  : 6.84678e+06
+Iteration: 92
+  Density   : 8.80769  U-velocity: 7872.99  V-velocity: 5864.66  Pressure  : 6.84194e+06
+Iteration: 93
+  Density   : 8.79239  U-velocity: 7863.66  V-velocity: 5856.45  Pressure  : 6.83602e+06
+Iteration: 94
+  Density   : 8.77654  U-velocity: 7853.47  V-velocity: 5847.71  Pressure  : 6.82888e+06
+Iteration: 95
+  Density   : 8.76065  U-velocity: 7843.04  V-velocity: 5838.92  Pressure  : 6.82105e+06
+Iteration: 96
+  Density   : 8.74504  U-velocity: 7832.73  V-velocity: 5830.37  Pressure  : 6.81285e+06
+Iteration: 97
+  Density   : 8.72983  U-velocity: 7822.96  V-velocity: 5821.92  Pressure  : 6.80489e+06
+Iteration: 98
+  Density   : 8.7147  U-velocity: 7813.55  V-velocity: 5813.4  Pressure  : 6.79685e+06
+Iteration: 99
+  Density   : 8.69925  U-velocity: 7804.03  V-velocity: 5805  Pressure  : 6.78929e+06
+Iteration: 100
+  Density   : 8.68329  U-velocity: 7794.04  V-velocity: 5796.61  Pressure  : 6.78189e+06
+Iteration: 101
+  Density   : 8.66684  U-velocity: 7783.35  V-velocity: 5788.07  Pressure  : 6.77415e+06
+Iteration: 102
+  Density   : 8.65017  U-velocity: 7772.01  V-velocity: 5779.45  Pressure  : 6.7659e+06
+Iteration: 103
+  Density   : 8.63342  U-velocity: 7760.45  V-velocity: 5770.89  Pressure  : 6.75752e+06
+Iteration: 104
+  Density   : 8.61661  U-velocity: 7748.75  V-velocity: 5761.61  Pressure  : 6.74858e+06
+Iteration: 105
+  Density   : 8.59995  U-velocity: 7737.12  V-velocity: 5752.08  Pressure  : 6.73921e+06
+Iteration: 106
+  Density   : 8.58351  U-velocity: 7725.84  V-velocity: 5742.85  Pressure  : 6.73037e+06
+Iteration: 107
+  Density   : 8.56712  U-velocity: 7714.57  V-velocity: 5733.7  Pressure  : 6.72154e+06
+Iteration: 108
+  Density   : 8.5506  U-velocity: 7702.93  V-velocity: 5724.56  Pressure  : 6.71233e+06
+Iteration: 109
+  Density   : 8.53382  U-velocity: 7690.87  V-velocity: 5715.47  Pressure  : 6.70287e+06
+Iteration: 110
+  Density   : 8.51685  U-velocity: 7678.55  V-velocity: 5706.18  Pressure  : 6.69325e+06
+Iteration: 111
+  Density   : 8.49988  U-velocity: 7666.32  V-velocity: 5696.6  Pressure  : 6.68361e+06
+Iteration: 112
+  Density   : 8.48296  U-velocity: 7654.3  V-velocity: 5687.24  Pressure  : 6.67435e+06
+Iteration: 113
+  Density   : 8.46581  U-velocity: 7642.12  V-velocity: 5677.83  Pressure  : 6.66524e+06
+Iteration: 114
+  Density   : 8.44819  U-velocity: 7629.28  V-velocity: 5668.03  Pressure  : 6.65534e+06
+Iteration: 115
+  Density   : 8.43006  U-velocity: 7615.67  V-velocity: 5657.76  Pressure  : 6.6444e+06
+Iteration: 116
+  Density   : 8.41175  U-velocity: 7601.66  V-velocity: 5647.39  Pressure  : 6.63281e+06
+Iteration: 117
+  Density   : 8.39362  U-velocity: 7587.74  V-velocity: 5637.09  Pressure  : 6.62112e+06
+Iteration: 118
+  Density   : 8.37585  U-velocity: 7574.31  V-velocity: 5626.66  Pressure  : 6.6095e+06
+Iteration: 119
+  Density   : 8.35844  U-velocity: 7561.25  V-velocity: 5616.49  Pressure  : 6.5983e+06
+Iteration: 120
+  Density   : 8.34125  U-velocity: 7548.37  V-velocity: 5606.62  Pressure  : 6.58758e+06
+Iteration: 121
+  Density   : 8.32408  U-velocity: 7535.49  V-velocity: 5596.94  Pressure  : 6.57727e+06
+Iteration: 122
+  Density   : 8.30689  U-velocity: 7522.43  V-velocity: 5587.36  Pressure  : 6.56709e+06
+Iteration: 123
+  Density   : 8.28969  U-velocity: 7509.16  V-velocity: 5577.85  Pressure  : 6.55684e+06
+Iteration: 124
+  Density   : 8.27246  U-velocity: 7495.79  V-velocity: 5568.25  Pressure  : 6.54658e+06
+Iteration: 125
+  Density   : 8.25521  U-velocity: 7482.21  V-velocity: 5558.19  Pressure  : 6.5354e+06
+Iteration: 126
+  Density   : 8.23803  U-velocity: 7468.72  V-velocity: 5548.33  Pressure  : 6.5244e+06
+Iteration: 127
+  Density   : 8.22087  U-velocity: 7455.21  V-velocity: 5538.58  Pressure  : 6.51345e+06
+Iteration: 128
+  Density   : 8.20377  U-velocity: 7441.63  V-velocity: 5529.02  Pressure  : 6.50247e+06
+Iteration: 129
+  Density   : 8.18672  U-velocity: 7428.03  V-velocity: 5519.62  Pressure  : 6.49165e+06
+Iteration: 130
+  Density   : 8.16965  U-velocity: 7414.48  V-velocity: 5510.39  Pressure  : 6.48109e+06
+Iteration: 131
+  Density   : 8.15258  U-velocity: 7400.95  V-velocity: 5501.02  Pressure  : 6.47077e+06
+Iteration: 132
+  Density   : 8.13552  U-velocity: 7387.31  V-velocity: 5491.43  Pressure  : 6.46002e+06
+Iteration: 133
+  Density   : 8.11836  U-velocity: 7373.47  V-velocity: 5482.01  Pressure  : 6.44929e+06
+Iteration: 134
+  Density   : 8.10107  U-velocity: 7359.29  V-velocity: 5472.62  Pressure  : 6.43826e+06
+Iteration: 135
+  Density   : 8.08361  U-velocity: 7344.78  V-velocity: 5463.14  Pressure  : 6.42671e+06
+Iteration: 136
+  Density   : 8.06607  U-velocity: 7330.12  V-velocity: 5453.58  Pressure  : 6.41493e+06
+Iteration: 137
+  Density   : 8.04859  U-velocity: 7315.52  V-velocity: 5444.09  Pressure  : 6.40324e+06
+Iteration: 138
+  Density   : 8.03131  U-velocity: 7301.18  V-velocity: 5434.48  Pressure  : 6.39191e+06
+Iteration: 139
+  Density   : 8.01417  U-velocity: 7286.99  V-velocity: 5424.74  Pressure  : 6.38044e+06
+Iteration: 140
+  Density   : 7.99704  U-velocity: 7272.8  V-velocity: 5415.16  Pressure  : 6.3692e+06
+Iteration: 141
+  Density   : 7.97982  U-velocity: 7258.45  V-velocity: 5405.65  Pressure  : 6.35794e+06
+Iteration: 142
+  Density   : 7.96251  U-velocity: 7243.97  V-velocity: 5396.18  Pressure  : 6.3467e+06
+Iteration: 143
+  Density   : 7.94518  U-velocity: 7229.4  V-velocity: 5386.74  Pressure  : 6.33551e+06
+Iteration: 144
+  Density   : 7.92791  U-velocity: 7214.86  V-velocity: 5377.4  Pressure  : 6.32448e+06
+Iteration: 145
+  Density   : 7.91074  U-velocity: 7200.38  V-velocity: 5367.85  Pressure  : 6.31338e+06
+Iteration: 146
+  Density   : 7.89364  U-velocity: 7185.83  V-velocity: 5358.07  Pressure  : 6.30166e+06
+Iteration: 147
+  Density   : 7.87658  U-velocity: 7171.29  V-velocity: 5348.42  Pressure  : 6.29001e+06
+Iteration: 148
+  Density   : 7.85959  U-velocity: 7156.82  V-velocity: 5338.9  Pressure  : 6.27847e+06
+Iteration: 149
+  Density   : 7.84269  U-velocity: 7142.45  V-velocity: 5329.49  Pressure  : 6.26714e+06
+Iteration: 150
+  Density   : 7.82589  U-velocity: 7128.24  V-velocity: 5320.18  Pressure  : 6.25608e+06
+Iteration: 151
+  Density   : 7.80917  U-velocity: 7114.06  V-velocity: 5310.94  Pressure  : 6.24512e+06
+Iteration: 152
+  Density   : 7.79252  U-velocity: 7099.86  V-velocity: 5301.55  Pressure  : 6.23401e+06
+Iteration: 153
+  Density   : 7.77593  U-velocity: 7085.58  V-velocity: 5292  Pressure  : 6.2224e+06
+Iteration: 154
+  Density   : 7.75938  U-velocity: 7071.35  V-velocity: 5282.71  Pressure  : 6.21104e+06
+Iteration: 155
+  Density   : 7.74291  U-velocity: 7057.12  V-velocity: 5273.58  Pressure  : 6.1998e+06
+Iteration: 156
+  Density   : 7.72657  U-velocity: 7042.94  V-velocity: 5264.64  Pressure  : 6.18865e+06
+Iteration: 157
+  Density   : 7.71039  U-velocity: 7028.86  V-velocity: 5255.91  Pressure  : 6.17768e+06
+Iteration: 158
+  Density   : 7.69441  U-velocity: 7014.97  V-velocity: 5247.38  Pressure  : 6.167e+06
+Iteration: 159
+  Density   : 7.67855  U-velocity: 7001.22  V-velocity: 5238.83  Pressure  : 6.15656e+06
+Iteration: 160
+  Density   : 7.66274  U-velocity: 6987.46  V-velocity: 5230.19  Pressure  : 6.14589e+06
+Iteration: 161
+  Density   : 7.64691  U-velocity: 6973.72  V-velocity: 5221.69  Pressure  : 6.13542e+06
+Iteration: 162
+  Density   : 7.63099  U-velocity: 6959.86  V-velocity: 5213.19  Pressure  : 6.12488e+06
+Iteration: 163
+  Density   : 7.61496  U-velocity: 6945.85  V-velocity: 5204.58  Pressure  : 6.11413e+06
+Iteration: 164
+  Density   : 7.59885  U-velocity: 6931.73  V-velocity: 5195.82  Pressure  : 6.10315e+06
+Iteration: 165
+  Density   : 7.5828  U-velocity: 6917.62  V-velocity: 5187.1  Pressure  : 6.09214e+06
+Iteration: 166
+  Density   : 7.56684  U-velocity: 6903.61  V-velocity: 5178.29  Pressure  : 6.08117e+06
+Iteration: 167
+  Density   : 7.55102  U-velocity: 6889.68  V-velocity: 5169.38  Pressure  : 6.06997e+06
+Iteration: 168
+  Density   : 7.53536  U-velocity: 6875.95  V-velocity: 5160.8  Pressure  : 6.05919e+06
+Iteration: 169
+  Density   : 7.51984  U-velocity: 6862.37  V-velocity: 5152.41  Pressure  : 6.04876e+06
+Iteration: 170
+  Density   : 7.50445  U-velocity: 6848.9  V-velocity: 5144.19  Pressure  : 6.03857e+06
+Iteration: 171
+  Density   : 7.48916  U-velocity: 6835.54  V-velocity: 5136.07  Pressure  : 6.02855e+06
+Iteration: 172
+  Density   : 7.47394  U-velocity: 6822.19  V-velocity: 5127.95  Pressure  : 6.01855e+06
+Iteration: 173
+  Density   : 7.45872  U-velocity: 6808.81  V-velocity: 5119.63  Pressure  : 6.00839e+06
+Iteration: 174
+  Density   : 7.44347  U-velocity: 6795.33  V-velocity: 5111.02  Pressure  : 5.99767e+06
+Iteration: 175
+  Density   : 7.42822  U-velocity: 6781.84  V-velocity: 5102.42  Pressure  : 5.98694e+06
+Iteration: 176
+  Density   : 7.41303  U-velocity: 6768.46  V-velocity: 5093.9  Pressure  : 5.97633e+06
+Iteration: 177
+  Density   : 7.39796  U-velocity: 6755.19  V-velocity: 5085.37  Pressure  : 5.96571e+06
+Iteration: 178
+  Density   : 7.3831  U-velocity: 6742.12  V-velocity: 5076.98  Pressure  : 5.95525e+06
+Iteration: 179
+  Density   : 7.36848  U-velocity: 6729.25  V-velocity: 5068.88  Pressure  : 5.94507e+06
+Iteration: 180
+  Density   : 7.35412  U-velocity: 6716.57  V-velocity: 5061.01  Pressure  : 5.93521e+06
+Iteration: 181
+  Density   : 7.33997  U-velocity: 6703.98  V-velocity: 5053.25  Pressure  : 5.9253e+06
+Iteration: 182
+  Density   : 7.32604  U-velocity: 6691.58  V-velocity: 5045.89  Pressure  : 5.91584e+06
+Iteration: 183
+  Density   : 7.31226  U-velocity: 6679.28  V-velocity: 5038.92  Pressure  : 5.90677e+06
+Iteration: 184
+  Density   : 7.29857  U-velocity: 6667.02  V-velocity: 5032.11  Pressure  : 5.8978e+06
+Iteration: 185
+  Density   : 7.28491  U-velocity: 6654.75  V-velocity: 5025.29  Pressure  : 5.88882e+06
+Iteration: 186
+  Density   : 7.27125  U-velocity: 6642.48  V-velocity: 5018.41  Pressure  : 5.87979e+06
+Iteration: 187
+  Density   : 7.25759  U-velocity: 6630.25  V-velocity: 5011.38  Pressure  : 5.87071e+06
+Iteration: 188
+  Density   : 7.24385  U-velocity: 6617.98  V-velocity: 5003.98  Pressure  : 5.86118e+06
+Iteration: 189
+  Density   : 7.23008  U-velocity: 6605.73  V-velocity: 4996.48  Pressure  : 5.85163e+06
+Iteration: 190
+  Density   : 7.21632  U-velocity: 6593.56  V-velocity: 4989.06  Pressure  : 5.84224e+06
+Iteration: 191
+  Density   : 7.20263  U-velocity: 6581.48  V-velocity: 4981.66  Pressure  : 5.83286e+06
+Iteration: 192
+  Density   : 7.18908  U-velocity: 6569.52  V-velocity: 4974.42  Pressure  : 5.82361e+06
+Iteration: 193
+  Density   : 7.17574  U-velocity: 6557.72  V-velocity: 4967.4  Pressure  : 5.81459e+06
+Iteration: 194
+  Density   : 7.16269  U-velocity: 6546.14  V-velocity: 4960.72  Pressure  : 5.80596e+06
+Iteration: 195
+  Density   : 7.1498  U-velocity: 6534.63  V-velocity: 4954.08  Pressure  : 5.79731e+06
+Iteration: 196
+  Density   : 7.13709  U-velocity: 6523.26  V-velocity: 4947.71  Pressure  : 5.78893e+06
+Iteration: 197
+  Density   : 7.12449  U-velocity: 6512  V-velocity: 4941.59  Pressure  : 5.78086e+06
+Iteration: 198
+  Density   : 7.11193  U-velocity: 6500.79  V-velocity: 4935.45  Pressure  : 5.77283e+06
+Iteration: 199
+  Density   : 7.09939  U-velocity: 6489.65  V-velocity: 4929.22  Pressure  : 5.76477e+06
+Iteration: 200
+  Density   : 7.08685  U-velocity: 6478.54  V-velocity: 4922.83  Pressure  : 5.75662e+06
+Iteration: 201
+  Density   : 7.07432  U-velocity: 6467.5  V-velocity: 4916.28  Pressure  : 5.74836e+06
+Iteration: 202
+  Density   : 7.06175  U-velocity: 6456.43  V-velocity: 4909.33  Pressure  : 5.73964e+06
+Iteration: 203
+  Density   : 7.04923  U-velocity: 6445.39  V-velocity: 4902.25  Pressure  : 5.73069e+06
+Iteration: 204
+  Density   : 7.03688  U-velocity: 6434.51  V-velocity: 4895.44  Pressure  : 5.722e+06
+Iteration: 205
+  Density   : 7.0248  U-velocity: 6423.84  V-velocity: 4888.89  Pressure  : 5.71357e+06
+Iteration: 206
+  Density   : 7.01307  U-velocity: 6413.43  V-velocity: 4882.73  Pressure  : 5.70555e+06
+Iteration: 207
+  Density   : 7.00172  U-velocity: 6403.31  V-velocity: 4877.02  Pressure  : 5.69807e+06
+Iteration: 208
+  Density   : 6.99073  U-velocity: 6393.47  V-velocity: 4871.82  Pressure  : 5.69115e+06
+Iteration: 209
+  Density   : 6.97996  U-velocity: 6383.78  V-velocity: 4866.8  Pressure  : 5.68446e+06
+Iteration: 210
+  Density   : 6.96926  U-velocity: 6374.14  V-velocity: 4861.81  Pressure  : 5.67775e+06
+Iteration: 211
+  Density   : 6.95851  U-velocity: 6364.5  V-velocity: 4856.99  Pressure  : 5.67127e+06
+Iteration: 212
+  Density   : 6.94766  U-velocity: 6354.81  V-velocity: 4851.96  Pressure  : 5.66456e+06
+Iteration: 213
+  Density   : 6.93668  U-velocity: 6345.02  V-velocity: 4846.65  Pressure  : 5.65752e+06
+Iteration: 214
+  Density   : 6.92562  U-velocity: 6335.21  V-velocity: 4841.1  Pressure  : 5.6502e+06
+Iteration: 215
+  Density   : 6.91457  U-velocity: 6325.45  V-velocity: 4835.41  Pressure  : 5.64273e+06
+Iteration: 216
+  Density   : 6.90359  U-velocity: 6315.78  V-velocity: 4829.61  Pressure  : 5.63514e+06
+Iteration: 217
+  Density   : 6.89271  U-velocity: 6306.22  V-velocity: 4823.77  Pressure  : 5.62747e+06
+Iteration: 218
+  Density   : 6.88205  U-velocity: 6296.88  V-velocity: 4818.35  Pressure  : 5.6203e+06
+Iteration: 219
+  Density   : 6.87168  U-velocity: 6287.79  V-velocity: 4813.34  Pressure  : 5.61364e+06
+Iteration: 220
+  Density   : 6.86161  U-velocity: 6278.96  V-velocity: 4808.75  Pressure  : 5.60749e+06
+Iteration: 221
+  Density   : 6.85179  U-velocity: 6270.33  V-velocity: 4804.51  Pressure  : 5.60178e+06
+Iteration: 222
+  Density   : 6.84215  U-velocity: 6261.81  V-velocity: 4800.51  Pressure  : 5.59635e+06
+Iteration: 223
+  Density   : 6.83255  U-velocity: 6253.3  V-velocity: 4796.49  Pressure  : 5.59092e+06
+Iteration: 224
+  Density   : 6.82279  U-velocity: 6244.64  V-velocity: 4792.13  Pressure  : 5.5851e+06
+Iteration: 225
+  Density   : 6.81293  U-velocity: 6235.94  V-velocity: 4787.58  Pressure  : 5.57912e+06
+Iteration: 226
+  Density   : 6.80297  U-velocity: 6227.2  V-velocity: 4782.81  Pressure  : 5.57293e+06
+Iteration: 227
+  Density   : 6.79298  U-velocity: 6218.5  V-velocity: 4777.79  Pressure  : 5.56651e+06
+Iteration: 228
+  Density   : 6.78305  U-velocity: 6209.9  V-velocity: 4772.6  Pressure  : 5.5599e+06
+Iteration: 229
+  Density   : 6.77332  U-velocity: 6201.47  V-velocity: 4767.49  Pressure  : 5.55331e+06
+Iteration: 230
+  Density   : 6.76385  U-velocity: 6193.26  V-velocity: 4762.62  Pressure  : 5.54691e+06
+Iteration: 231
+  Density   : 6.75458  U-velocity: 6185.18  V-velocity: 4757.85  Pressure  : 5.54053e+06
+Iteration: 232
+  Density   : 6.74566  U-velocity: 6177.35  V-velocity: 4753.57  Pressure  : 5.53464e+06
+Iteration: 233
+  Density   : 6.73707  U-velocity: 6169.79  V-velocity: 4749.85  Pressure  : 5.52937e+06
+Iteration: 234
+  Density   : 6.72877  U-velocity: 6162.46  V-velocity: 4746.53  Pressure  : 5.52457e+06
+Iteration: 235
+  Density   : 6.72063  U-velocity: 6155.25  V-velocity: 4743.45  Pressure  : 5.52008e+06
+Iteration: 236
+  Density   : 6.71255  U-velocity: 6148.1  V-velocity: 4740.46  Pressure  : 5.51572e+06
+Iteration: 237
+  Density   : 6.70448  U-velocity: 6140.99  V-velocity: 4737.43  Pressure  : 5.51141e+06
+Iteration: 238
+  Density   : 6.69616  U-velocity: 6133.69  V-velocity: 4733.94  Pressure  : 5.5066e+06
+Iteration: 239
+  Density   : 6.6877  U-velocity: 6126.34  V-velocity: 4730.14  Pressure  : 5.50154e+06
+Iteration: 240
+  Density   : 6.67917  U-velocity: 6119.02  V-velocity: 4726.23  Pressure  : 5.49642e+06
+Iteration: 241
+  Density   : 6.67065  U-velocity: 6111.74  V-velocity: 4722.2  Pressure  : 5.49116e+06
+Iteration: 242
+  Density   : 6.6622  U-velocity: 6104.54  V-velocity: 4718.18  Pressure  : 5.48588e+06
+Iteration: 243
+  Density   : 6.65395  U-velocity: 6097.49  V-velocity: 4714.32  Pressure  : 5.48073e+06
+Iteration: 244
+  Density   : 6.64601  U-velocity: 6090.72  V-velocity: 4710.81  Pressure  : 5.47595e+06
+Iteration: 245
+  Density   : 6.63817  U-velocity: 6084  V-velocity: 4707.42  Pressure  : 5.47126e+06
+Iteration: 246
+  Density   : 6.63054  U-velocity: 6077.43  V-velocity: 4704.2  Pressure  : 5.46677e+06
+Iteration: 247
+  Density   : 6.62308  U-velocity: 6071.04  V-velocity: 4701.33  Pressure  : 5.46267e+06
+Iteration: 248
+  Density   : 6.6157  U-velocity: 6064.73  V-velocity: 4698.56  Pressure  : 5.45866e+06
+Iteration: 249
+  Density   : 6.60832  U-velocity: 6058.43  V-velocity: 4695.7  Pressure  : 5.4546e+06
+Iteration: 250
+  Density   : 6.60095  U-velocity: 6052.17  V-velocity: 4692.78  Pressure  : 5.4505e+06
+Iteration: 251
+  Density   : 6.59364  U-velocity: 6046.04  V-velocity: 4689.85  Pressure  : 5.44642e+06
+Iteration: 252
+  Density   : 6.58622  U-velocity: 6039.83  V-velocity: 4686.68  Pressure  : 5.44215e+06
+Iteration: 253
+  Density   : 6.57879  U-velocity: 6033.65  V-velocity: 4683.32  Pressure  : 5.43771e+06
+Iteration: 254
+  Density   : 6.57147  U-velocity: 6027.57  V-velocity: 4680.1  Pressure  : 5.43344e+06
+Iteration: 255
+  Density   : 6.56431  U-velocity: 6021.62  V-velocity: 4677.11  Pressure  : 5.42941e+06
+Iteration: 256
+  Density   : 6.55731  U-velocity: 6015.81  V-velocity: 4674.29  Pressure  : 5.42558e+06
+Iteration: 257
+  Density   : 6.55052  U-velocity: 6010.12  V-velocity: 4671.7  Pressure  : 5.42199e+06
+Iteration: 258
+  Density   : 6.54397  U-velocity: 6004.63  V-velocity: 4669.36  Pressure  : 5.4187e+06
+Iteration: 259
+  Density   : 6.53743  U-velocity: 5999.12  V-velocity: 4666.97  Pressure  : 5.41535e+06
+Iteration: 260
+  Density   : 6.53084  U-velocity: 5993.55  V-velocity: 4664.41  Pressure  : 5.41173e+06
+Iteration: 261
+  Density   : 6.52423  U-velocity: 5987.97  V-velocity: 4661.76  Pressure  : 5.40796e+06
+Iteration: 262
+  Density   : 6.51762  U-velocity: 5982.4  V-velocity: 4659.06  Pressure  : 5.40411e+06
+Iteration: 263
+  Density   : 6.511  U-velocity: 5976.87  V-velocity: 4656.26  Pressure  : 5.40018e+06
+Iteration: 264
+  Density   : 6.50449  U-velocity: 5971.47  V-velocity: 4653.49  Pressure  : 5.39628e+06
+Iteration: 265
+  Density   : 6.49818  U-velocity: 5966.28  V-velocity: 4650.94  Pressure  : 5.39261e+06
+Iteration: 266
+  Density   : 6.49195  U-velocity: 5961.15  V-velocity: 4648.49  Pressure  : 5.38907e+06
+Iteration: 267
+  Density   : 6.48578  U-velocity: 5956.04  V-velocity: 4646.15  Pressure  : 5.38561e+06
+Iteration: 268
+  Density   : 6.47977  U-velocity: 5951.07  V-velocity: 4644.06  Pressure  : 5.38244e+06
+Iteration: 269
+  Density   : 6.47387  U-velocity: 5946.22  V-velocity: 4642.29  Pressure  : 5.37968e+06
+Iteration: 270
+  Density   : 6.46801  U-velocity: 5941.4  V-velocity: 4640.63  Pressure  : 5.37715e+06
+Iteration: 271
+  Density   : 6.46216  U-velocity: 5936.61  V-velocity: 4638.97  Pressure  : 5.37469e+06
+Iteration: 272
+  Density   : 6.45628  U-velocity: 5931.83  V-velocity: 4637.18  Pressure  : 5.37209e+06
+Iteration: 273
+  Density   : 6.45024  U-velocity: 5926.94  V-velocity: 4635.07  Pressure  : 5.36911e+06
+Iteration: 274
+  Density   : 6.44393  U-velocity: 5921.81  V-velocity: 4632.49  Pressure  : 5.36555e+06
+Iteration: 275
+  Density   : 6.43751  U-velocity: 5916.58  V-velocity: 4629.62  Pressure  : 5.36161e+06
+Iteration: 276
+  Density   : 6.43113  U-velocity: 5911.43  V-velocity: 4626.74  Pressure  : 5.35767e+06
+Iteration: 277
+  Density   : 6.4249  U-velocity: 5906.43  V-velocity: 4624.04  Pressure  : 5.35398e+06
+Iteration: 278
+  Density   : 6.41893  U-velocity: 5901.63  V-velocity: 4621.62  Pressure  : 5.35062e+06
+Iteration: 279
+  Density   : 6.4133  U-velocity: 5897.11  V-velocity: 4619.63  Pressure  : 5.34766e+06
+Iteration: 280
+  Density   : 6.40792  U-velocity: 5892.78  V-velocity: 4618.01  Pressure  : 5.34512e+06
+Iteration: 281
+  Density   : 6.40263  U-velocity: 5888.45  V-velocity: 4616.53  Pressure  : 5.34272e+06
+Iteration: 282
+  Density   : 6.39746  U-velocity: 5884.21  V-velocity: 4615.21  Pressure  : 5.34045e+06
+Iteration: 283
+  Density   : 6.39232  U-velocity: 5880.04  V-velocity: 4613.95  Pressure  : 5.33836e+06
+Iteration: 284
+  Density   : 6.38714  U-velocity: 5875.85  V-velocity: 4612.67  Pressure  : 5.33634e+06
+Iteration: 285
+  Density   : 6.38187  U-velocity: 5871.61  V-velocity: 4611.19  Pressure  : 5.33416e+06
+Iteration: 286
+  Density   : 6.37647  U-velocity: 5867.31  V-velocity: 4609.43  Pressure  : 5.33168e+06
+Iteration: 287
+  Density   : 6.37092  U-velocity: 5862.89  V-velocity: 4607.4  Pressure  : 5.32884e+06
+Iteration: 288
+  Density   : 6.36516  U-velocity: 5858.27  V-velocity: 4605  Pressure  : 5.32557e+06
+Iteration: 289
+  Density   : 6.35944  U-velocity: 5853.72  V-velocity: 4602.54  Pressure  : 5.32219e+06
+Iteration: 290
+  Density   : 6.35387  U-velocity: 5849.31  V-velocity: 4600.24  Pressure  : 5.31893e+06
+Iteration: 291
+  Density   : 6.34855  U-velocity: 5845.12  V-velocity: 4598.23  Pressure  : 5.31602e+06
+Iteration: 292
+  Density   : 6.34351  U-velocity: 5841.14  V-velocity: 4596.59  Pressure  : 5.31346e+06
+Iteration: 293
+  Density   : 6.33873  U-velocity: 5837.34  V-velocity: 4595.35  Pressure  : 5.31131e+06
+Iteration: 294
+  Density   : 6.33415  U-velocity: 5833.71  V-velocity: 4594.44  Pressure  : 5.30952e+06
+Iteration: 295
+  Density   : 6.32948  U-velocity: 5829.96  V-velocity: 4593.46  Pressure  : 5.30767e+06
+Iteration: 296
+  Density   : 6.32481  U-velocity: 5826.23  V-velocity: 4592.48  Pressure  : 5.30589e+06
+Iteration: 297
+  Density   : 6.3201  U-velocity: 5822.54  V-velocity: 4591.39  Pressure  : 5.30405e+06
+Iteration: 298
+  Density   : 6.31526  U-velocity: 5818.79  V-velocity: 4590.1  Pressure  : 5.30203e+06
+Iteration: 299
+  Density   : 6.3103  U-velocity: 5814.95  V-velocity: 4588.56  Pressure  : 5.29982e+06
+Iteration: 300
+  Density   : 6.30524  U-velocity: 5811.08  V-velocity: 4586.81  Pressure  : 5.29738e+06
+Iteration: 301
+  Density   : 6.30018  U-velocity: 5807.22  V-velocity: 4585.04  Pressure  : 5.29489e+06
+Iteration: 302
+  Density   : 6.29499  U-velocity: 5803.23  V-velocity: 4583.07  Pressure  : 5.29216e+06
+Iteration: 303
+  Density   : 6.28997  U-velocity: 5799.37  V-velocity: 4581.22  Pressure  : 5.28955e+06
+Iteration: 304
+  Density   : 6.28518  U-velocity: 5795.71  V-velocity: 4579.66  Pressure  : 5.28723e+06
+Iteration: 305
+  Density   : 6.28062  U-velocity: 5792.19  V-velocity: 4578.39  Pressure  : 5.28521e+06
+Iteration: 306
+  Density   : 6.27627  U-velocity: 5788.84  V-velocity: 4577.41  Pressure  : 5.28347e+06
+Iteration: 307
+  Density   : 6.27205  U-velocity: 5785.57  V-velocity: 4576.63  Pressure  : 5.28195e+06
+Iteration: 308
+  Density   : 6.26791  U-velocity: 5782.39  V-velocity: 4575.98  Pressure  : 5.28063e+06
+Iteration: 309
+  Density   : 6.26363  U-velocity: 5779.08  V-velocity: 4575.09  Pressure  : 5.27907e+06
+Iteration: 310
+  Density   : 6.25928  U-velocity: 5775.73  V-velocity: 4574.06  Pressure  : 5.27737e+06
+Iteration: 311
+  Density   : 6.25492  U-velocity: 5772.4  V-velocity: 4572.93  Pressure  : 5.27556e+06
+Iteration: 312
+  Density   : 6.25052  U-velocity: 5769.09  V-velocity: 4571.7  Pressure  : 5.27365e+06
+Iteration: 313
+  Density   : 6.24612  U-velocity: 5765.79  V-velocity: 4570.37  Pressure  : 5.27163e+06
+Iteration: 314
+  Density   : 6.24177  U-velocity: 5762.54  V-velocity: 4569.1  Pressure  : 5.26963e+06
+Iteration: 315
+  Density   : 6.23749  U-velocity: 5759.37  V-velocity: 4567.95  Pressure  : 5.26776e+06
+Iteration: 316
+  Density   : 6.23317  U-velocity: 5756.13  V-velocity: 4566.76  Pressure  : 5.26582e+06
+Iteration: 317
+  Density   : 6.22894  U-velocity: 5752.94  V-velocity: 4565.71  Pressure  : 5.26397e+06
+Iteration: 318
+  Density   : 6.22482  U-velocity: 5749.85  V-velocity: 4564.8  Pressure  : 5.2623e+06
+Iteration: 319
+  Density   : 6.22078  U-velocity: 5746.81  V-velocity: 4564  Pressure  : 5.2607e+06
+Iteration: 320
+  Density   : 6.21677  U-velocity: 5743.78  V-velocity: 4563.25  Pressure  : 5.25918e+06
+Iteration: 321
+  Density   : 6.21276  U-velocity: 5740.75  V-velocity: 4562.47  Pressure  : 5.25764e+06
+Iteration: 322
+  Density   : 6.20874  U-velocity: 5737.72  V-velocity: 4561.61  Pressure  : 5.25599e+06
+Iteration: 323
+  Density   : 6.20466  U-velocity: 5734.65  V-velocity: 4560.64  Pressure  : 5.25421e+06
+Iteration: 324
+  Density   : 6.20053  U-velocity: 5731.58  V-velocity: 4559.6  Pressure  : 5.25239e+06
+Iteration: 325
+  Density   : 6.19647  U-velocity: 5728.57  V-velocity: 4558.58  Pressure  : 5.2506e+06
+Iteration: 326
+  Density   : 6.19253  U-velocity: 5725.66  V-velocity: 4557.67  Pressure  : 5.24896e+06
+Iteration: 327
+  Density   : 6.18861  U-velocity: 5722.76  V-velocity: 4556.88  Pressure  : 5.24745e+06
+Iteration: 328
+  Density   : 6.18469  U-velocity: 5719.85  V-velocity: 4556.11  Pressure  : 5.24597e+06
+Iteration: 329
+  Density   : 6.1808  U-velocity: 5716.93  V-velocity: 4555.38  Pressure  : 5.24445e+06
+Iteration: 330
+  Density   : 6.17693  U-velocity: 5713.99  V-velocity: 4554.69  Pressure  : 5.24295e+06
+Iteration: 331
+  Density   : 6.17298  U-velocity: 5710.99  V-velocity: 4553.84  Pressure  : 5.24129e+06
+Iteration: 332
+  Density   : 6.16899  U-velocity: 5707.98  V-velocity: 4552.91  Pressure  : 5.23952e+06
+Iteration: 333
+  Density   : 6.165  U-velocity: 5704.96  V-velocity: 4551.97  Pressure  : 5.23777e+06
+Iteration: 334
+  Density   : 6.16106  U-velocity: 5701.99  V-velocity: 4551.07  Pressure  : 5.23614e+06
+Iteration: 335
+  Density   : 6.1573  U-velocity: 5699.2  V-velocity: 4550.3  Pressure  : 5.23457e+06
+Iteration: 336
+  Density   : 6.15358  U-velocity: 5696.43  V-velocity: 4549.6  Pressure  : 5.23306e+06
+Iteration: 337
+  Density   : 6.14985  U-velocity: 5693.63  V-velocity: 4548.93  Pressure  : 5.23163e+06
+Iteration: 338
+  Density   : 6.14607  U-velocity: 5690.79  V-velocity: 4548.16  Pressure  : 5.23001e+06
+Iteration: 339
+  Density   : 6.14231  U-velocity: 5687.98  V-velocity: 4547.42  Pressure  : 5.2284e+06
+Iteration: 340
+  Density   : 6.13864  U-velocity: 5685.2  V-velocity: 4546.82  Pressure  : 5.22696e+06
+Iteration: 341
+  Density   : 6.13501  U-velocity: 5682.49  V-velocity: 4546.34  Pressure  : 5.22567e+06
+Iteration: 342
+  Density   : 6.13135  U-velocity: 5679.73  V-velocity: 4545.77  Pressure  : 5.22424e+06
+Iteration: 343
+  Density   : 6.12767  U-velocity: 5676.94  V-velocity: 4545.19  Pressure  : 5.22285e+06
+Iteration: 344
+  Density   : 6.12399  U-velocity: 5674.19  V-velocity: 4544.54  Pressure  : 5.22141e+06
+Iteration: 345
+  Density   : 6.12038  U-velocity: 5671.53  V-velocity: 4543.75  Pressure  : 5.21977e+06
+Iteration: 346
+  Density   : 6.11664  U-velocity: 5668.73  V-velocity: 4542.88  Pressure  : 5.21799e+06
+Iteration: 347
+  Density   : 6.11289  U-velocity: 5665.93  V-velocity: 4542.02  Pressure  : 5.21628e+06
+Iteration: 348
+  Density   : 6.10919  U-velocity: 5663.14  V-velocity: 4541.23  Pressure  : 5.21466e+06
+Iteration: 349
+  Density   : 6.10555  U-velocity: 5660.37  V-velocity: 4540.56  Pressure  : 5.21306e+06
+Iteration: 350
+  Density   : 6.10208  U-velocity: 5657.74  V-velocity: 4540.14  Pressure  : 5.21174e+06
+Iteration: 351
+  Density   : 6.09874  U-velocity: 5655.19  V-velocity: 4539.88  Pressure  : 5.2106e+06
+Iteration: 352
+  Density   : 6.09537  U-velocity: 5652.62  V-velocity: 4539.55  Pressure  : 5.20934e+06
+Iteration: 353
+  Density   : 6.09204  U-velocity: 5650.09  V-velocity: 4539.28  Pressure  : 5.20821e+06
+Iteration: 354
+  Density   : 6.08878  U-velocity: 5647.68  V-velocity: 4539.08  Pressure  : 5.20727e+06
+Iteration: 355
+  Density   : 6.08558  U-velocity: 5645.33  V-velocity: 4538.84  Pressure  : 5.20625e+06
+Iteration: 356
+  Density   : 6.08214  U-velocity: 5642.76  V-velocity: 4538.27  Pressure  : 5.20483e+06
+Iteration: 357
+  Density   : 6.0786  U-velocity: 5640.12  V-velocity: 4537.58  Pressure  : 5.20333e+06
+Iteration: 358
+  Density   : 6.07505  U-velocity: 5637.43  V-velocity: 4536.87  Pressure  : 5.20177e+06
+Iteration: 359
+  Density   : 6.07142  U-velocity: 5634.65  V-velocity: 4536.02  Pressure  : 5.20001e+06
+Iteration: 360
+  Density   : 6.06789  U-velocity: 5631.98  V-velocity: 4535.34  Pressure  : 5.19843e+06
+Iteration: 361
+  Density   : 6.06454  U-velocity: 5629.43  V-velocity: 4534.91  Pressure  : 5.19716e+06
+Iteration: 362
+  Density   : 6.06133  U-velocity: 5626.99  V-velocity: 4534.67  Pressure  : 5.19607e+06
+Iteration: 363
+  Density   : 6.05825  U-velocity: 5624.66  V-velocity: 4534.56  Pressure  : 5.1951e+06
+Iteration: 364
+  Density   : 6.05543  U-velocity: 5622.57  V-velocity: 4534.7  Pressure  : 5.19436e+06
+Iteration: 365
+  Density   : 6.05266  U-velocity: 5620.53  V-velocity: 4534.83  Pressure  : 5.19362e+06
+Iteration: 366
+  Density   : 6.04962  U-velocity: 5618.22  V-velocity: 4534.72  Pressure  : 5.19263e+06
+Iteration: 367
+  Density   : 6.04641  U-velocity: 5615.8  V-velocity: 4534.46  Pressure  : 5.19158e+06
+Iteration: 368
+  Density   : 6.04308  U-velocity: 5613.3  V-velocity: 4534.03  Pressure  : 5.19042e+06
+Iteration: 369
+  Density   : 6.03969  U-velocity: 5610.7  V-velocity: 4533.45  Pressure  : 5.18898e+06
+Iteration: 370
+  Density   : 6.0363  U-velocity: 5608.13  V-velocity: 4532.83  Pressure  : 5.18749e+06
+Iteration: 371
+  Density   : 6.03301  U-velocity: 5605.65  V-velocity: 4532.27  Pressure  : 5.18613e+06
+Iteration: 372
+  Density   : 6.02983  U-velocity: 5603.24  V-velocity: 4531.81  Pressure  : 5.18479e+06
+Iteration: 373
+  Density   : 6.02672  U-velocity: 5600.89  V-velocity: 4531.5  Pressure  : 5.18358e+06
+Iteration: 374
+  Density   : 6.02398  U-velocity: 5598.87  V-velocity: 4531.56  Pressure  : 5.18276e+06
+Iteration: 375
+  Density   : 6.02119  U-velocity: 5596.76  V-velocity: 4531.65  Pressure  : 5.18197e+06
+Iteration: 376
+  Density   : 6.01838  U-velocity: 5594.62  V-velocity: 4531.74  Pressure  : 5.18117e+06
+Iteration: 377
+  Density   : 6.01556  U-velocity: 5592.46  V-velocity: 4531.87  Pressure  : 5.18041e+06
+Iteration: 378
+  Density   : 6.01271  U-velocity: 5590.25  V-velocity: 4531.92  Pressure  : 5.17956e+06
+Iteration: 379
+  Density   : 6.00978  U-velocity: 5588.05  V-velocity: 4531.81  Pressure  : 5.17859e+06
+Iteration: 380
+  Density   : 6.0068  U-velocity: 5585.81  V-velocity: 4531.7  Pressure  : 5.17764e+06
+Iteration: 381
+  Density   : 6.00374  U-velocity: 5583.53  V-velocity: 4531.44  Pressure  : 5.17654e+06
+Iteration: 382
+  Density   : 6.00063  U-velocity: 5581.19  V-velocity: 4531.04  Pressure  : 5.17531e+06
+Iteration: 383
+  Density   : 5.99775  U-velocity: 5579.08  V-velocity: 4530.77  Pressure  : 5.17411e+06
+Iteration: 384
+  Density   : 5.99501  U-velocity: 5577.08  V-velocity: 4530.7  Pressure  : 5.17319e+06
+Iteration: 385
+  Density   : 5.99223  U-velocity: 5575.01  V-velocity: 4530.66  Pressure  : 5.17229e+06
+Iteration: 386
+  Density   : 5.98947  U-velocity: 5572.91  V-velocity: 4530.71  Pressure  : 5.17144e+06
+Iteration: 387
+  Density   : 5.98677  U-velocity: 5570.82  V-velocity: 4530.92  Pressure  : 5.17079e+06
+Iteration: 388
+  Density   : 5.98408  U-velocity: 5568.77  V-velocity: 4531.13  Pressure  : 5.17016e+06
+Iteration: 389
+  Density   : 5.98145  U-velocity: 5566.74  V-velocity: 4531.37  Pressure  : 5.16954e+06
+Iteration: 390
+  Density   : 5.97886  U-velocity: 5564.78  V-velocity: 4531.59  Pressure  : 5.16891e+06
+Iteration: 391
+  Density   : 5.9763  U-velocity: 5562.91  V-velocity: 4531.81  Pressure  : 5.16833e+06
+Iteration: 392
+  Density   : 5.9737  U-velocity: 5561  V-velocity: 4531.88  Pressure  : 5.16753e+06
+Iteration: 393
+  Density   : 5.97128  U-velocity: 5559.26  V-velocity: 4532.1  Pressure  : 5.16689e+06
+Iteration: 394
+  Density   : 5.96866  U-velocity: 5557.34  V-velocity: 4532.18  Pressure  : 5.16616e+06
+Iteration: 395
+  Density   : 5.96589  U-velocity: 5555.22  V-velocity: 4532.06  Pressure  : 5.16515e+06
+Iteration: 396
+  Density   : 5.96317  U-velocity: 5553.16  V-velocity: 4532.01  Pressure  : 5.16422e+06
+Iteration: 397
+  Density   : 5.9606  U-velocity: 5551.22  V-velocity: 4532.16  Pressure  : 5.16351e+06
+Iteration: 398
+  Density   : 5.95818  U-velocity: 5549.43  V-velocity: 4532.5  Pressure  : 5.16304e+06
+Iteration: 399
+  Density   : 5.95583  U-velocity: 5547.72  V-velocity: 4532.87  Pressure  : 5.16264e+06
+Iteration: 400
+  Density   : 5.95352  U-velocity: 5546.01  V-velocity: 4533.37  Pressure  : 5.16239e+06
+Iteration: 401
+  Density   : 5.95121  U-velocity: 5544.29  V-velocity: 4533.87  Pressure  : 5.16211e+06
+Iteration: 402
+  Density   : 5.94905  U-velocity: 5542.75  V-velocity: 4534.41  Pressure  : 5.16185e+06
+Iteration: 403
+  Density   : 5.94676  U-velocity: 5541.07  V-velocity: 4534.78  Pressure  : 5.16134e+06
+Iteration: 404
+  Density   : 5.94432  U-velocity: 5539.23  V-velocity: 4534.95  Pressure  : 5.16063e+06
+Iteration: 405
+  Density   : 5.94186  U-velocity: 5537.42  V-velocity: 4535.04  Pressure  : 5.15992e+06
+Iteration: 406
+  Density   : 5.93943  U-velocity: 5535.65  V-velocity: 4535.16  Pressure  : 5.15921e+06
+Iteration: 407
+  Density   : 5.93709  U-velocity: 5533.95  V-velocity: 4535.51  Pressure  : 5.15879e+06
+Iteration: 408
+  Density   : 5.93485  U-velocity: 5532.31  V-velocity: 4535.99  Pressure  : 5.15854e+06
+Iteration: 409
+  Density   : 5.93264  U-velocity: 5530.72  V-velocity: 4536.49  Pressure  : 5.15825e+06
+Iteration: 410
+  Density   : 5.93045  U-velocity: 5529.13  V-velocity: 4537.01  Pressure  : 5.15792e+06
+Iteration: 411
+  Density   : 5.92846  U-velocity: 5527.73  V-velocity: 4537.69  Pressure  : 5.15787e+06
+Iteration: 412
+  Density   : 5.92664  U-velocity: 5526.45  V-velocity: 4538.48  Pressure  : 5.15786e+06
+Iteration: 413
+  Density   : 5.92461  U-velocity: 5524.97  V-velocity: 4539.1  Pressure  : 5.15772e+06
+Iteration: 414
+  Density   : 5.92244  U-velocity: 5523.39  V-velocity: 4539.63  Pressure  : 5.15755e+06
+Iteration: 415
+  Density   : 5.92028  U-velocity: 5521.78  V-velocity: 4540.19  Pressure  : 5.15737e+06
+Iteration: 416
+  Density   : 5.91806  U-velocity: 5520.19  V-velocity: 4540.59  Pressure  : 5.15704e+06
+Iteration: 417
+  Density   : 5.91582  U-velocity: 5518.61  V-velocity: 4540.89  Pressure  : 5.15656e+06
+Iteration: 418
+  Density   : 5.9137  U-velocity: 5517.1  V-velocity: 4541.29  Pressure  : 5.1562e+06
+Iteration: 419
+  Density   : 5.91171  U-velocity: 5515.73  V-velocity: 4541.82  Pressure  : 5.15601e+06
+Iteration: 420
+  Density   : 5.90982  U-velocity: 5514.43  V-velocity: 4542.55  Pressure  : 5.15607e+06
+Iteration: 421
+  Density   : 5.90838  U-velocity: 5513.54  V-velocity: 4543.81  Pressure  : 5.15665e+06
+Iteration: 422
+  Density   : 5.90674  U-velocity: 5512.38  V-velocity: 4544.95  Pressure  : 5.1571e+06
+Iteration: 423
+  Density   : 5.90486  U-velocity: 5511.03  V-velocity: 4545.76  Pressure  : 5.15721e+06
+Iteration: 424
+  Density   : 5.90285  U-velocity: 5509.6  V-velocity: 4546.38  Pressure  : 5.15711e+06
+Iteration: 425
+  Density   : 5.90082  U-velocity: 5508.14  V-velocity: 4546.94  Pressure  : 5.157e+06
+Iteration: 426
+  Density   : 5.8988  U-velocity: 5506.73  V-velocity: 4547.43  Pressure  : 5.15682e+06
+Iteration: 427
+  Density   : 5.89684  U-velocity: 5505.37  V-velocity: 4548  Pressure  : 5.15667e+06
+Iteration: 428
+  Density   : 5.89499  U-velocity: 5504.11  V-velocity: 4548.8  Pressure  : 5.15681e+06
+Iteration: 429
+  Density   : 5.89314  U-velocity: 5502.86  V-velocity: 4549.54  Pressure  : 5.15697e+06
+Iteration: 430
+  Density   : 5.89163  U-velocity: 5501.86  V-velocity: 4550.58  Pressure  : 5.15727e+06
+Iteration: 431
+  Density   : 5.89011  U-velocity: 5500.79  V-velocity: 4551.61  Pressure  : 5.15754e+06
+Iteration: 432
+  Density   : 5.88847  U-velocity: 5499.64  V-velocity: 4552.49  Pressure  : 5.15769e+06
+Iteration: 433
+  Density   : 5.88686  U-velocity: 5498.54  V-velocity: 4553.44  Pressure  : 5.15797e+06
+Iteration: 434
+  Density   : 5.88526  U-velocity: 5497.46  V-velocity: 4554.5  Pressure  : 5.15841e+06
+Iteration: 435
+  Density   : 5.88372  U-velocity: 5496.47  V-velocity: 4555.77  Pressure  : 5.15909e+06
+Iteration: 436
+  Density   : 5.88203  U-velocity: 5495.37  V-velocity: 4556.74  Pressure  : 5.15952e+06
+Iteration: 437
+  Density   : 5.88026  U-velocity: 5494.21  V-velocity: 4557.59  Pressure  : 5.15984e+06
+Iteration: 438
+  Density   : 5.87847  U-velocity: 5492.98  V-velocity: 4558.35  Pressure  : 5.16006e+06
+Iteration: 439
+  Density   : 5.87686  U-velocity: 5491.9  V-velocity: 4559.13  Pressure  : 5.16015e+06
+Iteration: 440
+  Density   : 5.87546  U-velocity: 5491  V-velocity: 4560.1  Pressure  : 5.16039e+06
+Iteration: 441
+  Density   : 5.87404  U-velocity: 5490.05  V-velocity: 4561.2  Pressure  : 5.16075e+06
+Iteration: 442
+  Density   : 5.87262  U-velocity: 5489.14  V-velocity: 4562.42  Pressure  : 5.16135e+06
+Iteration: 443
+  Density   : 5.87113  U-velocity: 5488.14  V-velocity: 4563.53  Pressure  : 5.16191e+06
+Iteration: 444
+  Density   : 5.86972  U-velocity: 5487.22  V-velocity: 4564.83  Pressure  : 5.1627e+06
+Iteration: 445
+  Density   : 5.86838  U-velocity: 5486.36  V-velocity: 4566.17  Pressure  : 5.16352e+06
+Iteration: 446
+  Density   : 5.86701  U-velocity: 5485.48  V-velocity: 4567.39  Pressure  : 5.16424e+06
+Iteration: 447
+  Density   : 5.86564  U-velocity: 5484.68  V-velocity: 4568.52  Pressure  : 5.1649e+06
+Iteration: 448
+  Density   : 5.86439  U-velocity: 5483.93  V-velocity: 4569.9  Pressure  : 5.16567e+06
+Iteration: 449
+  Density   : 5.8634  U-velocity: 5483.34  V-velocity: 4571.43  Pressure  : 5.16648e+06
+Iteration: 450
+  Density   : 5.86202  U-velocity: 5482.45  V-velocity: 4572.43  Pressure  : 5.16684e+06
+Iteration: 451
+  Density   : 5.86049  U-velocity: 5481.42  V-velocity: 4573.39  Pressure  : 5.16718e+06
+Iteration: 452
+  Density   : 5.85899  U-velocity: 5480.43  V-velocity: 4574.43  Pressure  : 5.16766e+06
+Iteration: 453
+  Density   : 5.85759  U-velocity: 5479.56  V-velocity: 4575.52  Pressure  : 5.1682e+06
+Iteration: 454
+  Density   : 5.85635  U-velocity: 5478.84  V-velocity: 4576.74  Pressure  : 5.16891e+06
+Iteration: 455
+  Density   : 5.85537  U-velocity: 5478.37  V-velocity: 4578.51  Pressure  : 5.17019e+06
+Iteration: 456
+  Density   : 5.85441  U-velocity: 5477.86  V-velocity: 4580.29  Pressure  : 5.17159e+06
+Iteration: 457
+  Density   : 5.85331  U-velocity: 5477.19  V-velocity: 4581.81  Pressure  : 5.1727e+06
+Iteration: 458
+  Density   : 5.85254  U-velocity: 5476.78  V-velocity: 4583.6  Pressure  : 5.17398e+06
+Iteration: 459
+  Density   : 5.85156  U-velocity: 5476.2  V-velocity: 4585.19  Pressure  : 5.17493e+06
+Iteration: 460
+  Density   : 5.85035  U-velocity: 5475.46  V-velocity: 4586.47  Pressure  : 5.1756e+06
+Iteration: 461
+  Density   : 5.849  U-velocity: 5474.65  V-velocity: 4587.52  Pressure  : 5.17612e+06
+Iteration: 462
+  Density   : 5.84781  U-velocity: 5474  V-velocity: 4588.9  Pressure  : 5.17694e+06
+Iteration: 463
+  Density   : 5.84662  U-velocity: 5473.35  V-velocity: 4590.24  Pressure  : 5.17779e+06
+Iteration: 464
+  Density   : 5.84549  U-velocity: 5472.66  V-velocity: 4591.64  Pressure  : 5.17868e+06
+Iteration: 465
+  Density   : 5.84448  U-velocity: 5472.16  V-velocity: 4593.27  Pressure  : 5.18002e+06
+Iteration: 466
+  Density   : 5.84353  U-velocity: 5471.65  V-velocity: 4594.96  Pressure  : 5.18141e+06
+Iteration: 467
+  Density   : 5.84302  U-velocity: 5471.41  V-velocity: 4597.02  Pressure  : 5.18288e+06
+Iteration: 468
+  Density   : 5.84262  U-velocity: 5471.3  V-velocity: 4599.15  Pressure  : 5.18442e+06
+Iteration: 469
+  Density   : 5.84211  U-velocity: 5471.23  V-velocity: 4601.3  Pressure  : 5.18615e+06
+Iteration: 470
+  Density   : 5.84131  U-velocity: 5470.92  V-velocity: 4603.1  Pressure  : 5.18755e+06
+Iteration: 471
+  Density   : 5.84034  U-velocity: 5470.44  V-velocity: 4604.66  Pressure  : 5.18864e+06
+Iteration: 472
+  Density   : 5.83933  U-velocity: 5469.97  V-velocity: 4606.13  Pressure  : 5.18966e+06
+Iteration: 473
+  Density   : 5.83826  U-velocity: 5469.45  V-velocity: 4607.6  Pressure  : 5.19081e+06
+Iteration: 474
+  Density   : 5.83724  U-velocity: 5468.95  V-velocity: 4609.14  Pressure  : 5.19209e+06
+Iteration: 475
+  Density   : 5.8364  U-velocity: 5468.52  V-velocity: 4610.79  Pressure  : 5.19323e+06
+Iteration: 476
+  Density   : 5.83609  U-velocity: 5468.54  V-velocity: 4613.01  Pressure  : 5.19495e+06
+Iteration: 477
+  Density   : 5.83605  U-velocity: 5468.87  V-velocity: 4615.57  Pressure  : 5.19706e+06
+Iteration: 478
+  Density   : 5.8357  U-velocity: 5468.86  V-velocity: 4617.8  Pressure  : 5.19884e+06
+Iteration: 479
+  Density   : 5.83526  U-velocity: 5468.74  V-velocity: 4619.96  Pressure  : 5.20058e+06
+Iteration: 480
+  Density   : 5.83471  U-velocity: 5468.63  V-velocity: 4621.99  Pressure  : 5.20234e+06
+Iteration: 481
+  Density   : 5.83403  U-velocity: 5468.43  V-velocity: 4623.87  Pressure  : 5.20399e+06
+Iteration: 482
+  Density   : 5.83333  U-velocity: 5468.17  V-velocity: 4625.68  Pressure  : 5.20542e+06
+Iteration: 483
+  Density   : 5.83273  U-velocity: 5468.01  V-velocity: 4627.59  Pressure  : 5.20707e+06
+Iteration: 484
+  Density   : 5.83232  U-velocity: 5468.12  V-velocity: 4629.75  Pressure  : 5.20897e+06
+Iteration: 485
+  Density   : 5.83186  U-velocity: 5468.07  V-velocity: 4631.72  Pressure  : 5.21057e+06
+Iteration: 486
+  Density   : 5.83185  U-velocity: 5468.3  V-velocity: 4634.03  Pressure  : 5.21228e+06
+Iteration: 487
+  Density   : 5.83173  U-velocity: 5468.51  V-velocity: 4636.33  Pressure  : 5.21408e+06
+Iteration: 488
+  Density   : 5.83146  U-velocity: 5468.63  V-velocity: 4638.55  Pressure  : 5.21599e+06
+Iteration: 489
+  Density   : 5.83107  U-velocity: 5468.6  V-velocity: 4640.77  Pressure  : 5.21789e+06
+Iteration: 490
+  Density   : 5.83074  U-velocity: 5468.58  V-velocity: 4643.09  Pressure  : 5.21979e+06
+Iteration: 491
+  Density   : 5.83062  U-velocity: 5468.86  V-velocity: 4645.68  Pressure  : 5.22207e+06
+Iteration: 492
+  Density   : 5.83039  U-velocity: 5469.07  V-velocity: 4648.24  Pressure  : 5.22441e+06
+Iteration: 493
+  Density   : 5.82991  U-velocity: 5469  V-velocity: 4650.29  Pressure  : 5.22619e+06
+Iteration: 494
+  Density   : 5.8294  U-velocity: 5468.88  V-velocity: 4652.13  Pressure  : 5.22771e+06
+Iteration: 495
+  Density   : 5.82943  U-velocity: 5469.18  V-velocity: 4654.38  Pressure  : 5.22947e+06
+Iteration: 496
+  Density   : 5.82925  U-velocity: 5469.34  V-velocity: 4656.53  Pressure  : 5.23119e+06
+Iteration: 497
+  Density   : 5.82899  U-velocity: 5469.39  V-velocity: 4658.69  Pressure  : 5.23297e+06
+Iteration: 498
+  Density   : 5.82894  U-velocity: 5469.64  V-velocity: 4661.18  Pressure  : 5.23504e+06
+Iteration: 499
+  Density   : 5.82917  U-velocity: 5470.22  V-velocity: 4664.16  Pressure  : 5.23766e+06
+Iteration: 500
+  Density   : 5.82919  U-velocity: 5470.59  V-velocity: 4666.85  Pressure  : 5.24011e+06
+Iteration: 501
+  Density   : 5.82908  U-velocity: 5470.76  V-velocity: 4669.36  Pressure  : 5.24234e+06
+Iteration: 502
+  Density   : 5.82891  U-velocity: 5470.92  V-velocity: 4671.76  Pressure  : 5.24457e+06
+Iteration: 503
+  Density   : 5.82868  U-velocity: 5471.09  V-velocity: 4673.97  Pressure  : 5.24649e+06
+Iteration: 504
+  Density   : 5.82869  U-velocity: 5471.41  V-velocity: 4676.36  Pressure  : 5.24837e+06
+Iteration: 505
+  Density   : 5.82872  U-velocity: 5471.7  V-velocity: 4678.75  Pressure  : 5.25023e+06
+Iteration: 506
+  Density   : 5.829  U-velocity: 5472.26  V-velocity: 4681.6  Pressure  : 5.25253e+06
+Iteration: 507
+  Density   : 5.82903  U-velocity: 5472.59  V-velocity: 4684.25  Pressure  : 5.25467e+06
+Iteration: 508
+  Density   : 5.82891  U-velocity: 5472.82  V-velocity: 4686.55  Pressure  : 5.25673e+06
+Iteration: 509
+  Density   : 5.82889  U-velocity: 5473.11  V-velocity: 4688.9  Pressure  : 5.25883e+06
+Iteration: 510
+  Density   : 5.82904  U-velocity: 5473.56  V-velocity: 4691.51  Pressure  : 5.26117e+06
+Iteration: 511
+  Density   : 5.82922  U-velocity: 5474.04  V-velocity: 4694.17  Pressure  : 5.26369e+06
+Iteration: 512
+  Density   : 5.8294  U-velocity: 5474.47  V-velocity: 4696.91  Pressure  : 5.26619e+06
+Iteration: 513
+  Density   : 5.82997  U-velocity: 5475.28  V-velocity: 4700.22  Pressure  : 5.26907e+06
+Iteration: 514
+  Density   : 5.83087  U-velocity: 5476.35  V-velocity: 4703.73  Pressure  : 5.27204e+06
+Iteration: 515
+  Density   : 5.83114  U-velocity: 5476.78  V-velocity: 4706.43  Pressure  : 5.27424e+06
+Iteration: 516
+  Density   : 5.83111  U-velocity: 5477  V-velocity: 4708.66  Pressure  : 5.27606e+06
+Iteration: 517
+  Density   : 5.83103  U-velocity: 5477.22  V-velocity: 4710.74  Pressure  : 5.27786e+06
+Iteration: 518
+  Density   : 5.83107  U-velocity: 5477.52  V-velocity: 4713.03  Pressure  : 5.27962e+06
+Iteration: 519
+  Density   : 5.8312  U-velocity: 5477.92  V-velocity: 4715.51  Pressure  : 5.28166e+06
+Iteration: 520
+  Density   : 5.83181  U-velocity: 5478.75  V-velocity: 4718.7  Pressure  : 5.28436e+06
+Iteration: 521
+  Density   : 5.83261  U-velocity: 5479.75  V-velocity: 4722.42  Pressure  : 5.28772e+06
+Iteration: 522
+  Density   : 5.833  U-velocity: 5480.38  V-velocity: 4725.43  Pressure  : 5.29058e+06
+Iteration: 523
+  Density   : 5.83336  U-velocity: 5480.94  V-velocity: 4728.04  Pressure  : 5.29295e+06
+Iteration: 524
+  Density   : 5.83416  U-velocity: 5481.77  V-velocity: 4730.97  Pressure  : 5.29534e+06
+Iteration: 525
+  Density   : 5.8347  U-velocity: 5482.41  V-velocity: 4733.6  Pressure  : 5.29753e+06
+Iteration: 526
+  Density   : 5.83497  U-velocity: 5482.86  V-velocity: 4736.14  Pressure  : 5.29958e+06
+Iteration: 527
+  Density   : 5.83544  U-velocity: 5483.47  V-velocity: 4739.27  Pressure  : 5.30209e+06
+Iteration: 528
+  Density   : 5.83598  U-velocity: 5484.2  V-velocity: 4742.57  Pressure  : 5.305e+06
+Iteration: 529
+  Density   : 5.83617  U-velocity: 5484.62  V-velocity: 4745.25  Pressure  : 5.30734e+06
+Iteration: 530
+  Density   : 5.83621  U-velocity: 5484.92  V-velocity: 4747.5  Pressure  : 5.30917e+06
+Iteration: 531
+  Density   : 5.83645  U-velocity: 5485.41  V-velocity: 4749.8  Pressure  : 5.31134e+06
+Iteration: 532
+  Density   : 5.83705  U-velocity: 5486.12  V-velocity: 4752.5  Pressure  : 5.31367e+06
+Iteration: 533
+  Density   : 5.83801  U-velocity: 5487.2  V-velocity: 4755.75  Pressure  : 5.31629e+06
+Iteration: 534
+  Density   : 5.8393  U-velocity: 5488.56  V-velocity: 4759.6  Pressure  : 5.31958e+06
+Iteration: 535
+  Density   : 5.84041  U-velocity: 5489.65  V-velocity: 4763.49  Pressure  : 5.32294e+06
+Iteration: 536
+  Density   : 5.84092  U-velocity: 5490.2  V-velocity: 4766.63  Pressure  : 5.32563e+06
+Iteration: 537
+  Density   : 5.84103  U-velocity: 5490.49  V-velocity: 4768.97  Pressure  : 5.32766e+06
+Iteration: 538
+  Density   : 5.84112  U-velocity: 5490.77  V-velocity: 4771.1  Pressure  : 5.32957e+06
+Iteration: 539
+  Density   : 5.84138  U-velocity: 5491.24  V-velocity: 4773.44  Pressure  : 5.33157e+06
+Iteration: 540
+  Density   : 5.84177  U-velocity: 5491.79  V-velocity: 4775.92  Pressure  : 5.33361e+06
+Iteration: 541
+  Density   : 5.84268  U-velocity: 5492.86  V-velocity: 4779.31  Pressure  : 5.33643e+06
+Iteration: 542
+  Density   : 5.84367  U-velocity: 5494.04  V-velocity: 4782.98  Pressure  : 5.3397e+06
+Iteration: 543
+  Density   : 5.84468  U-velocity: 5495.15  V-velocity: 4786.51  Pressure  : 5.34293e+06
+Iteration: 544
+  Density   : 5.84553  U-velocity: 5496.04  V-velocity: 4789.59  Pressure  : 5.34566e+06
+Iteration: 545
+  Density   : 5.84624  U-velocity: 5496.71  V-velocity: 4792.44  Pressure  : 5.34809e+06
+Iteration: 546
+  Density   : 5.84701  U-velocity: 5497.51  V-velocity: 4795.25  Pressure  : 5.35073e+06
+Iteration: 547
+  Density   : 5.84771  U-velocity: 5498.19  V-velocity: 4798.21  Pressure  : 5.35319e+06
+Iteration: 548
+  Density   : 5.84861  U-velocity: 5499.15  V-velocity: 4801.64  Pressure  : 5.35593e+06
+Iteration: 549
+  Density   : 5.84931  U-velocity: 5500.1  V-velocity: 4804.97  Pressure  : 5.35895e+06
+Iteration: 550
+  Density   : 5.84969  U-velocity: 5500.77  V-velocity: 4807.83  Pressure  : 5.36171e+06
+Iteration: 551
+  Density   : 5.84983  U-velocity: 5501.06  V-velocity: 4810.21  Pressure  : 5.36381e+06
+Iteration: 552
+  Density   : 5.85007  U-velocity: 5501.47  V-velocity: 4812.49  Pressure  : 5.36592e+06
+Iteration: 553
+  Density   : 5.85107  U-velocity: 5502.65  V-velocity: 4815.43  Pressure  : 5.36858e+06
+Iteration: 554
+  Density   : 5.85238  U-velocity: 5503.95  V-velocity: 4818.84  Pressure  : 5.37142e+06
+Iteration: 555
+  Density   : 5.85371  U-velocity: 5505.19  V-velocity: 4822.51  Pressure  : 5.37454e+06
+Iteration: 556
+  Density   : 5.85477  U-velocity: 5506.19  V-velocity: 4826.32  Pressure  : 5.37784e+06
+Iteration: 557
+  Density   : 5.85537  U-velocity: 5506.87  V-velocity: 4829.58  Pressure  : 5.38082e+06
+Iteration: 558
+  Density   : 5.85555  U-velocity: 5507.24  V-velocity: 4832.08  Pressure  : 5.38311e+06
+Iteration: 559
+  Density   : 5.85562  U-velocity: 5507.48  V-velocity: 4834.23  Pressure  : 5.38506e+06
+Iteration: 560
+  Density   : 5.85583  U-velocity: 5507.89  V-velocity: 4836.56  Pressure  : 5.38727e+06
+Iteration: 561
+  Density   : 5.85611  U-velocity: 5508.4  V-velocity: 4838.81  Pressure  : 5.38927e+06
+Iteration: 562
+  Density   : 5.85686  U-velocity: 5509.32  V-velocity: 4841.69  Pressure  : 5.39139e+06
+Iteration: 563
+  Density   : 5.85821  U-velocity: 5510.75  V-velocity: 4845.45  Pressure  : 5.39434e+06
+Iteration: 564
+  Density   : 5.85922  U-velocity: 5511.81  V-velocity: 4848.9  Pressure  : 5.39749e+06
+Iteration: 565
+  Density   : 5.85981  U-velocity: 5512.34  V-velocity: 4851.92  Pressure  : 5.4002e+06
+Iteration: 566
+  Density   : 5.86024  U-velocity: 5512.73  V-velocity: 4854.76  Pressure  : 5.40264e+06
+Iteration: 567
+  Density   : 5.86074  U-velocity: 5513.25  V-velocity: 4857.54  Pressure  : 5.40531e+06
+Iteration: 568
+  Density   : 5.86132  U-velocity: 5513.89  V-velocity: 4860.42  Pressure  : 5.40813e+06
+Iteration: 569
+  Density   : 5.86193  U-velocity: 5514.58  V-velocity: 4863.44  Pressure  : 5.41075e+06
+Iteration: 570
+  Density   : 5.86233  U-velocity: 5515.27  V-velocity: 4866.19  Pressure  : 5.41309e+06
+Iteration: 571
+  Density   : 5.86264  U-velocity: 5515.92  V-velocity: 4868.79  Pressure  : 5.41552e+06
+Iteration: 572
+  Density   : 5.86285  U-velocity: 5516.36  V-velocity: 4871.26  Pressure  : 5.41754e+06
+Iteration: 573
+  Density   : 5.86368  U-velocity: 5517.34  V-velocity: 4874.16  Pressure  : 5.41999e+06
+Iteration: 574
+  Density   : 5.86429  U-velocity: 5517.96  V-velocity: 4876.79  Pressure  : 5.42209e+06
+Iteration: 575
+  Density   : 5.86497  U-velocity: 5518.67  V-velocity: 4879.61  Pressure  : 5.42458e+06
+Iteration: 576
+  Density   : 5.86578  U-velocity: 5519.47  V-velocity: 4882.61  Pressure  : 5.42725e+06
+Iteration: 577
+  Density   : 5.86668  U-velocity: 5520.33  V-velocity: 4885.87  Pressure  : 5.43011e+06
+Iteration: 578
+  Density   : 5.86764  U-velocity: 5521.26  V-velocity: 4889.38  Pressure  : 5.43336e+06
+Iteration: 579
+  Density   : 5.86843  U-velocity: 5522.24  V-velocity: 4892.69  Pressure  : 5.4367e+06
+Iteration: 580
+  Density   : 5.86907  U-velocity: 5523.02  V-velocity: 4895.66  Pressure  : 5.43952e+06
+Iteration: 581
+  Density   : 5.86968  U-velocity: 5523.69  V-velocity: 4898.6  Pressure  : 5.44212e+06
+Iteration: 582
+  Density   : 5.87064  U-velocity: 5524.76  V-velocity: 4901.71  Pressure  : 5.44516e+06
+Iteration: 583
+  Density   : 5.87166  U-velocity: 5525.92  V-velocity: 4904.73  Pressure  : 5.44782e+06
+Iteration: 584
+  Density   : 5.87232  U-velocity: 5526.75  V-velocity: 4907.53  Pressure  : 5.45033e+06
+Iteration: 585
+  Density   : 5.87294  U-velocity: 5527.43  V-velocity: 4910.4  Pressure  : 5.45287e+06
+Iteration: 586
+  Density   : 5.87352  U-velocity: 5528.17  V-velocity: 4913.18  Pressure  : 5.4556e+06
+Iteration: 587
+  Density   : 5.87391  U-velocity: 5528.78  V-velocity: 4915.83  Pressure  : 5.45792e+06
+Iteration: 588
+  Density   : 5.87436  U-velocity: 5529.44  V-velocity: 4918.59  Pressure  : 5.46061e+06
+Iteration: 589
+  Density   : 5.87494  U-velocity: 5530.12  V-velocity: 4921.26  Pressure  : 5.46322e+06
+Iteration: 590
+  Density   : 5.8756  U-velocity: 5530.97  V-velocity: 4924.06  Pressure  : 5.46575e+06
+Iteration: 591
+  Density   : 5.87626  U-velocity: 5531.78  V-velocity: 4926.84  Pressure  : 5.46818e+06
+Iteration: 592
+  Density   : 5.87755  U-velocity: 5533.13  V-velocity: 4930.23  Pressure  : 5.47129e+06
+Iteration: 593
+  Density   : 5.87893  U-velocity: 5534.65  V-velocity: 4933.8  Pressure  : 5.47477e+06
+Iteration: 594
+  Density   : 5.87982  U-velocity: 5535.7  V-velocity: 4937.07  Pressure  : 5.47766e+06
+Iteration: 595
+  Density   : 5.88035  U-velocity: 5536.35  V-velocity: 4939.84  Pressure  : 5.48039e+06
+Iteration: 596
+  Density   : 5.88086  U-velocity: 5536.96  V-velocity: 4942.58  Pressure  : 5.48312e+06
+Iteration: 597
+  Density   : 5.88137  U-velocity: 5537.68  V-velocity: 4945.39  Pressure  : 5.48589e+06
+Iteration: 598
+  Density   : 5.88165  U-velocity: 5538.25  V-velocity: 4947.91  Pressure  : 5.4884e+06
+Iteration: 599
+  Density   : 5.88196  U-velocity: 5538.82  V-velocity: 4950.24  Pressure  : 5.49079e+06
+Iteration: 600
+  Density   : 5.88261  U-velocity: 5539.64  V-velocity: 4952.9  Pressure  : 5.49332e+06
+Iteration: 601
+  Density   : 5.88344  U-velocity: 5540.65  V-velocity: 4955.78  Pressure  : 5.49581e+06
+Iteration: 602
+  Density   : 5.88464  U-velocity: 5541.98  V-velocity: 4958.84  Pressure  : 5.49845e+06
+Iteration: 603
+  Density   : 5.88585  U-velocity: 5543.33  V-velocity: 4962.07  Pressure  : 5.50133e+06
+Iteration: 604
+  Density   : 5.88694  U-velocity: 5544.55  V-velocity: 4965.24  Pressure  : 5.50429e+06
+Iteration: 605
+  Density   : 5.88792  U-velocity: 5545.45  V-velocity: 4968.33  Pressure  : 5.50706e+06
+Iteration: 606
+  Density   : 5.88881  U-velocity: 5546.33  V-velocity: 4971.43  Pressure  : 5.51006e+06
+Iteration: 607
+  Density   : 5.88976  U-velocity: 5547.31  V-velocity: 4974.74  Pressure  : 5.51345e+06
+Iteration: 608
+  Density   : 5.89069  U-velocity: 5548.31  V-velocity: 4977.98  Pressure  : 5.51699e+06
+Iteration: 609
+  Density   : 5.89138  U-velocity: 5549.1  V-velocity: 4981.01  Pressure  : 5.51972e+06
+Iteration: 610
+  Density   : 5.89184  U-velocity: 5549.85  V-velocity: 4983.68  Pressure  : 5.52244e+06
+Iteration: 611
+  Density   : 5.89225  U-velocity: 5550.58  V-velocity: 4986.01  Pressure  : 5.52488e+06
+Iteration: 612
+  Density   : 5.89308  U-velocity: 5551.54  V-velocity: 4988.71  Pressure  : 5.52697e+06
+Iteration: 613
+  Density   : 5.89365  U-velocity: 5552.26  V-velocity: 4991.19  Pressure  : 5.52862e+06
+Iteration: 614
+  Density   : 5.89409  U-velocity: 5552.98  V-velocity: 4993.46  Pressure  : 5.53078e+06
+Iteration: 615
+  Density   : 5.89477  U-velocity: 5553.81  V-velocity: 4995.96  Pressure  : 5.53318e+06
+Iteration: 616
+  Density   : 5.8956  U-velocity: 5554.48  V-velocity: 4998.92  Pressure  : 5.53557e+06
+Iteration: 617
+  Density   : 5.89644  U-velocity: 5555.31  V-velocity: 5001.91  Pressure  : 5.53846e+06
+Iteration: 618
+  Density   : 5.89765  U-velocity: 5556.51  V-velocity: 5005.35  Pressure  : 5.54221e+06
+Iteration: 619
+  Density   : 5.89898  U-velocity: 5557.94  V-velocity: 5009.01  Pressure  : 5.54591e+06
+Iteration: 620
+  Density   : 5.89984  U-velocity: 5558.95  V-velocity: 5012.22  Pressure  : 5.54888e+06
+Iteration: 621
+  Density   : 5.9002  U-velocity: 5559.59  V-velocity: 5014.61  Pressure  : 5.55141e+06
+Iteration: 622
+  Density   : 5.90099  U-velocity: 5560.65  V-velocity: 5017.23  Pressure  : 5.5538e+06
+Iteration: 623
+  Density   : 5.90161  U-velocity: 5561.73  V-velocity: 5019.66  Pressure  : 5.55586e+06
+Iteration: 624
+  Density   : 5.90166  U-velocity: 5562.23  V-velocity: 5021.43  Pressure  : 5.55722e+06
+Iteration: 625
+  Density   : 5.90199  U-velocity: 5562.84  V-velocity: 5023.5  Pressure  : 5.55921e+06
+Iteration: 626
+  Density   : 5.90288  U-velocity: 5564  V-velocity: 5026.14  Pressure  : 5.56185e+06
+Iteration: 627
+  Density   : 5.90416  U-velocity: 5565.39  V-velocity: 5029.4  Pressure  : 5.56475e+06
+Iteration: 628
+  Density   : 5.90549  U-velocity: 5566.71  V-velocity: 5032.85  Pressure  : 5.56806e+06
+Iteration: 629
+  Density   : 5.90716  U-velocity: 5568.33  V-velocity: 5036.75  Pressure  : 5.57224e+06
+Iteration: 630
+  Density   : 5.90881  U-velocity: 5570.03  V-velocity: 5040.47  Pressure  : 5.57621e+06
+Iteration: 631
+  Density   : 5.90997  U-velocity: 5571.32  V-velocity: 5043.8  Pressure  : 5.57938e+06
+Iteration: 632
+  Density   : 5.91076  U-velocity: 5572.38  V-velocity: 5046.59  Pressure  : 5.58218e+06
+Iteration: 633
+  Density   : 5.91177  U-velocity: 5573.77  V-velocity: 5049.17  Pressure  : 5.58514e+06
+Iteration: 634
+  Density   : 5.91267  U-velocity: 5574.97  V-velocity: 5051.62  Pressure  : 5.58758e+06
+Iteration: 635
+  Density   : 5.91324  U-velocity: 5575.87  V-velocity: 5053.81  Pressure  : 5.5892e+06
+Iteration: 636
+  Density   : 5.9141  U-velocity: 5577.13  V-velocity: 5056.28  Pressure  : 5.59173e+06
+Iteration: 637
+  Density   : 5.91563  U-velocity: 5578.86  V-velocity: 5059.42  Pressure  : 5.59517e+06
+Iteration: 638
+  Density   : 5.91749  U-velocity: 5580.62  V-velocity: 5063.26  Pressure  : 5.59875e+06
+Iteration: 639
+  Density   : 5.91922  U-velocity: 5582.29  V-velocity: 5066.99  Pressure  : 5.60222e+06
+Iteration: 640
+  Density   : 5.92116  U-velocity: 5584.19  V-velocity: 5070.83  Pressure  : 5.60647e+06
+Iteration: 641
+  Density   : 5.92302  U-velocity: 5586.12  V-velocity: 5074.75  Pressure  : 5.61092e+06
+Iteration: 642
+  Density   : 5.92442  U-velocity: 5587.49  V-velocity: 5078.32  Pressure  : 5.61435e+06
+Iteration: 643
+  Density   : 5.92535  U-velocity: 5588.51  V-velocity: 5080.83  Pressure  : 5.6169e+06
+Iteration: 644
+  Density   : 5.9263  U-velocity: 5589.95  V-velocity: 5083.24  Pressure  : 5.61969e+06
+Iteration: 645
+  Density   : 5.92729  U-velocity: 5591.6  V-velocity: 5085.79  Pressure  : 5.62219e+06
+Iteration: 646
+  Density   : 5.92827  U-velocity: 5592.88  V-velocity: 5088.28  Pressure  : 5.62425e+06
+Iteration: 647
+  Density   : 5.92949  U-velocity: 5594.21  V-velocity: 5090.97  Pressure  : 5.627e+06
+Iteration: 648
+  Density   : 5.93109  U-velocity: 5596.09  V-velocity: 5094.24  Pressure  : 5.63056e+06
+Iteration: 649
+  Density   : 5.93287  U-velocity: 5598.07  V-velocity: 5097.9  Pressure  : 5.63407e+06
+Iteration: 650
+  Density   : 5.93449  U-velocity: 5599.64  V-velocity: 5101.48  Pressure  : 5.63759e+06
+Iteration: 651
+  Density   : 5.93636  U-velocity: 5601.41  V-velocity: 5105.28  Pressure  : 5.64173e+06
+Iteration: 652
+  Density   : 5.93814  U-velocity: 5603.27  V-velocity: 5108.97  Pressure  : 5.64574e+06
+Iteration: 653
+  Density   : 5.93968  U-velocity: 5604.92  V-velocity: 5112.26  Pressure  : 5.64866e+06
+Iteration: 654
+  Density   : 5.94069  U-velocity: 5606.27  V-velocity: 5114.89  Pressure  : 5.65126e+06
+Iteration: 655
+  Density   : 5.94166  U-velocity: 5607.76  V-velocity: 5117.65  Pressure  : 5.65447e+06
+Iteration: 656
+  Density   : 5.94256  U-velocity: 5609.16  V-velocity: 5120.01  Pressure  : 5.657e+06
+Iteration: 657
+  Density   : 5.94379  U-velocity: 5610.64  V-velocity: 5122.78  Pressure  : 5.65926e+06
+Iteration: 658
+  Density   : 5.94514  U-velocity: 5612.25  V-velocity: 5125.81  Pressure  : 5.66226e+06
+Iteration: 659
+  Density   : 5.94663  U-velocity: 5614.11  V-velocity: 5128.99  Pressure  : 5.6659e+06
+Iteration: 660
+  Density   : 5.94865  U-velocity: 5616.07  V-velocity: 5132.77  Pressure  : 5.66946e+06
+Iteration: 661
+  Density   : 5.95067  U-velocity: 5617.89  V-velocity: 5136.77  Pressure  : 5.67286e+06
+Iteration: 662
+  Density   : 5.9525  U-velocity: 5619.97  V-velocity: 5140.49  Pressure  : 5.67688e+06
+Iteration: 663
+  Density   : 5.95397  U-velocity: 5621.7  V-velocity: 5143.55  Pressure  : 5.68033e+06
+Iteration: 664
+  Density   : 5.9554  U-velocity: 5623.01  V-velocity: 5146.87  Pressure  : 5.68317e+06
+Iteration: 665
+  Density   : 5.95643  U-velocity: 5624.13  V-velocity: 5149.7  Pressure  : 5.68567e+06
+Iteration: 666
+  Density   : 5.95736  U-velocity: 5625.72  V-velocity: 5152.04  Pressure  : 5.68878e+06
+Iteration: 667

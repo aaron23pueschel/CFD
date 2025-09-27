@@ -13,18 +13,19 @@ int testmesh();
 int main(){
     
     Simulation test("inputs/curve_inputs.json");
-    test.simulation_solver.set_ambient_conditions();
+    test.simulation_solver.set_MMS_initial_conditions();
     test.simulation_solver.set_boundary_conditions();
-    test.simulation_solver.flux.set_MMS_source(false);
+    test.simulation_solver.flux.set_MMS_source(true);
      test.simulation_flux.compute_residual();
     
     // //test.simulation_solver.set_flow_initial_conditions();
     const string primvar = "primitives.csv";
     //test.write_primitives_csv(primvar);
     // // test.simulation_mesh.test_boundary_normals();
-     for(int i=0;i<3000;i++){
+     for(int i=0;i<14000;i++){
         cout << "Iteration: " << i<<endl; 
          test.simulation_solver.iteration_step(i);
+
      
     //test.simulation_solver.iteration_step(1);
       auto norms = test.simulation_flux.compute_norm();
@@ -37,12 +38,13 @@ int main(){
      }
 
     test.write_primitives_csv(primvar);
+    test.write_residuals_csv("residuals.csv");
+    test.write_sources_csv("sources.csv");
 
-
-    for(Cell* cell: test.simulation_mesh.ghost_cells){
-        auto P = test.simulation_flux.get_primvars(cell->U);
-        cout<<"  rho: "<< P[0]<<endl;
-    }
+    // for(Cell* cell: test.simulation_mesh.ghost_cells){
+    //     auto P = test.simulation_flux.get_primvars(cell->U);
+    //     cout<<"  rho: "<< P[0]<<endl;
+    // }
 
     return 0;
 }

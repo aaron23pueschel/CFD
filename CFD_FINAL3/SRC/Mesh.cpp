@@ -527,13 +527,13 @@ void Mesh::set_airfoil_boundary_types(){
     cout << "Setting boundary types"<<endl;
     for (Cell* c : ghost_cells) {
        
-        if(c->cell_D != nullptr){
-            c->type = 2; 
+        if(c->cell_D != nullptr){ 
+                c->type = 2; 
         }   
         if(c->cell_R !=nullptr)
             c->type = 0; // outflow
         if(c->cell_L !=nullptr)
-            c->type = 0; //slip
+            c->type = 0; //outflow
         if(c->cell_U != nullptr){
             Cell* cell_temp = c->cell_U;
             bool found = false;
@@ -543,10 +543,8 @@ void Mesh::set_airfoil_boundary_types(){
                                  && cell_temp->y22==c_->cell_U->y21 &&cell_temp->y21==c_->cell_U->y22){
 
                     c->cell_U->cell_D = c_->cell_U;
-                    //c_->cell_U = c->cell_U->cell_D;
-                    cout << "Found matching condition"<<endl;
                     found = true;
-                    c->type = 0;
+                    c->type = 4;  //
                     break;
                 }
 

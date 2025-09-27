@@ -20,6 +20,9 @@ public:
     double* K2 = new double[4]();
     double* K3 = new double[4]();
     double* K4 = new double[4]();
+    double* total_residual = new double[4]();
+    double* p1 = new double[1]();
+
     // Solver variables
     double delta_t;
 

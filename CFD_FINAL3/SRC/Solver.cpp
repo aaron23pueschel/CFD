@@ -106,6 +106,7 @@ void Solver::RK4_step() {
     for (Cell* c : mesh.interior_cells) {
         const double dt = c->delta_t;
         for (int i = 0; i < 4; ++i) {
+            c->total_residual[i] = (c->K1[i] + 2.0*c->K2[i] + 2.0*c->K3[i] + c->K4[i]);
             c->U[i] = c->temp_U[i]
                     + (dt/6.0) * (c->K1[i] + 2.0*c->K2[i] + 2.0*c->K3[i] + c->K4[i]);
         }
@@ -115,13 +116,19 @@ void Solver::RK4_step() {
 
 
 void Solver::step(){
-    
+    bool is_mms = inputs["is_mms"];
     for (Cell* cell : mesh.interior_cells){
+        if (is_mms &&( (cell->cell_L && cell->cell_L->name == "Ghost") ||
+     (cell->cell_R && cell->cell_R->name == "Ghost") ||
+     (cell->cell_U && cell->cell_U->name == "Ghost") ||
+     (cell->cell_D && cell->cell_D->name == "Ghost") ))
+     continue;
         for(int i=0;i<4;i++){
-            
-            cell->U[i] = cell->U[i] - (((cell->Residual[i]))/cell->Volume+cell->Source[i])*cell->delta_t;
-
+            cell->total_residual[i] = (((cell->Residual[i]))/cell->Volume-cell->Source[i]);
+            cell->U[i] = cell->U[i] - (((cell->Residual[i]))/cell->Volume-cell->Source[i])*cell->delta_t;
         }
+
+        
     }
 
 
@@ -180,13 +187,13 @@ void Solver::set_mms_bcs(Cell* outflow_cell){
     Cell* neighbor = nullptr;
     double midpointx;
     double midpointy;
-    if (outflow_cell->cell_R){
-        neighbor = outflow_cell->cell_R;
+    if (outflow_cell->cell_L){
+        neighbor = outflow_cell->cell_L;
         midpointx = (neighbor->x12 +neighbor->x22)/2;
         midpointy = (neighbor->y12 +neighbor->y22)/2;
     }
-     else if (outflow_cell->cell_L){
-        neighbor = outflow_cell->cell_L;
+     else if (outflow_cell->cell_R){
+        neighbor = outflow_cell->cell_R;
         midpointx = (neighbor->x11 +neighbor->x21)/2;
         midpointy = (neighbor->y11 +neighbor->y21)/2;
      }
@@ -201,8 +208,14 @@ void Solver::set_mms_bcs(Cell* outflow_cell){
         midpointy = (neighbor->y11 +neighbor->y12)/2;
 
      }
+
+    
     else
         throw std::invalid_argument("Cannot set outflow");
+
+    midpointx = neighbor->midpoint_x;
+    midpointy = neighbor->midpoint_y;
+     
     double length = 1.0;
     double gamma = 1.4;
     
@@ -214,6 +227,7 @@ void Solver::set_mms_bcs(Cell* outflow_cell){
     temp[3] = flux.press_mms(length,midpointx,midpointy);
 
     flux.set_conserved(outflow_cell,temp);
+    flux.set_conserved(neighbor,temp);
     
     // for(int i=0;i<4;i++)
     //     cout << outflow_cell->U[i] <<",  "<<endl;
@@ -226,7 +240,7 @@ void Solver::set_mms_bcs(Cell* outflow_cell){
 
 
 void Solver::set_boundary_conditions(){
-
+    bool use_normal_bcs = true;
     for (Cell* c : mesh.ghost_cells) {
 
         
@@ -239,16 +253,40 @@ void Solver::set_boundary_conditions(){
         if(c->type == 0)
             set_outflow_bcs(c);
 
-
+        if(c->type==1 && use_normal_bcs)
+            set_normal_bcs(c);
 
         if(c->type==3)
             set_mms_bcs(c);
+
+        
 
     }
 
 
 }
 
+
+
+void Solver::set_MMS_initial_conditions(){
+    cout << "Setting inflow Conditions...";
+
+    
+    
+
+    for (Cell* cell : mesh.interior_cells){
+        double rho_ = flux.rho_mms(1000.0,cell->midpoint_x,cell->midpoint_y);
+        double u_ = flux.uvel_mms(1000.0,cell->midpoint_x,cell->midpoint_y);
+        double v_ = flux.vvel_mms(1000.0,cell->midpoint_x,cell->midpoint_y);
+        double p_ = flux.press_mms(1000.0,cell->midpoint_x,cell->midpoint_y);
+        flux.set_conserved(cell,{rho_,u_,v_,p_});
+    }
+
+
+
+    
+
+}
 
 
 
@@ -363,6 +401,7 @@ void Solver::set_ambient_conditions(){
 void Solver::set_inflow_bcs(Cell* inflow_cell, double nx, double ny)
 {
     // Inputs: static freestream
+    
     const double gamma = this->gamma;
     const double M     = inputs["mach"];   // freestream Mach (static)
     const double R     = inputs["ru"];     // gas constant
@@ -376,8 +415,8 @@ void Solver::set_inflow_bcs(Cell* inflow_cell, double nx, double ny)
 
 
     // Velocity INTO the domain: V · n < 0  -> choose V = -U * n
-    const double u = U;
-    const double v = 0.0;
+    const double u = 1*U;
+    const double v = 0*U;
 
     // Set full state (Dirichlet) for supersonic inflow
     flux.set_conserved(inflow_cell, {rho, u, v, p});

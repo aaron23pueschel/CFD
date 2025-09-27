@@ -40,12 +40,19 @@ double Flux::press_mms(double length, double x, double y) {
          + pressy * sin((pi * y) / length);
 }
 
-double Flux::mass_mms(double L, double x, double y){
+double Flux::mass_mms(double length, double x, double y){
 
-    double mass = (3*pi*uvelx*cos((3*pi*x)/(2.*L))*(rho0 + rhoy*cos((pi*y)/(2.*L)) + rhox*sin((pi*x)/L)))/(2.*L) + 
-   (2*pi*vvely*cos((2*pi*y)/(3.*L))*(rho0 + rhoy*cos((pi*y)/(2.*L)) + rhox*sin((pi*x)/L)))/(3.*L) + 
-   (pi*rhox*cos((pi*x)/L)*(uvel0 + uvely*cos((3*pi*y)/(5.*L)) + uvelx*sin((3*pi*x)/(2.*L))))/L - 
-   (pi*rhoy*sin((pi*y)/(2.*L))*(vvel0 + vvelx*cos((pi*x)/(2.*L)) + vvely*sin((2*pi*y)/(3.*L))))/(2.*L);
+   
+
+   double mass = (three*pi*uvelx*cos((three*pi*x)/(two*length)) *                 
+    (rho0 + rhoy*cos((pi*y)/(two*length)) + rhox*sin((pi*x)/length))) /        
+    (two*length) + (two*pi*vvely*cos((two*pi*y)/(three*length)) *              
+    (rho0 + rhoy*cos((pi*y)/(two*length)) + rhox*sin((pi*x)/length))) /        
+    (three*length) + (pi*rhox*cos((pi*x)/length) *                             
+    (uvel0 + uvely*cos((three*pi*y)/(five*length)) + uvelx*sin((three*pi*x)/   
+    (two*length))))/length - (pi*rhoy*sin((pi*y)/(two*length)) *               
+    (vvel0 + vvelx*cos((pi*x)/(two*length)) + vvely*sin((two*pi*y) /           
+    (three*length))))/(two*length);
 
 
     return mass;
@@ -54,43 +61,32 @@ double Flux::mass_mms(double L, double x, double y){
 
 
 
-double Flux::xmtm_mms(double L,double x,double y){
+double Flux::xmtm_mms(double length,double x,double y){
 
 
-//     double xmtm = (2*pi*vvely*cos((2*pi*y)/(3.*L))*(rho0 + rhoy*cos((pi*y)/(2.*L)) + rhox*sin((pi*x)/L))*
-//       (uvel0 + uvely*cos((3*pi*y)/(5.*L)) + uvelx*sin((3*pi*x)/(2.*L))))/(3.*L) - 
-//    (pi*rhoy*(uvel0 + uvely*cos((3*pi*y)/(5.*L)) + uvelx*sin((3*pi*x)/(2.*L)))*sin((pi*y)/(2.*L))*
-//       (vvel0 + vvelx*cos((pi*x)/(2.*L)) + vvely*sin((2*pi*y)/(3.*L))))/(2.*L) - 
-//    (3*pi*uvely*(rho0 + rhoy*cos((pi*y)/(2.*L)) + rhox*sin((pi*x)/L))*sin((3*pi*y)/(5.*L))*
-//       (vvel0 + vvelx*cos((pi*x)/(2.*L)) + vvely*sin((2*pi*y)/(3.*L))))/(5.*L);
-
-//     return xmtm;
 
 
-return (3.0*pi*uvelx*cos((3.0*pi*x)/(2.0*L)) *
-        (rho0 + rhoy*cos((pi*y)/(2.0*L)) + rhox*sin((pi*x)/L)) *
-        (uvel0 + uvely*cos((3.0*pi*y)/(5.0*L)) +
-         uvelx*sin((3.0*pi*x)/(2.0*L))))/L
-     + (2.0*pi*vvely*cos((2.0*pi*y)/(3.0*L)) *
-        (rho0 + rhoy*cos((pi*y)/(2.0*L)) + rhox*sin((pi*x)/L)) *
-        (uvel0 + uvely*cos((3.0*pi*y)/(5.0*L)) +
-         uvelx*sin((3.0*pi*x)/(2.0*L))))/(3.0*L)
-     + (pi*rhox*cos((pi*x)/L) *
-        (uvel0 + uvely*cos((3.0*pi*y)/(5.0*L)) +
-         uvelx*sin((3.0*pi*x)/(2.0*L))) *
-        (uvel0 + uvely*cos((3.0*pi*y)/(5.0*L)) +
-         uvelx*sin((3.0*pi*x)/(2.0*L))))/L
-     - (2.0*pi*pressx*sin((2.0*pi*x)/L))/L
-     - (pi*rhoy*(uvel0 + uvely*cos((3.0*pi*y)/(5.0*L)) +
-                 uvelx*sin((3.0*pi*x)/(2.0*L))) *
-        sin((pi*y)/(2.0*L)) *
-        (vvel0 + vvelx*cos((pi*x)/(2.0*L)) +
-         vvely*sin((2.0*pi*y)/(3.0*L))))/(2.0*L)
-     - (3.0*pi*uvely*(rho0 + rhoy*cos((pi*y)/(2.0*L)) +
-                      rhox*sin((pi*x)/L)) *
-        sin((3.0*pi*y)/(5.0*L)) *
-        (vvel0 + vvelx*cos((pi*x)/(2.0*L)) +
-         vvely*sin((2.0*pi*y)/(3.0*L))))/(5.0*L);
+ double xmtmconv = (three*pi*uvelx*cos((three*pi*x)/(two*length)) *                  
+    (rho0 + rhoy*cos((pi*y)/(two*length)) + rhox*sin((pi*x)/length)) *         
+    (uvel0 + uvely*cos((three*pi*y)/(five*length)) +                           
+    uvelx*sin((three*pi*x)/(two*length))))/length +                            
+    (two*pi*vvely*cos((two*pi*y) /                                             
+    (three*length))*(rho0 + rhoy*cos((pi*y)/(two*length)) +                    
+    rhox*sin((pi*x)/length))*(uvel0 + uvely*cos((three*pi*y) /                 
+    (five*length)) + uvelx*sin((three*pi*x)/(two*length))))/(three*length) +   
+    (pi*rhox*cos((pi*x)/length)*pow(uvel0 + uvely*cos((three*pi*y) /              
+    (five*length)) + uvelx*sin((three*pi*x)/(two*length)),2))/length -        
+    (two*pi*pressx*sin((two*pi*x)/length))/length -                            
+    (pi*rhoy*(uvel0 + uvely*cos((three*pi*y)/(five*length)) +                  
+    uvelx*sin((three*pi*x)/(two*length)))*sin((pi*y)/(two*length))*            
+    (vvel0 + vvelx*cos((pi*x)/(two*length)) +                                  
+    vvely*sin((two*pi*y)/(three*length))))/(two*length) -                      
+    (three*pi*uvely*(rho0 + rhoy*cos((pi*y)/(two*length)) +                    
+    rhox*sin((pi*x)/length))*sin((three*pi*y)/(five*length))*(vvel0 + vvelx *  
+    cos((pi*x)/(two*length)) + vvely*sin((two*pi*y)/(three*length)))) /        
+    (five*length);
+
+    return xmtmconv;
 
 
 
@@ -98,27 +94,31 @@ return (3.0*pi*uvelx*cos((3.0*pi*x)/(2.0*L)) *
 
 
 
-double Flux::ymtm_mms(double L,double x,double y){
-
-//     double ymtm = (pi*pressy*cos((pi*y)/L))/L + (4*pi*vvely*cos((2*pi*y)/(3.*L))*(rho0 + rhoy*cos((pi*y)/(2.*L)) + rhox*sin((pi*x)/L))*
-//       (vvel0 + vvelx*cos((pi*x)/(2.*L)) + vvely*sin((2*pi*y)/(3.*L))))/(3.*L) - 
-//    (pi*rhoy*sin((pi*y)/(2.*L))*pow(vvel0 + vvelx*cos((pi*x)/(2.*L)) + vvely*sin((2*pi*y)/(3.*L)),2))/(2.*L);
+double Flux::ymtm_mms(double length,double x,double y){
 
 
-//     return ymtm;
+double ymtmconv = (pi*pressy*cos((pi*y)/length))/length -                           
+    (pi*vvelx*sin((pi*x)/(two*length))*(rho0 + rhoy*cos((pi*y)/(two*length)) + 
+    rhox*sin((pi*x)/length))*(uvel0 + uvely*cos((three*pi*y)/(five*length)) +  
+    uvelx*sin((three*pi*x)/(two*length))))/(two*length) +                      
+    (three*pi*uvelx*cos((three*pi*x)/(two*length)) *                           
+    (rho0 + rhoy*cos((pi*y)/(two*length)) + rhox*sin((pi*x)/length)) *         
+    (vvel0 + vvelx*cos((pi*x)/(two*length)) +                                  
+    vvely*sin((two*pi*y)/(three*length))))/(two*length) +                      
+    (four*pi*vvely*cos((two*pi*y) /                                            
+    (three*length))*(rho0 + rhoy*cos((pi*y)/(two*length)) +                    
+    rhox*sin((pi*x)/length))*(vvel0 + vvelx*cos((pi*x)/(two*length)) +         
+    vvely*sin((two*pi*y)/(three*length))))/(three*length) +                    
+    (pi*rhox*cos((pi*x)/length) *                                              
+    (uvel0 + uvely*cos((three*pi*y)/(five*length)) +                           
+    uvelx*sin((three*pi*x)/(two*length))) *                                    
+    (vvel0 + vvelx*cos((pi*x)/(two*length)) +                                  
+    vvely*sin((two*pi*y)/(three*length))))/length -                            
+    (pi*rhoy*sin((pi*y)/(two*length)) *                                        
+    pow(vvel0 + vvelx*cos((pi*x)/(two*length)) +                                  
+    vvely*sin((two*pi*y)/(three*length)),2))/(two*length);
 
-return (pi*pressy*cos((pi*y)/L))/L
-     - (pi*vvelx*sin((pi*x)/(2.0*L)) * (rho0 + rhoy*cos((pi*y)/(2.0*L)) + rhox*sin((pi*x)/L))
-        * (uvel0 + uvely*cos((3.0*pi*y)/(5.0*L)) + uvelx*sin((3.0*pi*x)/(2.0*L))))/(2.0*L)
-     + (3.0*pi*uvelx*cos((3.0*pi*x)/(2.0*L)) * (rho0 + rhoy*cos((pi*y)/(2.0*L)) + rhox*sin((pi*x)/L))
-        * (vvel0 + vvelx*cos((pi*x)/(2.0*L)) + vvely*sin((2.0*pi*y)/(3.0*L))))/(2.0*L)
-     + (4.0*pi*vvely*cos((2.0*pi*y)/(3.0*L)) * (rho0 + rhoy*cos((pi*y)/(2.0*L)) + rhox*sin((pi*x)/L))
-        * (vvel0 + vvelx*cos((pi*x)/(2.0*L)) + vvely*sin((2.0*pi*y)/(3.0*L))))/(3.0*L)
-     + (pi*rhox*cos((pi*x)/L) * (uvel0 + uvely*cos((3.0*pi*y)/(5.0*L)) + uvelx*sin((3.0*pi*x)/(2.0*L)))
-        * (vvel0 + vvelx*cos((pi*x)/(2.0*L)) + vvely*sin((2.0*pi*y)/(3.0*L))))/L
-     - (pi*rhoy*sin((pi*y)/(2.0*L)) * std::pow(vvel0 + vvelx*cos((pi*x)/(2.0*L))
-        + vvely*sin((2.0*pi*y)/(3.0*L)), 2))/(2.0*L);
-
+    return ymtmconv;
 
 
 }
@@ -127,49 +127,78 @@ return (pi*pressy*cos((pi*y)/L))/L
 
 
 
-double Flux::energy_mms(double L,double x,double y){
+double Flux::energy_mms(double length,double x,double y){
 
 
-    double energy = (uvel0 + uvely*cos((3*pi*y)/(5.*L)) + uvelx*sin((3*pi*x)/(2.*L)))*
-    ((-2*pi*pressx*sin((2*pi*x)/L))/L + (rho0 + rhoy*cos((pi*y)/(2.*L)) + rhox*sin((pi*x)/L))*
-       ((-2*pi*pressx*sin((2*pi*x)/L))/((-1 + gamma)*L*(rho0 + rhoy*cos((pi*y)/(2.*L)) + rhox*sin((pi*x)/L))) + 
-         ((3*pi*uvelx*cos((3*pi*x)/(2.*L))*(uvel0 + uvely*cos((3*pi*y)/(5.*L)) + uvelx*sin((3*pi*x)/(2.*L))))/L - 
-            (pi*vvelx*sin((pi*x)/(2.*L))*(vvel0 + vvelx*cos((pi*x)/(2.*L)) + vvely*sin((2*pi*y)/(3.*L))))/L)/2. - 
-         (pi*rhox*cos((pi*x)/L)*(press0 + pressx*cos((2*pi*x)/L) + pressy*sin((pi*y)/L)))/
-          ((-1 + gamma)*L*pow(rho0 + rhoy*cos((pi*y)/(2.*L)) + rhox*sin((pi*x)/L),2))) + 
-      (pi*rhox*cos((pi*x)/L)*((pow(0.0,2) + pow(uvel0 + uvely*cos((3*pi*y)/(5.*L)) + uvelx*sin((3*pi*x)/(2.*L)),2) + 
-              pow(vvel0 + vvelx*cos((pi*x)/(2.*L)) + vvely*sin((2*pi*y)/(3.*L)),2))/2. + 
-           (press0 + pressx*cos((2*pi*x)/L) + pressy*sin((pi*y)/L))/
-            ((-1 + gamma)*(rho0 + rhoy*cos((pi*y)/(2.*L)) + rhox*sin((pi*x)/L)))))/L) + 
-   (3*pi*uvelx*cos((3*pi*x)/(2.*L))*(press0 + pressx*cos((2*pi*x)/L) + pressy*sin((pi*y)/L) + 
-        (rho0 + rhoy*cos((pi*y)/(2.*L)) + rhox*sin((pi*x)/L))*
-         ((pow(0.0,2) + pow(uvel0 + uvely*cos((3*pi*y)/(5.*L)) + uvelx*sin((3*pi*x)/(2.*L)),2) + 
-              pow(vvel0 + vvelx*cos((pi*x)/(2.*L)) + vvely*sin((2*pi*y)/(3.*L)),2))/2. + 
-           (press0 + pressx*cos((2*pi*x)/L) + pressy*sin((pi*y)/L))/
-            ((-1 + gamma)*(rho0 + rhoy*cos((pi*y)/(2.*L)) + rhox*sin((pi*x)/L))))))/(2.*L) + 
-   (2*pi*vvely*cos((2*pi*y)/(3.*L))*(press0 + pressx*cos((2*pi*x)/L) + pressy*sin((pi*y)/L) + 
-        (rho0 + rhoy*cos((pi*y)/(2.*L)) + rhox*sin((pi*x)/L))*
-         ((pow(0.0,2) + pow(uvel0 + uvely*cos((3*pi*y)/(5.*L)) + uvelx*sin((3*pi*x)/(2.*L)),2) + 
-              pow(vvel0 + vvelx*cos((pi*x)/(2.*L)) + vvely*sin((2*pi*y)/(3.*L)),2))/2. + 
-           (press0 + pressx*cos((2*pi*x)/L) + pressy*sin((pi*y)/L))/
-            ((-1 + gamma)*(rho0 + rhoy*cos((pi*y)/(2.*L)) + rhox*sin((pi*x)/L))))))/(3.*L) + 
-   (vvel0 + vvelx*cos((pi*x)/(2.*L)) + vvely*sin((2*pi*y)/(3.*L)))*
-    ((pi*pressy*cos((pi*y)/L))/L - (pi*rhoy*sin((pi*y)/(2.*L))*
-         ((pow(0.0,2) + pow(uvel0 + uvely*cos((3*pi*y)/(5.*L)) + uvelx*sin((3*pi*x)/(2.*L)),2) + 
-              pow(vvel0 + vvelx*cos((pi*x)/(2.*L)) + vvely*sin((2*pi*y)/(3.*L)),2))/2. + 
-           (press0 + pressx*cos((2*pi*x)/L) + pressy*sin((pi*y)/L))/
-            ((-1 + gamma)*(rho0 + rhoy*cos((pi*y)/(2.*L)) + rhox*sin((pi*x)/L)))))/(2.*L) + 
-      (rho0 + rhoy*cos((pi*y)/(2.*L)) + rhox*sin((pi*x)/L))*
-       ((pi*pressy*cos((pi*y)/L))/((-1 + gamma)*L*(rho0 + rhoy*cos((pi*y)/(2.*L)) + rhox*sin((pi*x)/L))) + 
-         ((-6*pi*uvely*(uvel0 + uvely*cos((3*pi*y)/(5.*L)) + uvelx*sin((3*pi*x)/(2.*L)))*sin((3*pi*y)/(5.*L)))/(5.*L) + 
-            (4*pi*vvely*cos((2*pi*y)/(3.*L))*(vvel0 + vvelx*cos((pi*x)/(2.*L)) + vvely*sin((2*pi*y)/(3.*L))))/(3.*L))/2. + 
-         (pi*rhoy*sin((pi*y)/(2.*L))*(press0 + pressx*cos((2*pi*x)/L) + pressy*sin((pi*y)/L)))/
-          (2.*(-1 + gamma)*L*pow(rho0 + rhoy*cos((pi*y)/(2.*L)) + rhox*sin((pi*x)/L),2))));
+   double energyconv = (uvel0 + uvely*cos((three*pi*y)/(five*length)) +                
+    uvelx*sin((three*pi*x)/(two*length)))*((-two*pi*pressx*sin((two*pi*x) /    
+    length))/length + (rho0 + rhoy*cos((pi*y)/(two*length)) +                  
+    rhox*sin((pi*x)/length))*((-two*pi*pressx*sin((two*pi*x)/length))/         
+    ((-one + gamma)*length*(rho0 + rhoy*cos((pi*y)/(two*length)) +             
+    rhox*sin((pi*x)/length))) + ((three*pi*uvelx*cos((three*pi*x) /            
+    (two*length))*(uvel0 + uvely*cos((three*pi*y)/(five*length)) +             
+    uvelx*sin((three*pi*x)/(two*length))))/length - (pi*vvelx*sin((pi*x) /     
+    (two*length))*(vvel0 + vvelx*cos((pi*x)/(two*length)) +                    
+    vvely*sin((two*pi*y)/(three*length))))/length)/two - (pi*rhox*cos((pi*x) / 
+    length)*(press0 + pressx*cos((two*pi*x)/length) +                           
+    pressy*sin((pi*y)/length)))/((-one + gamma)*length*pow(rho0 + rhoy*cos((pi*y)/
+    (two*length)) + rhox*sin((pi*x)/length),2))) +                            
+    (pi*rhox*cos((pi*x)/length)*((0.0 + pow(uvel0 + uvely*cos((three*pi*y) / 
+    (five*length)) + uvelx*sin((three*pi*x)/(two*length)),2) +                
+    pow(vvel0 + vvelx*cos((pi*x)/(two*length)) + vvely*sin((two*pi*y) /           
+    (three*length)),2))/two + (press0 + pressx*cos((two*pi*x)/length) +       
+    pressy*sin((pi*y)/length))/((-one + gamma) *                               
+    (rho0 + rhoy*cos((pi*y)/(two*length)) +                                    
+    rhox*sin((pi*x)/length)))))/length) +                                      
+    (three*pi*uvelx*cos((three*pi*x)/(two*length)) *                           
+    (press0 + pressx*cos((two*pi*x)/length) + pressy*sin((pi*y)/length) +      
+    (rho0 + rhoy*cos((pi*y)/(two*length)) + rhox*sin((pi*x)/length))*          
+    ((0.0 + pow(uvel0 + uvely*cos((three*pi*y)/(five*length)) +              
+    uvelx*sin((three*pi*x)/(two*length)),2) +                                 
+    pow(vvel0 + vvelx*cos((pi*x)/(two*length)) +                                  
+    vvely*sin((two*pi*y)/(three*length)),2))/two +                            
+    (press0 + pressx*cos((two*pi*x)/length) +                                  
+    pressy*sin((pi*y)/length))/((-one + gamma) *                               
+    (rho0 + rhoy*cos((pi*y)/(two*length)) +                                    
+    rhox*sin((pi*x)/length))))))/(two*length) +                                
+    (two*pi*vvely*cos((two*pi*y)/(three*length)) *                             
+    (press0 + pressx*cos((two*pi*x)/length) +                                  
+    pressy*sin((pi*y)/length) + (rho0 + rhoy*cos((pi*y)/(two*length)) +        
+    rhox*sin((pi*x)/length))*((0.0 +                                      
+    pow(uvel0 + uvely*cos((three*pi*y)/(five*length)) +                           
+    uvelx*sin((three*pi*x)/(two*length)),2) +                                 
+    pow(vvel0 + vvelx*cos((pi*x)/(two*length)) +                                  
+    vvely*sin((two*pi*y)/(three*length)),2))/two +                            
+    (press0 + pressx*cos((two*pi*x)/length) + pressy*sin((pi*y)/length)) /     
+	((-one + gamma)*(rho0 + rhoy*cos((pi*y)/(two*length)) +                    
+    rhox*sin((pi*x)/length))))))/(three*length) + (vvel0 + vvelx*cos((pi*x) /  
+    (two*length)) + vvely*sin((two*pi*y)/(three*length))) *                    
+    ((pi*pressy*cos((pi*y)/length))/length - (pi*rhoy*sin((pi*y)/(two*length))*
+    ((0.0 + pow(uvel0 + uvely*cos((three*pi*y)/(five*length)) +              
+    uvelx*sin((three*pi*x)/(two*length)),2) + pow(vvel0 + vvelx *                
+    cos((pi*x)/(two*length)) + vvely*sin((two*pi*y)/(three*length)),2))/two + 
+    (press0 + pressx*cos((two*pi*x)/length) +                                  
+    pressy*sin((pi*y)/length))/((-one + gamma) *                               
+    (rho0 + rhoy*cos((pi*y)/(two*length)) +                                    
+    rhox*sin((pi*x)/length)))))/(two*length) +                                 
+    (rho0 + rhoy*cos((pi*y)/(two*length)) +                                    
+    rhox*sin((pi*x)/length))*((pi*pressy*cos((pi*y)/length)) /                 
+    ((-one + gamma)*length*(rho0 + rhoy*cos((pi*y)/(two*length)) +             
+    rhox*sin((pi*x)/length))) +                                                
+    ((-six*pi*uvely*(uvel0 + uvely*cos((three*pi*y) /                          
+    (five*length)) + uvelx*sin((three*pi*x)/(two*length))) *                   
+    sin((three*pi*y)/(five*length)))/(five*length) +                           
+    (four*pi*vvely*cos((two*pi*y) /                                            
+    (three*length))*(vvel0 + vvelx*cos((pi*x)/(two*length)) +                  
+    vvely*sin((two*pi*y)/(three*length))))/(three*length))/two +               
+    (pi*rhoy*sin((pi*y)/(two*length))*(press0 + pressx*cos((two*pi*x)/length) +
+    pressy*sin((pi*y)/length)))/(two*(-one + gamma)*length*                    
+    pow(rho0 + rhoy*cos((pi*y)/(two*length)) + rhox*sin((pi*x)/length),2))));
 
 
 
 
-    return energy;
+    return energyconv;
 
 
 
@@ -441,12 +470,17 @@ double p_func(double i4,double i3,double i2,double i1){
     double NUM = i4-i3;
     double DEN = i2-i1;
 
-    if(DEN<.00000001)
+
+    if (abs(DEN) < 1e-6)
         return 0.0;
-    double r = NUM/DEN;
-    auto den = (1+r > 0) - (1+r < 0);
-    //return (r+abs(r))/(1+abs(r));
-    return (r*r+r)/max(.00000001,1+r*r);
+
+    double r = NUM / DEN;
+    //return std::max(0.0, std::min(1.0, r));
+    //return (r + std::abs(r)) / (1.0 + std::abs(r));
+    //return std::max(0.0, std::max(std::min(2*r,1.0), std::min(r,2.0)));
+    return (r + std::abs(r)) / (1.0 + std::abs(r));
+    //return (r*r+r)/max(.00000001,1+r*r);
+    //return 1.0;
         
 
 }
@@ -494,7 +528,7 @@ pair<array<double,4>, array<double,4>> Flux::MusclExtrapolation(Cell* cell,char 
                 auto CR  = cell->cell_R;
 
                 
-                    p1 = p_func(cell->U[i],CL->U[i],CL->U[i],CLL->U[i]);
+                p1 = p_func(cell->U[i],CL->U[i],CL->U[i],CLL->U[i]);
                 p3 = p_func(cell->U[i],CL->U[i],CR->U[i],cell->U[i]);
 
                 FL[i] = CL->U[i]+ 0.5*upwind_order_ * (p1 * (CL->U[i]   - CLL->U[i]));
@@ -508,7 +542,7 @@ pair<array<double,4>, array<double,4>> Flux::MusclExtrapolation(Cell* cell,char 
                 auto CU  = cell->cell_U;
 
                 
-                    p3 = p_func(CU->U[i],cell->U[i],CUU->U[i],CU->U[i]);
+                p3 = p_func(CU->U[i],cell->U[i],CUU->U[i],CU->U[i]);
                 p1 = p_func(CU->U[i],cell->U[i],cell->U[i],CD->U[i]);
                 
 
@@ -531,7 +565,8 @@ pair<array<double,4>, array<double,4>> Flux::MusclExtrapolation(Cell* cell,char 
                 FR[i] = cell->U[i]- 0.5*upwind_order_ * (p3 * (CU->U[i]   - cell->U[i]));
             }
 
-
+        if(p1>0)
+            cell->p1[0] = p1;
         if(isnan(FL[i])||isnan(FR[i])){
             cout<<"Nan encountered at index: "<<i<<", Direction: "<<direction<<endl;
             throw invalid_argument("NaN encountered");
@@ -562,7 +597,7 @@ array<double,4> Flux::compute_norm(){
     double sumP = 0.0; double sumU = 0.0;double sumV=0.0;double sumRho = 0.0;
     int N = mesh.interior_cells.size();
     for(Cell* cell: mesh.interior_cells){
-        auto V = cell->Residual;
+        auto V = cell->total_residual;
         sumRho += V[0]*V[0];
         sumU += V[1]*V[1];
         sumV += V[2]*V[2];
@@ -584,7 +619,7 @@ array<double,4> Flux::compute_norm(){
 
 
 void Flux::compute_residual(){
-
+    bool use_flux_bcs = true;
     array<double, 4> FL = {0.0, 0.0, 0.0, 0.0};
     array<double, 4> FR = {0.0, 0.0, 0.0, 0.0};
     array<double, 4> FD = {0.0, 0.0, 0.0, 0.0};
@@ -592,6 +627,7 @@ void Flux::compute_residual(){
     array<double,4> UL, UR;
     for (Cell* cell : mesh.interior_cells) {
 
+        
         std::function<array<double,4>(array<double,4>,array<double,4>,double, double)> flux_function;
 
            if (damping_scheme == 1) {
@@ -605,13 +641,12 @@ void Flux::compute_residual(){
             };
         }
 
-        bool ghost_flag = false;
         if (cell->cell_L) {
             auto ULR = MusclExtrapolation(cell, 'L');  // {UL, UR}
             UL = ULR.first;
             UR = ULR.second;
             FL = flux_function(UR, UL, cell->nx_L, cell->ny_L);
-            if(cell->cell_L->name=="Ghost" && cell->cell_L->type == 1){
+            if(cell->cell_L->name=="Ghost" && cell->cell_L->type == 1 && use_flux_bcs){
                 auto V = get_primvars(cell);
                 FL = {0,cell->nx_L*V[3],cell->ny_L*V[3],0};
             }   
@@ -623,7 +658,7 @@ void Flux::compute_residual(){
             UL = ULR.first;
             UR = ULR.second;
             FR = flux_function(UL, UR, cell->nx_R, cell->ny_R);
-            if(cell->cell_R->name=="Ghost" && cell->cell_R->type == 1){
+            if(cell->cell_R->name=="Ghost" && cell->cell_R->type == 1 && use_flux_bcs){
                 auto V = get_primvars(cell);
                 FR = {0,cell->nx_R*V[3],cell->ny_R*V[3],0};
             }   
@@ -635,10 +670,14 @@ void Flux::compute_residual(){
             UL = ULR.first;
             UR = ULR.second;
             FD = flux_function(UR, UL, cell->nx_D, cell->ny_D);
-            if(cell->cell_D->name=="Ghost" && cell->cell_D->type == 1){
+            if(cell->cell_D->name=="Ghost" && cell->cell_D->type == 1 && use_flux_bcs){
                 auto V = get_primvars(cell);
                 FD = {0,cell->nx_D*V[3],cell->ny_D*V[3],0};
+                
             }   
+            // else if(cell->cell_D->type == 4)
+            //     throw invalid_argument("Encountered type 4");
+
 
         }
 
@@ -647,10 +686,12 @@ void Flux::compute_residual(){
             UL = ULR.first;
             UR = ULR.second;
             FU = flux_function(UL, UR, cell->nx_U, cell->ny_U);
-            if(cell->cell_U->name=="Ghost" && cell->cell_U->type == 1){
+            if(cell->cell_U->name=="Ghost" && cell->cell_U->type == 1 && use_flux_bcs){
                 auto V = get_primvars(cell);
                 FU = {0,cell->nx_U*V[3],cell->ny_U*V[3],0};
             }   
+            //  else if(cell->cell_U->type == 4)
+            //     throw invalid_argument("Encountered type 4");
 
         }
         for(int i=0;i<4;i++)
@@ -662,10 +703,11 @@ void Flux::compute_residual(){
                     cout<<"pressure";
                 throw invalid_argument("NaN encountered");
             }
-
-
+        double temp_num = 1.0;
+        // if(flag)
+        //     temp_num = 0.0;
         for(int i=0;i<4;i++)
-            cell->Residual[i] = (FL[i]*cell->A_L + FR[i]*cell->A_R + FU[i]*cell->A_U + FD[i]*cell->A_D);
+            cell->Residual[i] = temp_num*(FL[i]*cell->A_L + FR[i]*cell->A_R + FU[i]*cell->A_U + FD[i]*cell->A_D);
 
     }
 

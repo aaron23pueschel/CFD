@@ -25,11 +25,7 @@ public:
 
 
 
-
-
-
-
-
+    
 
 
 
@@ -40,7 +36,7 @@ public:
     const double pi     = 3.14159265358979323846;
 
     const double rho0   = 1.0;
-    const double rhox   = 0.15;
+    const double rhox   =  0.15;
     const double rhoy   = -0.1;
 
     const double uvel0  = 800.0;
@@ -54,6 +50,14 @@ public:
     const double press0 = 100000.0;
     const double pressx = 20000.0;
     const double pressy = 50000.0;
+
+
+    const double one = 1.0;
+    const double two = 2.0;
+    const double three = 3.0;
+    const double four = 4.0;
+    const double five = 5.0;
+    const double six = 6.0;
 
 
 

@@ -11,6 +11,8 @@
 #include "inputs.h"
 #include <map>
 #include <array>
+
+#include <iomanip>  // Required for std::setprecision and std::scientific
 using namespace std;
 
 
@@ -29,6 +31,7 @@ void Simulation::write_primitives_csv(const string& filename)
     vector<double> u;   u.reserve(N);
     vector<double> v;   v.reserve(N);
     vector<double> p;   p.reserve(N);
+    vector<double> p1;   p1.reserve(N);
 
     for (const auto* elem : cells) {
         array<double,4> V = simulation_flux.get_primvars(elem->U); // {rho,u,v,p}
@@ -36,11 +39,12 @@ void Simulation::write_primitives_csv(const string& filename)
         u.push_back(V[1]);
         v.push_back(V[2]);
         p.push_back(V[3]);
+        p1.push_back(elem->p1[0]);
     }
 
-    auto write_line = [&](const vector<double>& vec) {
+    auto write_line = [&](const std::vector<double>& vec) {
         for (size_t i = 0; i < vec.size(); ++i) {
-            file << vec[i];
+            file << std::scientific << std::setprecision(17) << vec[i];
             if (i + 1 < vec.size()) file << ",";
         }
         file << "\n";
@@ -51,6 +55,7 @@ void Simulation::write_primitives_csv(const string& filename)
     write_line(u);
     write_line(v);
     write_line(p);
+    write_line(p1);
 }
 
 
@@ -78,7 +83,8 @@ void Simulation::write_Cd(const string& filename){
 
             double Area = sqrt(pow(cell->cell_U->x22-cell->cell_U->x21,2) + pow(cell->cell_U->y22-cell->cell_U->y21,2));
 
-            file << pressure_at_face*nx*Area;
+            file << std::fixed << std::setprecision(17) << pressure_at_face * nx * Area;
+
 
 
             
@@ -108,6 +114,53 @@ void Simulation::write_Cd(const string& filename){
 
 
 
+void Simulation::write_sources_csv(const string& filename)
+{
+    ofstream file(filename);
+    if (!file) {
+        throw runtime_error("Could not open file: " + filename);
+    }
+
+    const auto& cells = simulation_mesh.interior_cells;
+    const size_t N = cells.size();
+
+    // Collect each primitive across all cells
+    vector<double> rho; rho.reserve(N);
+    vector<double> u;   u.reserve(N);
+    vector<double> v;   v.reserve(N);
+    vector<double> p;   p.reserve(N);
+
+    for (const auto* elem : cells) {
+        //cout << simulation_flux.vvel_mms(1000,elem->midpoint_x,elem->midpoint_y)<<","<<elem->midpoint_x<<","<<elem->midpoint_y<<endl;
+        rho.push_back(simulation_flux.rho_mms(1000,elem->midpoint_x,elem->midpoint_y));
+        u.push_back(simulation_flux.uvel_mms(1000,elem->midpoint_x,elem->midpoint_y));
+        v.push_back(simulation_flux.vvel_mms(1000,elem->midpoint_x,elem->midpoint_y));
+        p.push_back(simulation_flux.press_mms(1000,elem->midpoint_x,elem->midpoint_y));
+
+        // rho.push_back(elem->Source[0]);
+        // u.push_back(elem->Source[1]);
+        // v.push_back(elem->Source[2]);
+        // p.push_back(elem->Source[3]);
+    }
+
+    auto write_line = [&](const std::vector<double>& vec) {
+        for (size_t i = 0; i < vec.size(); ++i) {
+            file << std::setprecision(17) << std::scientific << vec[i];
+            if (i + 1 < vec.size()) file << ",";
+        }
+        file << "\n";
+    };
+
+    // One variable per line (newline separates variables)
+    write_line(rho);
+    write_line(u);
+    write_line(v);
+    write_line(p);
+}
+
+
+
+
 
 
 
@@ -133,20 +186,22 @@ void Simulation::write_residuals_csv(const string& filename)
     vector<double> p;   p.reserve(N);
 
     for (const auto* elem : cells) {
-        auto V = elem->Residual;
+        auto V = elem->total_residual;
         rho.push_back(V[0]);
         u.push_back(V[1]);
         v.push_back(V[2]);
         p.push_back(V[3]);
     }
 
-    auto write_line = [&](const vector<double>& vec) {
-        for (size_t i = 0; i < vec.size(); ++i) {
-            file << vec[i];
-            if (i + 1 < vec.size()) file << ",";
-        }
-        file << "\n";
-    };
+
+auto write_line = [&](const std::vector<double>& vec) {
+    for (size_t i = 0; i < vec.size(); ++i) {
+        file << std::scientific << std::setprecision(17) << vec[i];
+        if (i + 1 < vec.size()) file << ",";
+    }
+    file << "\n";
+};
+
 
     // One variable per line (newline separates variables)
     write_line(rho);

@@ -26,17 +26,17 @@ int main(){
     test.simulation_solver.set_flow_initial_conditions();
     test.simulation_flux.set_MMS_source(test.in.is_mms);
     const string primvar = "primitives.csv";
-    for(int i=0;i< 32000;i++){
+    for(int i=0;i< 4500;i++){
        cout << "Iteration: " << i<<endl; 
 
        test.simulation_solver.iteration_step(i);
        
-        if(i<200)
-            test.simulation_solver.flux.upwind_order = 0;
-        else
-            test.simulation_solver.flux.upwind_order = 1.0;//std::min(1.0,(i-5000)/2000.0);
+        // if(i<100)
+        //     test.simulation_solver.flux.upwind_order = 0;
+        // else
+        //     test.simulation_solver.flux.upwind_order = 1.0; //std::min(1.0,(i-5000)/2000.0);
 
-    if(i%100==0){
+    
 
        auto norms = test.simulation_flux.compute_norm();
     cout <<"Upwind Order: "<<test.simulation_solver.flux.upwind_order<< ";  Norms:\n"
@@ -44,12 +44,12 @@ int main(){
      << "  U-velocity: "   << norms[1] 
      << "  V-velocity: "   << norms[2]  
      << "  Pressure  : "   << norms[3] << "\n";
-    }
+    
     }
      //test.simulation_solver.iteration_step();
      
-    //test.write_residuals_csv(primvar);
     test.write_primitives_csv(primvar);
+    test.write_residuals_csv("residuals.csv");
     // test.write_primitives_csv(primvar);
     
     auto norms = test.simulation_flux.compute_norm();
