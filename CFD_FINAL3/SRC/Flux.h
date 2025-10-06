@@ -59,7 +59,13 @@ public:
     const double five = 5.0;
     const double six = 6.0;
 
+    // const double uvel0  = 70; //800.0;
+    // const double uvelx  = 5; //50.0;
+    // const double uvely  = -7; //-30.0;
 
+    // const double vvel0  = 90; //800.0;
+    // const double vvelx  = -15; //-75.0;
+    // const double vvely  = 8.5; //40.0;
 
 
 

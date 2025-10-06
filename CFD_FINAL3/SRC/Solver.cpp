@@ -47,9 +47,49 @@ void Solver::iteration_step(int i){
     update_delta_t();
     step();
     //RK4_step();
+    //RK2_step();
 
 
+}
+void Solver::RK2_step() {
+    const bool is_mms = inputs["is_mms"];
 
+    // 1) Save U^n
+    for (Cell* c : mesh.interior_cells)
+        for (int i = 0; i < 4; ++i)
+            c->temp_U[i] = c->U[i];
+
+    // ---------- Stage 1: K1 = L(U^n) ----------
+    set_boundary_conditions();
+    flux.compute_residual();                 // fills c->Residual for current c->U
+
+    for (Cell* c : mesh.interior_cells) {
+        const double dt = c->delta_t;        // keep same dt across both stages per cell
+        for (int i = 0; i < 4; ++i) {
+            // L(U) = -(Residual/Vol - Source)   (your sign convention)
+            c->K1[i] = - (c->Residual[i] / c->Volume - c->Source[i]);
+            c->U[i]  =  c->temp_U[i] + dt * c->K1[i];   // U^(1)
+        }
+    }
+
+    // ---------- Stage 2: K2 = L(U^(1)) ----------
+    set_boundary_conditions();               // BCs must be consistent with stage state
+    flux.compute_residual();
+
+    for (Cell* c : mesh.interior_cells) {
+        const double dt = c->delta_t;
+        for (int i = 0; i < 4; ++i) {
+            c->K2[i] = - (c->Residual[i] / c->Volume - c->Source[i]);
+
+            // U^{n+1} = 0.5*U^n + 0.5*( U^(1) + dt*K2 )
+            const double U1_i   = c->U[i];             // currently holds U^(1)
+            const double update = U1_i + dt * c->K2[i];
+            c->U[i] = 0.5 * c->temp_U[i] + 0.5 * update;
+
+            // optional diagnostics
+            c->total_residual[i] = c->K1[i] + c->K2[i];
+        }
+    }
 }
 
 
@@ -67,7 +107,7 @@ void Solver::RK4_step() {
 
         for (Cell* c : mesh.interior_cells) {
             for (int i = 0; i < 4; ++i) {
-                const double f = - (c->Residual[i] / c->Volume + c->Source[i]); // slope f(U)
+                const double f = - (c->Residual[i] / c->Volume - c->Source[i]); // slope f(U)
                 if      (stage == 1) c->K1[i] = f;
                 else if (stage == 2) c->K2[i] = f;
                 else if (stage == 3) c->K3[i] = f;
@@ -275,10 +315,10 @@ void Solver::set_MMS_initial_conditions(){
     
 
     for (Cell* cell : mesh.interior_cells){
-        double rho_ = flux.rho_mms(1000.0,cell->midpoint_x,cell->midpoint_y);
-        double u_ = flux.uvel_mms(1000.0,cell->midpoint_x,cell->midpoint_y);
-        double v_ = flux.vvel_mms(1000.0,cell->midpoint_x,cell->midpoint_y);
-        double p_ = flux.press_mms(1000.0,cell->midpoint_x,cell->midpoint_y);
+        double rho_ = flux.rho_mms(1.0,cell->midpoint_x,cell->midpoint_y);
+        double u_ = flux.uvel_mms(1.0,cell->midpoint_x,cell->midpoint_y);
+        double v_ = flux.vvel_mms(1.0,cell->midpoint_x,cell->midpoint_y);
+        double p_ = flux.press_mms(1.0,cell->midpoint_x,cell->midpoint_y);
         flux.set_conserved(cell,{rho_,u_,v_,p_});
     }
 
@@ -318,7 +358,7 @@ void Solver::set_flow_initial_conditions(){
     const double R     = inputs["ru"];       // specific gas constant
     const double p     = inputs["p0"];       // static pressure (Pa)
     const double T     = inputs["t0"];       // static temperature (K)
-    const double ang   = inputs.count("angle_deg") ? inputs["angle_deg"] : 0.0; // optional
+    const double ang   = 0.0;
     const double ang_r = ang * M_PI / 180.0;
 
     const double rho = p / (R * T);
@@ -413,10 +453,14 @@ void Solver::set_inflow_bcs(Cell* inflow_cell, double nx, double ny)
     const double a   = std::sqrt(gamma * R * T);
     const double U   = M * a;              // speed magnitude
 
+    const double ang   = 0.0;
+    const double ang_r = ang * M_PI / 180.0;
 
-    // Velocity INTO the domain: V · n < 0  -> choose V = -U * n
-    const double u = 1*U;
-    const double v = 0*U;
+    
+    const double u   = U * std::cos(ang_r);
+    const double v   = U * std::sin(ang_r);
+    
+    
 
     // Set full state (Dirichlet) for supersonic inflow
     flux.set_conserved(inflow_cell, {rho, u, v, p});

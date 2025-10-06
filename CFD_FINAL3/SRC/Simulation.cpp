@@ -131,11 +131,11 @@ void Simulation::write_sources_csv(const string& filename)
     vector<double> p;   p.reserve(N);
 
     for (const auto* elem : cells) {
-        //cout << simulation_flux.vvel_mms(1000,elem->midpoint_x,elem->midpoint_y)<<","<<elem->midpoint_x<<","<<elem->midpoint_y<<endl;
-        rho.push_back(simulation_flux.rho_mms(1000,elem->midpoint_x,elem->midpoint_y));
-        u.push_back(simulation_flux.uvel_mms(1000,elem->midpoint_x,elem->midpoint_y));
-        v.push_back(simulation_flux.vvel_mms(1000,elem->midpoint_x,elem->midpoint_y));
-        p.push_back(simulation_flux.press_mms(1000,elem->midpoint_x,elem->midpoint_y));
+        //cout << simulation_flux.vvel_mms(1,elem->midpoint_x,elem->midpoint_y)<<","<<elem->midpoint_x<<","<<elem->midpoint_y<<endl;
+        rho.push_back(simulation_flux.rho_mms(1,elem->midpoint_x,elem->midpoint_y));
+        u.push_back(simulation_flux.uvel_mms(1,elem->midpoint_x,elem->midpoint_y));
+        v.push_back(simulation_flux.vvel_mms(1,elem->midpoint_x,elem->midpoint_y));
+        p.push_back(simulation_flux.press_mms(1,elem->midpoint_x,elem->midpoint_y));
 
         // rho.push_back(elem->Source[0]);
         // u.push_back(elem->Source[1]);

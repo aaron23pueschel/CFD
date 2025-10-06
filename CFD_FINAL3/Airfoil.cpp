@@ -16,22 +16,22 @@ int main(){
     Simulation test("inputs/airfoil_inputs.json");
     test.simulation_solver.set_ambient_conditions();
     test.simulation_solver.set_flow_initial_conditions();
-    const string primvar = "airfoil_primitives.csv";
-    const string resvar = "airfoil_residuals.csv";
+    const string primvar = "airfoil_primitives_coarse.csv";
+    const string resvar = "airfoil_residuals_coarse.csv";
     const string drag_coef = "drag_coef.csv";
 
-    for(int i=0;i<40050;i++){
+    for(int i=0;i<30050;i++){
        cout << "Iteration: " << i<<endl; 
        test.simulation_solver.iteration_step(i);
 
 
         
-    //    auto norms = test.simulation_flux.compute_norm();
+       auto norms = test.simulation_flux.compute_norm();
 
-    //  cout<< "  Density   : "   << norms[0] 
-    //  << "  U-velocity: "   << norms[1] 
-    //  << "  V-velocity: "   << norms[2]  
-    //  << "  Pressure  : "   << norms[3] << "\n";
+     cout<< "  Density   : "   << norms[0] 
+     << "  U-velocity: "   << norms[1] 
+     << "  V-velocity: "   << norms[2]  
+     << "  Pressure  : "   << norms[3] << "\n";
     
 
 

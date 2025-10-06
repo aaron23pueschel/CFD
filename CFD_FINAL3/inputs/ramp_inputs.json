@@ -13,7 +13,7 @@
     "extrapolation_order": 0,
     "epsilon": 1e-6,
     "kappa": -1,
-    "upwind_order": 1,
+    "upwind_order": 0,
     "convergence_criteria": 1e-12,
     "damping_scheme": 1,
     "iter_max": 1000000,

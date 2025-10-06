@@ -63,6 +63,7 @@ public:
     void set_mms_bcs(Cell* outflow_cell);
     void RK4_step();
     void set_MMS_initial_conditions();
+    void RK2_step();
 
 
 

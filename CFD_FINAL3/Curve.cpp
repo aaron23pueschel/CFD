@@ -22,7 +22,7 @@ int main(){
     const string primvar = "primitives.csv";
     //test.write_primitives_csv(primvar);
     // // test.simulation_mesh.test_boundary_normals();
-     for(int i=0;i<14000;i++){
+     for(int i=0;i<5500;i++){
         cout << "Iteration: " << i<<endl; 
          test.simulation_solver.iteration_step(i);
 

@@ -464,7 +464,7 @@ array<double, 4> Flux::vanleer_flux(array<double, 4> U_L, array<double, 4> U_R, 
 
 
 double p_func(double i4,double i3,double i2,double i1){
-
+    return 1.0;
     if(isnan(i4)|| isnan(i3)||isnan(i2)||isnan(i1))
          throw invalid_argument("NaN encountered in Flux::p_func");
     double NUM = i4-i3;
@@ -486,9 +486,33 @@ double p_func(double i4,double i3,double i2,double i1){
 }
 
 
+inline double van_albada(double a, double b) {
+    // Symmetric van Albada (smooth, TVD). eps avoids 0/0 near extrema.
+    const double eps = 1e-16;
+    if (a * b <= 0.0) return 0.0;
+    return ((a * b + eps) / (a * a + b * b + eps)) * (a + b);
+}
 
+inline double van_leer(double a, double b) {
+    // Equivalent to φ(r) = (r + |r|)/(1 + |r|) with r = a/b.
+    if (a * b <= 0.0) return 0.0;
+    return (2.0 * a * b) / (a + b);  // harmonic mean
+}
+inline double minmod(double a, double b) {
+    if (a * b <= 0.0) return 0.0;
+    return (std::abs(a) < std::abs(b)) ? a : b;
+}
+inline double mc_limiter(double a, double b) {
+    // MC: minmod( (a+b)/2, 2a, 2b )
+    //return minmod(0.5*(a + b), minmod(2.0*a, 2.0*b));
+    //return van_leer(a,b);
+    return van_albada(a,b);
+}
 
-
+inline double limiter_frozen(double a, double b) {
+    // a = (U_i - U_{i-1}), b = (U_{i+1} - U_i) on a uniform grid
+    return 0.5 * (a + b);  // central slope
+}
 
 
 
@@ -502,81 +526,91 @@ pair<array<double,4>, array<double,4>> Flux::MusclExtrapolation(Cell* cell,char 
         
         for(;i<4;i++){
 
-            const double tol = 1e-14;
+            // Put these helpers somewhere accessible (e.g., top of file or a utils header)
 
-            // ---------- RIGHT face ----------
-            if (direction=='R') {
-                Cell temp_cell("temp_cell");
-                
-                auto CRR = cell->cell_R->cell_R ? cell->cell_R->cell_R : cell->cell_R;
-                auto CL  = cell->cell_L;
-                auto CR  = cell->cell_R;
+// ... inside your loop over components i and given `cell` & `direction`:
 
-                
-                p3 = p_func(CR->U[i],cell->U[i],CRR->U[i],CR->U[i]);
-                p1 = p_func(CR->U[i],cell->U[i],cell->U[i],CL->U[i]);
-                
-                FL[i] = cell->U[i]+ 0.5*upwind_order_ * (p1 * (cell->U[i] - CL->U[i]));
-                FR[i] = CR->U[i]- 0.5*upwind_order_ * (p3 * (CRR->U[i]  - CR->U[i]));
-            }
+// ---------- RIGHT face (cell | CR) ----------
+if (direction == 'R') {
+    auto CL  = cell->cell_L;
+    auto CR  = cell->cell_R;
+    auto CRR = (CR && CR->cell_R) ? CR->cell_R : CR;
 
-            // ---------- LEFT face ----------
-            if (direction=='L') {
-                
-                auto CLL = cell->cell_L->cell_L ? cell->cell_L->cell_L : cell->cell_L;
-                auto CL  = cell->cell_L;
-                auto CR  = cell->cell_R;
+    double Ui   = cell->U[i];
+    double UCL  = CL->U[i];
+    double UCR  = CR->U[i];
+    double UCRR = CRR->U[i];
 
-                
-                p1 = p_func(cell->U[i],CL->U[i],CL->U[i],CLL->U[i]);
-                p3 = p_func(cell->U[i],CL->U[i],CR->U[i],cell->U[i]);
+    // slopes toward the RIGHT face
+    double slopeC  = (upwind_order_ == 1) ? 0.0 : mc_limiter(Ui  - UCL,  UCR - Ui );
+    double slopeCR = (upwind_order_ == 1) ? 0.0 : mc_limiter(UCR - Ui,   UCRR - UCR);
 
-                FL[i] = CL->U[i]+ 0.5*upwind_order_ * (p1 * (CL->U[i]   - CLL->U[i]));
-                FR[i] = cell->U[i]- 0.5*upwind_order_ * (p3 * (CR->U[i]   - cell->U[i]));
-            }
+    // states at i+1/2
+    FL[i] = Ui  + 0.5 * slopeC;     // from cell (left of face)
+    FR[i] = UCR - 0.5 * slopeCR;    // from CR   (right of face)
+}
 
-            // ---------- UP face ----------
-            if (direction=='U') {
-                auto CUU = cell->cell_U->cell_U ? cell->cell_U->cell_U : cell->cell_U;
-                auto CD  = cell->cell_D;
-                auto CU  = cell->cell_U;
+// ---------- LEFT face (CL | cell) ----------
+if (direction == 'L') {
+    auto CL  = cell->cell_L;
+    auto CLL = (CL && CL->cell_L) ? CL->cell_L : CL;
+    auto CR  = cell->cell_R;
 
-                
-                p3 = p_func(CU->U[i],cell->U[i],CUU->U[i],CU->U[i]);
-                p1 = p_func(CU->U[i],cell->U[i],cell->U[i],CD->U[i]);
-                
+    double Ui   = cell->U[i];
+    double UCL  = CL->U[i];
+    double UCLL = CLL->U[i];
+    double UCR  = CR->U[i];
 
-                FL[i] = cell->U[i]+ 0.5*upwind_order_ * (p1 * (cell->U[i] - CD->U[i]));
-                FR[i] = CU->U[i]- 0.5*upwind_order_ * (p3 * (CUU->U[i]  - CU->U[i]));
-            }
+    // slopes toward the LEFT face
+    double slopeCL = (upwind_order_ == 1) ? 0.0 : mc_limiter(UCL - UCLL, Ui  - UCL);
+    double slopeC  = (upwind_order_ == 1) ? 0.0 : mc_limiter(Ui  - UCL,  UCR - Ui );
 
-            // ---------- DOWN face ----------
-            if (direction=='D') {
-                auto CDD = cell->cell_D->cell_D ? cell->cell_D->cell_D : cell->cell_D;
-                auto CD  = cell->cell_D;
-                auto CU  = cell->cell_U;
-                
+    // states at i-1/2
+    FL[i] = UCL + 0.5 * slopeCL;    // from CL   (left of face)
+    FR[i] = Ui  - 0.5 * slopeC;     // from cell (right of face)
+}
 
-                
-                p1 = p_func(cell->U[i],CD->U[i],CD->U[i],CDD->U[i]);
-                p3 = p_func(cell->U[i],CD->U[i],CU->U[i],cell->U[i]);
-                
-                FL[i] = CD->U[i] + 0.5*upwind_order_ * (p1 * (CD->U[i]   - CDD->U[i]));
-                FR[i] = cell->U[i]- 0.5*upwind_order_ * (p3 * (CU->U[i]   - cell->U[i]));
-            }
+// ---------- UP face (cell | CU) ----------
+if (direction == 'U') {
+    auto CD  = cell->cell_D;
+    auto CU  = cell->cell_U;
+    auto CUU = (CU && CU->cell_U) ? CU->cell_U : CU;
 
-        if(p1>0)
-            cell->p1[0] = p1;
-        if(isnan(FL[i])||isnan(FR[i])){
-            cout<<"Nan encountered at index: "<<i<<", Direction: "<<direction<<endl;
-            throw invalid_argument("NaN encountered");
+    double Ui   = cell->U[i];
+    double UCD  = CD->U[i];
+    double UCU  = CU->U[i];
+    double UCUU = CUU->U[i];
+
+    // slopes toward the UP face
+    double slopeC  = (upwind_order_ == 1) ? 0.0 : mc_limiter(Ui  - UCD,  UCU - Ui );
+    double slopeCU = (upwind_order_ == 1) ? 0.0 : mc_limiter(UCU - Ui,   UCUU - UCU);
+
+    // states at j+1/2
+    FL[i] = Ui  + 0.5 * slopeC;     // from cell (below face)
+    FR[i] = UCU - 0.5 * slopeCU;    // from CU   (above face)
+}
+
+// ---------- DOWN face (CD | cell) ----------
+if (direction == 'D') {
+    auto CD  = cell->cell_D;
+    auto CDD = (CD && CD->cell_D) ? CD->cell_D : CD;
+    auto CU  = cell->cell_U;
+
+    double Ui   = cell->U[i];
+    double UCD  = CD->U[i];
+    double UCDD = CDD->U[i];
+    double UCU  = CU->U[i];
+
+    // slopes toward the DOWN face
+    double slopeCD = (upwind_order_ == 1) ? 0.0 : mc_limiter(UCD - UCDD, Ui  - UCD);
+    double slopeC  = (upwind_order_ == 1) ? 0.0 : mc_limiter(Ui  - UCD,  UCU - Ui );
+
+    // states at j-1/2
+    FL[i] = UCD + 0.5 * slopeCD;    // from CD   (below face)
+    FR[i] = Ui  - 0.5 * slopeC;     // from cell (above face)
+}
+
         }
-
-
-
-    
-        }
-
 
     return make_pair(FL,FR);
 
@@ -584,7 +618,7 @@ pair<array<double,4>, array<double,4>> Flux::MusclExtrapolation(Cell* cell,char 
 
 
 
-
+        
 
 }
 
