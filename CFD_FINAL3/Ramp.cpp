@@ -31,10 +31,10 @@ int main(){
 
        test.simulation_solver.iteration_step(i);
        
-        if(i<3000)
-            test.simulation_solver.flux.upwind_order = 1.0;
-        else
-            test.simulation_solver.flux.upwind_order = 2.0; //std::min(1.0,(i-5000)/2000.0);
+        // if(i<3000)
+        //     test.simulation_solver.flux.upwind_order = 1.0;
+        // else
+        //     test.simulation_solver.flux.upwind_order = 2.0; //std::min(1.0,(i-5000)/2000.0);
 
     
 

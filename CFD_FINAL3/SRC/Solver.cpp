@@ -358,7 +358,7 @@ void Solver::set_flow_initial_conditions(){
     const double R     = inputs["ru"];       // specific gas constant
     const double p     = inputs["p0"];       // static pressure (Pa)
     const double T     = inputs["t0"];       // static temperature (K)
-    const double ang   = 0.0;
+    const double ang   = 8.0;
     const double ang_r = ang * M_PI / 180.0;
 
     const double rho = p / (R * T);
@@ -453,7 +453,7 @@ void Solver::set_inflow_bcs(Cell* inflow_cell, double nx, double ny)
     const double a   = std::sqrt(gamma * R * T);
     const double U   = M * a;              // speed magnitude
 
-    const double ang   = 0.0;
+    const double ang   = 8.0;
     const double ang_r = ang * M_PI / 180.0;
 
     
